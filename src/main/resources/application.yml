@@ -13,19 +13,23 @@ spring:
                 dialect: org.hibernate.dialect.MySQL8Dialect
 
     mail:
-        host: smtp.example.com
-        port: 587
-        username: your-email@example.com
-        password: your-email-password
+        host: mail.nasbg.com
+        port: 465
+        username: “bootcamp@nasbg.com”
+        password: ‘%61%,g]AI,g_’
         properties:
             mail:
                 smtp:
                     auth: true
                     starttls:
                         enable: true
+                    ssl: enable
+                    connectiontimeout: 5000
+                    timeout: 5000
+                    writetimeout: 5000
 
 server:
-    port: 8080
+    port: 33062
 
 web:
     access-url: https://office.nasbg.com/danni
