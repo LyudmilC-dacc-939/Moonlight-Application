@@ -25,14 +25,15 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: Deploy to server
-        uses: garygrossgarten/github-action-scp@release
+        uses: appleboy/scp-action@v0.1.7
         with:
-          local: target/bootcamp-java-24.jar
-          remote: apps/bootcamp-java-24.jar
+          source: "target/*.jar"
+          target: "/home/services/apps/"
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
+          strip_components: 1
 
       - name: Reboot the service
         uses: appleboy/ssh-action@master
