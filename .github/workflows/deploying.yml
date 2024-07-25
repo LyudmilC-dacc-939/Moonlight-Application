@@ -1,0 +1,44 @@
+name: Deploying
+
+on:
+  push:
+    branches: [ "main" ]
+
+concurrency:
+  group: deploying
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 20
+        uses: actions/setup-java@v3
+        with:
+          java-version: '20'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        # run: mvn -B package --file pom.xml -DskipTests=true
+        run: mvn -B package --file pom.xml
+
+      - name: Deploy to server
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: target/bootcamp-java-24.jar
+          remote: apps/bootcamp-java-24.jar
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Reboot the service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: "/usr/bin/env sudo /bin/systemctl restart bootcamp-java-24.service"

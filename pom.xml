@@ -88,6 +88,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>bootcamp-java-24</finalName>
 	</build>
 
 </project>
