@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-@Entity
+@Entity(name = "USERS")
 @Table(name = "users")
 @Data
 @NoArgsConstructor
@@ -20,15 +20,12 @@ public class User {
     private String lastName;
     @Column(unique = true)
     private String emailAddress;
-    @Column(length = 15)
     private String phoneNumber;
-    @Column(length = 30)
     private String password;
     private Instant dateCreated;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     @JsonBackReference
-    private Role role;
-
+    private UserRole userRole;
 }

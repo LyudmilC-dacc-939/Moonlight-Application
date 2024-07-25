@@ -7,18 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Entity
+@Entity(name = "ROLES")
 @Data
 @NoArgsConstructor
-public class Role {
+public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String roleName;
-    @OneToMany(mappedBy = "role",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<User> users;
+    @Column(name = "USER_ROLE", unique = true)
+    private String userRole;
 }
