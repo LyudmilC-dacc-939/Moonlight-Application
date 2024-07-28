@@ -1,11 +1,8 @@
 package com.moonlight.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Entity(name = "ROLES")
 @Data
