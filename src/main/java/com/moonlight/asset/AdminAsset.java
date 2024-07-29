@@ -39,7 +39,7 @@ public class AdminAsset implements CommandLineRunner {
         if (user.isPresent()) {
             throw new UserAlreadyExistsException(String.format("User with role admin already exists"));
         }   else {
-            String filePath = "D:\\Projects\\bootcamp-java-24-july\\src\\main\\resources\\admin-details.txt";
+            String filePath = "src/main/resources/admin-details.txt";
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line;
             while ((line = reader.readLine()) != null) {
