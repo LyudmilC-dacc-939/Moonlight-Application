@@ -1,4 +1,4 @@
-package com.moonlight.exception;
+package com.moonlight.advice.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
 
