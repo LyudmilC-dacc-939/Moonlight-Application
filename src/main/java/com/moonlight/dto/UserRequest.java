@@ -1,6 +1,5 @@
 package com.moonlight.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -25,12 +24,12 @@ public class UserRequest {
     @Pattern(regexp = "^(\\+|00)[0-9-]{1,15}$", message = "Invalid phone number format")
     private String phoneNumber;
     @NotNull(message = "Password cannot be null!")
-    @Size(min = 8, max = 30,message = "User's password must be between {min} and {max} symbols")
+    @Size(min = 8, max = 30, message = "User's password must be between {min} and {max} symbols")
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\\w\\s]).{8,}$",
             message = "The user’s password must consist at least one numeric, one lowercase, one uppercase and one special characters")
     private String password;
     @NotNull(message = "Repeated password cannot be null!")
-    @Size(min = 8, max = 30,message = "Repeated password must be between {min} and {max} symbols")
+    @Size(min = 8, max = 30, message = "Repeated password must be between {min} and {max} symbols")
     private String repeatPassword;
     private Boolean isAgreedGDPR;
     private Boolean isAgreedEULA;
