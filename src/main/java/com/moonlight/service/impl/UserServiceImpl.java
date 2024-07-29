@@ -32,6 +32,9 @@ public class UserServiceImpl implements UserService {
         // created the ROLES table/id/names yet - TBD
         role.setUserRole("ROLE_CLIENT");
         user.setEmailAddress(userRequest.getEmail());
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setDateCreated(Instant.now());
         user.setUserRole(role);
