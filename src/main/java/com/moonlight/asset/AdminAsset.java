@@ -23,12 +23,19 @@ public class AdminAsset implements CommandLineRunner {
     private UserRoleRepository userRoleRepository;
     @Override
     public void run(String... args) throws Exception {
-        UserRole userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
+        Optional<UserRole> userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
+        if (userRole.isEmpty()) {
+            UserRole roleAdmin = new UserRole();
+            roleAdmin.setUserRole("ROLE_ADMIN");
+            userRoleRepository.save(roleAdmin);
+        } else {
+            userRole.get();
+        }
         Optional<User> user = userRepository.findByUserRole(userRole);
         if (user.isPresent()) {
             throw new UserAlreadyExistsException(String.format("User with role admin already exists"));
         }   else {
-            String filePath = "Text file path here";
+            String filePath = "D:\\Projects\\bootcamp-java-24-july\\src\\main\\resources\\admin-details.txt";
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -41,7 +48,7 @@ public class AdminAsset implements CommandLineRunner {
                 newAdmin.setPhoneNumber(data[3].trim());
                 newAdmin.setPassword(data[4].trim());
                 newAdmin.setDateCreated(Instant.now());
-                newAdmin.setUserRole(userRole);
+                newAdmin.setUserRole(userRole.get());
 
                 userRepository.save(newAdmin);
             }
