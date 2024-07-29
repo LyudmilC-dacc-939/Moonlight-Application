@@ -1,6 +1,6 @@
 package com.moonlight.asset;
 
-import com.moonlight.exception.UserAlreadyExistsException;
+import com.moonlight.advice.exception.UserAlreadyExistsException;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
