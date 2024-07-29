@@ -1,0 +1,18 @@
+package com.moonlight.advice;
+
+import com.moonlight.advice.exception.RecordNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @Operation(summary = "Handles RecordNotFoundException", description = "Returned when a requested record is not found in the database.")
+    @ExceptionHandler(RecordNotFoundException.class)
+    public ResponseEntity<?> handleRecordNotFoundException(RecordNotFoundException recordNotFoundException){
+        return new ResponseEntity<>(recordNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+    }
+}
