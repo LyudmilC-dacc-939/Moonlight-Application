@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-         run: mvn -B package --file pom.xml -DskipTests=true
+        run: mvn -B package --file pom.xml -DskipTests=true
 
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.7
