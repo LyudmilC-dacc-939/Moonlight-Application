@@ -7,6 +7,7 @@ import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.service.UserService;
 import jakarta.validation.ConstraintViolationException;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@Data
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -25,7 +26,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
             throw new ConstraintViolationException("Email is already taken", null);
         }
-
         User user = new User();
         UserRole role = new UserRole();
         // Temporary setting the regular use to "ROLE_CLIENT", it's not decided what it will be called yet, and we have not
@@ -43,13 +43,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new RecordNotFoundException(String.format("User with id %s not exist", id)));
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new RecordNotFoundException(String.format("User with email %s not exist", email)));
     }
 
     @Override
