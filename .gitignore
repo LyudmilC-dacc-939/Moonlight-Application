@@ -71,3 +71,4 @@ build/
 hs_err_pid*
 /qodana.yaml
 /src/main/local-resources/application.yml
+/src/main/resources/application-dev.yml

@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(UserRequest userRequest) {
-        if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
+        if (userRepository.findByEmailAddress(userRequest.getEmail()).isPresent()) {
             throw new ConstraintViolationException("Email is already taken", null);
         }
         User user = new User();
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() ->
+        return userRepository.findByEmailAddress(email).orElseThrow(() ->
                 new RecordNotFoundException(String.format("User with email %s not exist", email)));
     }
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RecordNotFoundException("User not found"));
+        User user = userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("User not found"));
         if (passwordEncoder.matches(password, user.getPassword())) {
             return user;
         } else {
