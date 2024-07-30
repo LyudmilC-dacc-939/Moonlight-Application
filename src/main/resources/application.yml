@@ -6,9 +6,9 @@ spring:
     include-message: always
     include-binding-errors: always
   datasource:
-    url: jdbc:mysql://localhost:3306/bootcamp_java_24_july
-    username: root
-    password: 12345678
+    url: jdbc:mysql://office.nasbg.com:3306/bootcamp_java_24_july
+    username: bootcamp_java_24_july
+    password: eZ@8Pa21A56_2
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
