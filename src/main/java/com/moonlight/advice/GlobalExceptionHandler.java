@@ -1,6 +1,7 @@
 package com.moonlight.advice;
 
 import com.moonlight.advice.exception.RecordNotFoundException;
+import com.moonlight.advice.exception.UserAlreadyExistsException;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,5 +15,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RecordNotFoundException.class)
     public ResponseEntity<?> handleRecordNotFoundException(RecordNotFoundException recordNotFoundException){
         return new ResponseEntity<>(recordNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<?> userAlreadyExistsException(UserAlreadyExistsException userAlreadyExistsException){
+        return new ResponseEntity<>(userAlreadyExistsException.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
