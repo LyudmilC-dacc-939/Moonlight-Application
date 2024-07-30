@@ -13,12 +13,12 @@ public class GlobalExceptionHandler {
 
     @Operation(summary = "Handles RecordNotFoundException", description = "Returned when a requested record is not found in the database.")
     @ExceptionHandler(RecordNotFoundException.class)
-    public ResponseEntity<?> handleRecordNotFoundException(RecordNotFoundException recordNotFoundException){
+    public ResponseEntity<?> handleRecordNotFoundException(RecordNotFoundException recordNotFoundException) {
         return new ResponseEntity<>(recordNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<?> userAlreadyExistsException(UserAlreadyExistsException userAlreadyExistsException){
+    public ResponseEntity<?> userAlreadyExistsException(UserAlreadyExistsException userAlreadyExistsException) {
         return new ResponseEntity<>(userAlreadyExistsException.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
