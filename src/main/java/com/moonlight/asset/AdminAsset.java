@@ -17,10 +17,14 @@ import java.util.Optional;
 @Component
 public class AdminAsset implements CommandLineRunner {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserRoleRepository userRoleRepository;
+    private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
+
+    public AdminAsset(UserRepository userRepository, UserRoleRepository userRoleRepository) {
+        this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
+    }
+
     @Override
     public void run(String... args) throws Exception {
         Optional<UserRole> userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
