@@ -52,7 +52,7 @@ public class AdminAsset implements CommandLineRunner {
                     throw new IllegalArgumentException("Incorrect data format in 'admin-details.txt' the data array length is not a multiple of 5");
                 }
 
-                // Every 4 data indexes are a new user, the admin-details.txt must 100% have its data separated by 4's
+                // Every 5 data indexes are a new user, the admin-details.txt must 100% have its data separated by 5's
                 for (int i = 0; i < data.length; i+= 5) {
                     User newAdmin = new User();
                     newAdmin.setFirstName(data[i].trim());
