@@ -1,6 +1,5 @@
 package com.moonlight.asset;
 
-import com.moonlight.advice.exception.UserAlreadyExistsException;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
@@ -36,10 +35,6 @@ public class AdminAsset implements CommandLineRunner {
             userRole = Optional.of(userRoleRepository.save(roleAdmin));
         }
 
-        // Check if a user with the admin role already exists
-        if (userRepository.findByUserRole(userRole.get()).isPresent()) {
-            System.out.println("User with role admin already exists");
-        }
 
         // Read admin details from the file
         try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream("admin-details.txt")) {
@@ -65,7 +60,11 @@ public class AdminAsset implements CommandLineRunner {
                 newAdmin.setPassword(passwordEncoder.encode(data[4].trim())); // Encode the password
                 newAdmin.setDateCreated(Instant.now());
                 newAdmin.setUserRole(userRole.get());
-                userRepository.save(newAdmin);
+
+                // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
+                if (!userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isPresent()) {
+                    userRepository.save(newAdmin);
+                }
             }
         }
     }
