@@ -57,13 +57,13 @@ public class AdminAsset implements CommandLineRunner {
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
 
-                if (data.length % 4 != 0) {
+                if (data.length % 5 != 0) {
                     // Handle the error appropriately if the data does not have exactly 5 parts
-                    throw new IllegalArgumentException("Incorrect data format in 'admin-details.txt' the data array length is not a multiple of 4");
+                    throw new IllegalArgumentException("Incorrect data format in 'admin-details.txt' the data array length is not a multiple of 5");
                 }
 
                 // Every 4 data indexes are a new user, the admin-details.txt must 100% have its data separated by 4's
-                for (int i = 0; i < data.length; i+= 4) {
+                for (int i = 0; i < data.length; i+= 5) {
                     User newAdmin = new User();
                     newAdmin.setFirstName(data[i].trim());
                     newAdmin.setLastName(data[i + 1].trim());
