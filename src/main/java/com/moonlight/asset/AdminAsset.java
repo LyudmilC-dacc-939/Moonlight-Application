@@ -57,24 +57,28 @@ public class AdminAsset implements CommandLineRunner {
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
 
-                if (data.length != 5) {
+                if (data.length % 4 != 0) {
                     // Handle the error appropriately if the data does not have exactly 5 parts
-                    throw new IllegalArgumentException("Incorrect data format in admin-details.txt");
+                    throw new IllegalArgumentException("Incorrect data format in 'admin-details.txt' the data array length is not a multiple of 4");
                 }
 
-                User newAdmin = new User();
-                newAdmin.setFirstName(data[0].trim());
-                newAdmin.setLastName(data[1].trim());
-                newAdmin.setEmailAddress(data[2].trim());
-                newAdmin.setPhoneNumber(data[3].trim());
-                newAdmin.setPassword(passwordEncoder.encode(data[4].trim())); // Encode the password
-                newAdmin.setDateCreated(Instant.now());
-                newAdmin.setUserRole(userRole.get());
+                // Every 4 data indexes are a new user, the admin-details.txt must 100% have its data separated by 4's
+                for (int i = 0; i < data.length; i+= 4) {
+                    User newAdmin = new User();
+                    newAdmin.setFirstName(data[i].trim());
+                    newAdmin.setLastName(data[i + 1].trim());
+                    newAdmin.setEmailAddress(data[i + 2].trim());
+                    newAdmin.setPhoneNumber(data[i + 3].trim());
+                    newAdmin.setPassword(passwordEncoder.encode(data[i + 4].trim())); // Encode the password
+                    newAdmin.setDateCreated(Instant.now());
+                    newAdmin.setUserRole(userRole.get());
 
-                // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
-                if (!userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isPresent()) {
-                    userRepository.save(newAdmin);
+                    // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
+                    if (!userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isPresent()) {
+                        userRepository.save(newAdmin);
+                    }
                 }
+
             }
         }
     }
