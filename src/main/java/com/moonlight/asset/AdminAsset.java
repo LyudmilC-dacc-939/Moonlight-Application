@@ -70,7 +70,11 @@ public class AdminAsset implements CommandLineRunner {
                 newAdmin.setPassword(passwordEncoder.encode(data[4].trim())); // Encode the password
                 newAdmin.setDateCreated(Instant.now());
                 newAdmin.setUserRole(userRole.get());
-                userRepository.save(newAdmin);
+
+                // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
+                if (!userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isPresent()) {
+                    userRepository.save(newAdmin);
+                }
             }
         }
     }
