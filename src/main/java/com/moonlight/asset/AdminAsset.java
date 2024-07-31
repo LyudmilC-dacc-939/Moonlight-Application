@@ -37,7 +37,7 @@ public class AdminAsset implements CommandLineRunner {
 
         // Check if a user with the admin role already exists
         if (userRepository.findByUserRole(userRole.get()).isPresent()) {
-            throw new UserAlreadyExistsException("User with role admin already exists");
+            System.out.println("User with role admin already exists");
         }
         Optional<User> user = userRepository.findByUserRole(userRole);
         if (user.isPresent()) {
