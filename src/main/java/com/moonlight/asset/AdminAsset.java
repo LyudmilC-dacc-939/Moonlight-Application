@@ -27,14 +27,12 @@ public class AdminAsset implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        UserRoleAsset userRoleAsset = new UserRoleAsset();
+        userRoleAsset.run();
+
         // Find or create the admin role
         Optional<UserRole> userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
-        if (userRole.isEmpty()) {
-            UserRole roleAdmin = new UserRole();
-            roleAdmin.setUserRole("ROLE_ADMIN");
-            userRole = Optional.of(userRoleRepository.save(roleAdmin));
-        }
-
 
         // Read admin details from the file
         try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream("admin-details.txt")) {
