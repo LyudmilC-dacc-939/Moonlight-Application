@@ -1,10 +1,12 @@
 package com.moonlight.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Value;
 
 @Getter
 @Setter
@@ -37,7 +39,9 @@ public class UserRequest {
     @Size(min = 8, max = 30, message = "Repeated password must be between {min} and {max} symbols")
     private String repeatPassword;
 
+    @Column(columnDefinition = "boolean default false")
     private Boolean isAgreedGDPR;
 
+    @Column(columnDefinition = "boolean default false")
     private Boolean isAgreedEULA;
 }
