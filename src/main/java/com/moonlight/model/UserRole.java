@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ROLES")  // Define the actual table name in the database
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class UserRole {
 

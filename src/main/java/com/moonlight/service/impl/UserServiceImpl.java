@@ -63,14 +63,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
+        userRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User not found"));
         userRepository.deleteById(id);
     }
 
     @Override
     public String login(LoginRequest loginRequest) {
-        User user = userRepository.findByEmailAddress(loginRequest.getEMail()).orElseThrow(() -> new RecordNotFoundException("User not found"));
+        User user = userRepository.findByEmailAddress(loginRequest.getEmail()).orElseThrow(() -> new RecordNotFoundException("User not found"));
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return "STRING GENERATED FROM JWT TOKEN SHOULD BE HERE";
             //Will be appended
