@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.time.Instant;
-import java.util.Optional;
 
 @Component
 public class AdminAsset implements CommandLineRunner {
@@ -28,6 +27,7 @@ public class AdminAsset implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
         Optional<UserRole> userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
         if (userRole.isEmpty()) {
             UserRole roleAdmin = new UserRole();
