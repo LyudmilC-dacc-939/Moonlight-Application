@@ -1,12 +1,16 @@
 package com.moonlight.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ROLES")  // Define the actual table name in the database
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class UserRole {
 
