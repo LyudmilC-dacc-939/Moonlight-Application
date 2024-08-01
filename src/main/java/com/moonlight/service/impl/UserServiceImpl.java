@@ -1,5 +1,6 @@
 package com.moonlight.service.impl;
 
+import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.LoginRequest;
 import com.moonlight.dto.UserRequest;
@@ -9,6 +10,7 @@ import com.moonlight.repository.UserRepository;
 import com.moonlight.service.UserService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @SneakyThrows
     public User registerUser(UserRequest userRequest) {
         if (userRepository.findByEmailAddress(userRequest.getEmail()).isPresent()) {
             throw new ConstraintViolationException("Email is already taken", null);
@@ -38,7 +41,12 @@ public class UserServiceImpl implements UserService {
         user.setDateCreated(Instant.now());
         user.setUserRole(role);
 
-        return userRepository.save(user);
+        if (userRequest.getIsAgreedEULA() && userRequest.getIsAgreedGDPR()) {
+            return userRepository.save(user);
+        } else {
+           throw new InvalidInputException("You must agree to our EULA and to the GDPR to register");
+        }
+
     }
 
     @Override
