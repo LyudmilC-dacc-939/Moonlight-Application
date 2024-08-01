@@ -4,7 +4,6 @@ import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 
-import java.util.Optional;
 
 public interface UserService {
     @Operation(summary = "Register a new user", description = "Creates a new user in the database.")
