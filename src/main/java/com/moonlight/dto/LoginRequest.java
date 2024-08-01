@@ -9,7 +9,7 @@ import lombok.Setter;
 public class LoginRequest {
 
     @NotNull(message = "Email cannot be null!")
-    private String eMail;
+    private String email;
     @NotNull(message = "Password cannot be null!")
     private String password;
 }
