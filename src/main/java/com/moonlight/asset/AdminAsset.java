@@ -1,7 +1,6 @@
 package com.moonlight.asset;
 
 import com.moonlight.model.User;
-import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.time.Instant;
-import java.util.Optional;
 
 @Component
 public class AdminAsset implements CommandLineRunner {
@@ -27,12 +25,6 @@ public class AdminAsset implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        UserRoleAsset userRoleAsset = new UserRoleAsset();
-        userRoleAsset.run();
-
-        // Find or create the admin role
-        Optional<UserRole> userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
 
         // Read admin details from the file
         try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream("admin-details.txt")) {
@@ -59,7 +51,7 @@ public class AdminAsset implements CommandLineRunner {
                     newAdmin.setPhoneNumber(data[i + 3].trim());
                     newAdmin.setPassword(passwordEncoder.encode(data[i + 4].trim())); // Encode the password
                     newAdmin.setDateCreated(Instant.now());
-                    newAdmin.setUserRole(userRole.get());
+                    newAdmin.setUserRole(userRoleRepository.getByUserRoleIs("ROLE_ADMIN"));
 
                     // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
                     if (userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isEmpty()) {

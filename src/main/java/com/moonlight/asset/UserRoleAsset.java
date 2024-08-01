@@ -16,14 +16,18 @@ import java.util.Optional;
 public class UserRoleAsset implements CommandLineRunner {
 
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
-    private static final String USER_ROLE = "ROLE_USER";
+    private static final String CLIENT_ROLE = "ROLE_CLIENT";
 
-    @Autowired
     private UserRoleRepository userRoleRepository;
+
+    public UserRoleAsset(UserRoleRepository userRoleRepository) {
+        this.userRoleRepository = userRoleRepository;
+    }
 
     @Override
     public void run(String... args) throws Exception {
 
+        //Find or create the admin role
         Optional<UserRole> adminUserRole = userRoleRepository.findByUserRole(ADMIN_ROLE);
         if (adminUserRole.isEmpty()) {
             UserRole adminRoleCreation = new UserRole();
@@ -32,10 +36,10 @@ public class UserRoleAsset implements CommandLineRunner {
         }
 
         //Find or create the user role
-        Optional<UserRole> userUserRole = userRoleRepository.findByUserRole(USER_ROLE);
+        Optional<UserRole> userUserRole = userRoleRepository.findByUserRole(CLIENT_ROLE);
         if (userUserRole.isEmpty()) {
             UserRole userUserRoleCreation = new UserRole();
-            userUserRoleCreation.setUserRole(USER_ROLE);
+            userUserRoleCreation.setUserRole(CLIENT_ROLE);
             userRoleRepository.save(userUserRoleCreation);
         }
     }

@@ -7,6 +7,7 @@ import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,14 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Operation(summary = "Creates new user", description = "Returns created user")
     @PostMapping
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<User> createUser(@Valid @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(userRequest));
     }
 
+    @Operation(summary = "Searches an user by their id", description = "Returns user")
     @GetMapping(path = "/{id}")
     //@PreAuthorize
     @ExceptionHandler(RecordNotFoundException.class)
@@ -45,6 +48,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserById(id));
     }
 
+    @Operation(summary = "Searches an user by email", description = "Returns user")
     @GetMapping(path = "/get-by-email")
     //@PreAuthorize
     @ExceptionHandler(RecordNotFoundException.class)
@@ -52,6 +56,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserByEmail(userEmail));
     }
 
+    @Operation(summary = "Deletes user by id", description = "Deletes user")
     @DeleteMapping(path = "/account-deletion")
     //@PreAuthorize
     @ExceptionHandler(RecordNotFoundException.class)
@@ -60,6 +65,9 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    @Operation(summary = "User provides email and password credentials to login",
+            description = "Based on user input, for login if successful, generates a JWTToken(String) which the user " +
+                    "authenticates himself as logged in")
     @PostMapping(path = "/auth")
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
