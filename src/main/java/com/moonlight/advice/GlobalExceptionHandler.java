@@ -1,5 +1,6 @@
 package com.moonlight.advice;
 
+import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UserAlreadyExistsException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<?> userAlreadyExistsException(UserAlreadyExistsException userAlreadyExistsException) {
-        return new ResponseEntity<>(userAlreadyExistsException.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(userAlreadyExistsException.getMessage(), HttpStatus.ALREADY_REPORTED);
+    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<?> invalidInputException(InvalidInputException invalidInputException) {
+        return new ResponseEntity<>(invalidInputException.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
