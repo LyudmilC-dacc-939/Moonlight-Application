@@ -53,7 +53,7 @@ public class AdminAsset implements CommandLineRunner {
                 }
 
                 // Every 5 data indexes are a new user, the admin-details.txt must 100% have its data separated by 5's
-                for (int i = 0; i < data.length; i+= 5) {
+                for (int i = 0; i < data.length; i += 5) {
                     User newAdmin = new User();
                     newAdmin.setFirstName(data[i].trim());
                     newAdmin.setLastName(data[i + 1].trim());
@@ -64,7 +64,7 @@ public class AdminAsset implements CommandLineRunner {
                     newAdmin.setUserRole(userRole.get());
 
                     // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
-                    if (!userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isPresent()) {
+                    if (userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isEmpty()) {
                         userRepository.save(newAdmin);
                     }
                 }
