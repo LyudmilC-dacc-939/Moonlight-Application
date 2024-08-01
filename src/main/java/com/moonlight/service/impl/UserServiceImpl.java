@@ -1,6 +1,7 @@
 package com.moonlight.service.impl;
 
 import com.moonlight.advice.exception.RecordNotFoundException;
+import com.moonlight.dto.LoginRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
@@ -60,10 +61,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(String email, String password) {
-        User user = userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("User not found"));
-        if (passwordEncoder.matches(password, user.getPassword())) {
-            return user;
+    public String login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmailAddress(loginRequest.getEMail()).orElseThrow(() -> new RecordNotFoundException("User not found"));
+        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return "STRING GENERATED FROM JWT TOKEN SHOULD BE HERE";
+            //Will be appended
+            //todo add initial logic after security is properly handled
         } else {
             throw new IllegalArgumentException("Invalid username or password");
         }
