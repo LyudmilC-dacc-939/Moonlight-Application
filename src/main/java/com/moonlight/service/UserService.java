@@ -1,10 +1,10 @@
 package com.moonlight.service;
 
+import com.moonlight.dto.LoginRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 
-import java.util.Optional;
 
 public interface UserService {
     @Operation(summary = "Register a new user", description = "Creates a new user in the database.")
@@ -22,5 +22,5 @@ public interface UserService {
     void deleteUser(Long id);
 
     @Operation(summary = "Logs in an Existing User", description = "Login an user using their email and password")
-    User login(String email, String password);
+    String login(LoginRequest loginRequest);
 }

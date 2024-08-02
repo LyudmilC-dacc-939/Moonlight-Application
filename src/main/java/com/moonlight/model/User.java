@@ -35,7 +35,7 @@ public class User {
     private String phoneNumber;
 
     @Column(name = "PASSWORD", nullable = false)
-    @Size(min = 8, max = 100, message = "User's password must be between {min} and {max} symbols")
+    @Size(min = 8, message = "User's password must be at least 8 characters long")
     private String password;
 
     private Instant dateCreated;

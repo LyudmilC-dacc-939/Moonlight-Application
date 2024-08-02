@@ -1,6 +1,8 @@
 package com.moonlight.service.impl;
 
+import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
+import com.moonlight.dto.LoginRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
@@ -8,6 +10,7 @@ import com.moonlight.repository.UserRepository;
 import com.moonlight.service.UserService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @SneakyThrows
     public User registerUser(UserRequest userRequest) {
         if (userRepository.findByEmailAddress(userRequest.getEmail()).isPresent()) {
             throw new ConstraintViolationException("Email is already taken", null);
@@ -37,7 +41,12 @@ public class UserServiceImpl implements UserService {
         user.setDateCreated(Instant.now());
         user.setUserRole(role);
 
-        return userRepository.save(user);
+        if (userRequest.getIsAgreedEULA() && userRequest.getIsAgreedGDPR()) {
+            return userRepository.save(user);
+        } else {
+           throw new InvalidInputException("You must agree to our EULA and to the GDPR to register");
+        }
+
     }
 
     @Override
@@ -54,16 +63,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
+        userRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("User not found"));
         userRepository.deleteById(id);
     }
 
     @Override
-    public User login(String email, String password) {
-        User user = userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("User not found"));
-        if (passwordEncoder.matches(password, user.getPassword())) {
-            return user;
+    public String login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmailAddress(loginRequest.getEmail()).orElseThrow(() -> new RecordNotFoundException("User not found"));
+        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return "STRING GENERATED FROM JWT TOKEN SHOULD BE HERE";
+            //Will be appended
+            //todo add initial logic after security is properly handled
         } else {
             throw new IllegalArgumentException("Invalid username or password");
         }
