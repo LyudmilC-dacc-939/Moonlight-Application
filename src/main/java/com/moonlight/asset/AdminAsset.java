@@ -7,13 +7,16 @@ import com.moonlight.repository.UserRepository;
 import com.moonlight.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.time.Instant;
+import java.util.Optional;
 
 @Component
+@Order(2)
 public class AdminAsset implements CommandLineRunner {
 
     @Autowired
@@ -71,6 +74,14 @@ public class AdminAsset implements CommandLineRunner {
                     newAdmin.setPhoneNumber(data[i + 3].trim());
                     newAdmin.setPassword(passwordEncoder.encode(data[i + 4].trim())); // Encode the password
                     newAdmin.setDateCreated(Instant.now());
+
+                    // Fetch the UserRole for ROLE_ADMIN
+                    Optional<UserRole> adminRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
+                    if (adminRole.isPresent()) {
+                        newAdmin.setUserRole(adminRole.get());
+                    } else {
+                        throw new IllegalStateException("UserRole ROLE_ADMIN not found in the database");
+                    }
                     newAdmin.setUserRole(userRole.get());
 
                     // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
