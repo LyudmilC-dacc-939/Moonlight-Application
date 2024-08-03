@@ -4,13 +4,14 @@ import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRoleRepository;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@Order(1)
 @Getter
 @Setter
 public class UserRoleAsset implements CommandLineRunner {
