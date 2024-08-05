@@ -10,7 +10,6 @@ spring:
         username: bootcamp_java_24_july
         password: eZ@8Pa21A56_2
         driver-class-name: com.mysql.cj.jdbc.Driver
-
     jpa:
         hibernate:
             ddl-auto: update
