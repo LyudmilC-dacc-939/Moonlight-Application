@@ -1,5 +1,6 @@
 package com.moonlight.asset;
 
+
 import com.moonlight.advice.exception.UserAlreadyExistsException;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
@@ -30,31 +31,11 @@ public class AdminAsset implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        Optional<UserRole> userRole = userRoleRepository.findByUserRole("ROLE_ADMIN");
-        if (userRole.isEmpty()) {
-            UserRole roleAdmin = new UserRole();
-            roleAdmin.setUserRole("ROLE_ADMIN");
-            userRole = Optional.of(userRoleRepository.save(roleAdmin));
-        }
-
-        // Check if a user with the admin role already exists
-        if (userRepository.findByUserRole(userRole.get()).isPresent()) {
-            System.out.println("User with role admin already exists");
-        }
-        Optional<User> user = userRepository.findByUserRole(userRole);
-        if (user.isPresent()) {
-            throw new UserAlreadyExistsException(String.format("User with role admin already exists"));
-        }   else {
-            String filePath = "src/main/resources/admin-details.txt";
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-
         // Read admin details from the file
         try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream("admin-details.txt")) {
             if (resourceStream == null) {
                 throw new FileNotFoundException("Resource file not found: admin-details.txt");
             }
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -82,8 +63,6 @@ public class AdminAsset implements CommandLineRunner {
                     } else {
                         throw new IllegalStateException("UserRole ROLE_ADMIN not found in the database");
                     }
-                    newAdmin.setUserRole(userRole.get());
-
                     // Checks if user with that email does not exist, it will then save it to the DB, otherwise it will do nothing.
                     if (userRepository.findByEmailAddress(newAdmin.getEmailAddress()).isEmpty()) {
                         userRepository.save(newAdmin);

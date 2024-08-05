@@ -34,13 +34,9 @@ spring:
             mail.smtp.writetimeout: 5000
 
 server:
-    port: 8080
-
-
-server:
   port: 8080
 
 web:
-    access-url: https://office.nasbg.com/danni.com/danni
+    access-url: https://office.nasbg.com/danni
 
 secret-key: 3236464233324341314236393235454146313246353844464642353838
