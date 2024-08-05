@@ -21,7 +21,7 @@ public class UserRequest {
 
     @NotNull(message = "Email cannot be null!")
     @Size(min = 5, max = 255, message = "Mail must be between {min} and {max} characters")
-    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
             message = "Invalid Email")
     private String email;
 
