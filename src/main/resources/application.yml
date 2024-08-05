@@ -42,3 +42,5 @@ server:
 
 web:
     access-url: https://office.nasbg.com/danni.com/danni
+
+secret-key: 3236464233324341314236393235454146313246353844464642353838
