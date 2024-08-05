@@ -47,6 +47,10 @@ public class UserServiceImpl implements UserService {
             throw new ConstraintViolationException("Email is already taken", null);
         }
         User user = new User();
+        UserRole role = new UserRole();
+        // Temporary setting the regular use to "ROLE_CLIENT", it's not decided what it will be called yet, and we have not
+        // created the ROLES table/id/names yet - TBD
+        role.setUserRole("ROLE_CLIENT");
         user.setEmailAddress(userRequest.getEmail());
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
