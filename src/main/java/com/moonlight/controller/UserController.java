@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/users")
+@Tag(name = "User API ", description = "API for managing users")
 public class UserController {
 
     @Autowired
@@ -28,7 +30,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @Operation(summary = "Registers new user", description = "Returns registered user")
+    @Operation(summary = "User Registration", description = "Registers new user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully added",
                     content = @Content(mediaType = "application/json",

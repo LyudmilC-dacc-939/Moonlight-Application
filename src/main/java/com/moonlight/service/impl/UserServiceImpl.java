@@ -9,6 +9,7 @@ import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.repository.UserRoleRepository;
 import com.moonlight.security.JwtService;
+import com.moonlight.service.EmailService;
 import com.moonlight.service.UserService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,15 +30,17 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final CurrentUserImpl currentUserImpl;
+    private final EmailService emailService;
 
     private final UserRoleRepository userRoleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, @Lazy CurrentUserImpl currentUserImpl, UserRoleRepository userRoleRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, @Lazy CurrentUserImpl currentUserImpl, EmailService emailService, UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.currentUserImpl = currentUserImpl;
+        this.emailService = emailService;
         this.userRoleRepository = userRoleRepository;
     }
 
@@ -47,20 +51,28 @@ public class UserServiceImpl implements UserService {
             throw new ConstraintViolationException("Email is already taken", null);
         }
         User user = new User();
-        UserRole role = new UserRole();
-        // Temporary setting the regular use to "ROLE_CLIENT", it's not decided what it will be called yet, and we have not
-        // created the ROLES table/id/names yet - TBD
-        role.setUserRole("ROLE_CLIENT");
+        Optional<UserRole> role = userRoleRepository.findByUserRole("ROLE_CLIENT");
+        if (role.isPresent()) {
+            user.setUserRole(role.get());
+        } else {
+            throw new IllegalStateException("UserRole ROLE_CLIENT not found in the database");
+        }
         user.setEmailAddress(userRequest.getEmail());
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setDateCreated(Instant.now());
-        user.setUserRole(userRoleRepository.findByUserRole("ROLE_CLIENT").get());
 
         if (userRequest.getIsAgreedEULA() && userRequest.getIsAgreedGDPR()) {
             userRepository.save(user);
+
+            String subject = "Welcome to Moonlight";
+            String text = "Dear " +
+                    userRequest.getLastName() + ",\n\nYour registration was successful!\nUsername: " +
+                    userRequest.getEmail() + "\nPassword: " +
+                    userRequest.getPassword() + "\n\nBest regards, \nYour service Team";
+            emailService.sendEmailUponRegister(userRequest.getEmail(), subject, text);
         } else {
             throw new InvalidInputException("You must agree to our EULA and to the GDPR to register");
         }
