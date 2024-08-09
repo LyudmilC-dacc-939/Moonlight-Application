@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity(name = "HOTEL_ROOMS")
 @Table(name = "rooms")
 @Data
@@ -32,13 +35,21 @@ public class HotelRoom {
 
     @Column(name = "room_view")
     @Enumerated(EnumType.STRING)
+
+    @NotNull(message = "Room view is mandatory")
     private RoomView roomView;
 
     @Column(name = "bed_type")
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Bed type is mandatory")
-    private RoomBedType bedType;
+    private RoomBedType bedType; // Had to set SINGLE_BED by default for Assets, Make it an option in Controller later
 
+    @ManyToMany
+    @JoinTable(
+            name = "room_amenities",
+            joinColumns =  @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "amenity_id")
+    )
     @NotEmpty(message = "Must include at least one amenity")
-    private String description;
+    private Set<Amenity> amenities = new HashSet<>();
+
 }

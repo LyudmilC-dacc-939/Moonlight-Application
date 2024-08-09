@@ -31,7 +31,7 @@ public class AdminAsset implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Read admin details from the file
-        try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream("admin-details.txt")) {
+        try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream("assetDocs/admin-details.txt")) {
             if (resourceStream == null) {
                 throw new FileNotFoundException("Resource file not found: admin-details.txt");
             }
