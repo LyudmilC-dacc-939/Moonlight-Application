@@ -30,6 +30,7 @@ public class SecurityConfiguration {
         roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_CLIENT");
         return roleHierarchy;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -37,9 +38,9 @@ public class SecurityConfiguration {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers("/api/v1/users/register",
-                                        "/api/v1/users/login"
-                                        , "/swagger-ui/*"
-                                        , "/api-docs")
+                                        "/api/v1/users/login",
+                                        "/swagger-ui/*",
+                                        "/api-docs")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

@@ -35,13 +35,12 @@ public class HotelRoom {
 
     @Column(name = "room_view")
     @Enumerated(EnumType.STRING)
-
     @NotNull(message = "Room view is mandatory")
     private RoomView roomView;
 
     @Column(name = "bed_type")
     @Enumerated(EnumType.STRING)
-    private RoomBedType bedType; // Had to set SINGLE_BED by default for Assets, Make it an option in Controller later
+    private RoomBedType bedType;
 
     @ManyToMany
     @JoinTable(

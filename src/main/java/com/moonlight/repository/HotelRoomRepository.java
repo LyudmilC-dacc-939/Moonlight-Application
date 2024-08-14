@@ -13,12 +13,14 @@ import java.util.Set;
 public interface HotelRoomRepository extends JpaRepository<HotelRoom, Long> {
     Optional<HotelRoom> findByRoomNumber(Long roomNumber);
 
-    @Query(value = "SELECT * FROM hotel_rooms hr WHERE " +
-            "(:roomType IS NULL OR hr.room_type LIKE %:roomType%) AND " +
-            "(:roomView IS NULL OR hr.room_view LIKE %:roomView%) AND " +
-            "(:roomBedType IS NULL OR hr.room_bed_type LIKE %:roomBedType%)", nativeQuery = true)
-    Set<HotelRoom> findByRoomTypeOrViewTypeOrBedType(@Param("roomType") String roomType,
-                                                     @Param("roomView") String roomView,
-                                                     @Param("roomBedType") String roomBedType);
 
+    @Query(value = "SELECT * FROM rooms r WHERE " +
+            "(:roomNumber IS NULL OR r.room_number = :roomNumber) AND " +
+            "(:roomType IS NULL OR r.room_type = :roomType) AND " +
+            "(:roomView IS NULL OR r.room_view = :roomView) AND " +
+            "(:roomBedType IS NULL OR r.bed_type = :roomBedType)", nativeQuery = true)
+    Set<HotelRoom> findByRoomNumberByRoomTypeOrViewTypeOrBedType(@Param("roomNumber") Long roomNumber,
+                                                                 @Param("roomType") String roomType,
+                                                                 @Param("roomView") String roomView,
+                                                                 @Param("roomBedType") String roomBedType);
 }

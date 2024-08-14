@@ -19,7 +19,7 @@ public class HotelRoomServiceImpl implements HotelRoomService {
     }
 
     @Override
-    public Set<HotelRoom> findByRoomTypeOrViewTypeOrBedType(String roomType, String roomView, String roomBedType) {
-        return hotelRoomRepository.findByRoomTypeOrViewTypeOrBedType(roomType, roomBedType, roomBedType);
+    public Set<HotelRoom> findByRoomNumberByRoomTypeOrViewTypeOrBedType(Long roomNumber, String roomType, String roomView, String roomBedType) {
+        return hotelRoomRepository.findByRoomNumberByRoomTypeOrViewTypeOrBedType(roomNumber, roomType, roomBedType, roomBedType);
     }
 }
