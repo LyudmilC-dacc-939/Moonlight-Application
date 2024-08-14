@@ -27,7 +27,6 @@ public class CarAsset implements CommandLineRunner {
         List<String[]> carsFromCsv = csvService.readCarsFromCsv("assetDocs/cars.csv");
         saveCars(carsFromCsv);
     }
-
     private void saveCars(List<String[]> carsFromCsv) {
         List<Car> carsInDataBase = carRepository.findAll();
         Set<String> carsInCsvSet = new HashSet<>();
@@ -44,7 +43,6 @@ public class CarAsset implements CommandLineRunner {
             newCar.setCarBrand(carBrand);
 
             carsInCsvSet.add(carTypeStr + ":" + carBrand);
-
             // Combine type and brand as unique identifier
 
             if (carRepository.findByTypeAndCarBrand(newCar.getType(), newCar.getCarBrand()).isEmpty()) {

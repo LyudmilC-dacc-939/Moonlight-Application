@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/users")
-@Tag(name = "User API ", description = "API for managing users")
+@Tag(name = "User API", description = "API for managing users")
 public class UserController {
 
     @Autowired
