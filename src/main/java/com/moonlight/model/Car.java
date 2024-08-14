@@ -8,12 +8,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity (name = "CARS")
-@Table (name = "cars")
+@Entity(name = "CARS")
+@Table(name = "cars")
 @Data
 @NoArgsConstructor
 public class Car {
@@ -29,13 +30,13 @@ public class Car {
 
     @NotEmpty(message = "Car brand cannot be empty")
     @Size(max = 50, message = "Car brand cannot exceed 50 characters")
-    @Column(name = "Car_brand", nullable =false, length = 50)
+    @Column(name = "Car_brand", nullable = false, length = 50)
     private String carBrand;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     @Column(name = "image_url")
-    private List<FileResource> fileResources=new ArrayList<>();
+    private List<FileResource> fileResources = new ArrayList<>();
 
     @Column(name = "Reservation_date")
     private LocalDate reservationDate;

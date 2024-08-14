@@ -1,5 +1,6 @@
 package com.moonlight.model.enums;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ public enum CarType {
     VAN("Van with 8 seats", 8, 600.0,4);
 
     private final String description;
+    @Column(name = "NUMBER_OF_SEATS")
     private final int numberOfSeats;
     private final double price;   // price per car per day
     private final int quantity;  // Available quantity of this car type

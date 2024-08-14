@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class CarAsset implements CommandLineRunner {
         List<String[]> carsFromCsv = csvService.readCarsFromCsv("assetDocs/cars.csv");
         saveCars(carsFromCsv);
     }
+
     private void saveCars(List<String[]> carsFromCsv) {
         List<Car> carsInDataBase = carRepository.findAll();
         Set<String> carsInCsvSet = new HashSet<>();
@@ -41,16 +43,17 @@ public class CarAsset implements CommandLineRunner {
             newCar.setType(carType);
             newCar.setCarBrand(carBrand);
 
-            carsInCsvSet.add(carTypeStr+":"+carBrand);
+            carsInCsvSet.add(carTypeStr + ":" + carBrand);
+
             // Combine type and brand as unique identifier
 
             if (carRepository.findByTypeAndCarBrand(newCar.getType(), newCar.getCarBrand()).isEmpty()) {
                 carRepository.save(newCar);
             }
         }
-        for(Car car:carsInDataBase){
-            String carIdentifier = car.getType().name()+":"+car.getCarBrand();
-            if(!carsInCsvSet.contains(carIdentifier)){
+        for (Car car : carsInDataBase) {
+            String carIdentifier = car.getType().name() + ":" + car.getCarBrand();
+            if (!carsInCsvSet.contains(carIdentifier)) {
                 carRepository.delete(car);
                 // Remove cars that are in the database but not in the CSV
             }
