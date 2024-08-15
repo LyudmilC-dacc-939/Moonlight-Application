@@ -1,8 +1,11 @@
 package com.moonlight.service.impl;
 
+import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
+import com.moonlight.dto.ChangePasswordRequest;
 import com.moonlight.dto.LoginRequest;
+import com.moonlight.dto.ResetPasswordRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
@@ -11,9 +14,10 @@ import com.moonlight.repository.UserRoleRepository;
 import com.moonlight.security.JwtService;
 import com.moonlight.service.EmailService;
 import com.moonlight.service.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
-import org.hibernate.mapping.List;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +26,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 import java.time.Instant;
 import java.util.Optional;
@@ -141,4 +144,35 @@ public class UserServiceImpl implements UserService {
         Page<User> pagedResult = userRepository.findAll(pageable);
         return pagedResult.toList();
     }
+
+    @Override
+    @SneakyThrows
+    public User changePassword(ChangePasswordRequest changePasswordRequest) {
+        User currentUser = currentUserImpl.extractCurrentUser();
+        if (!currentUserImpl.isCurrentUserMatch(currentUser)) {
+            throw new IllegalAccessException("Unauthorized Access!");
+        }
+        if (passwordEncoder.encode(changePasswordRequest.getCurrentPassword()).equals(currentUser.getPassword())) {
+            currentUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+            userRepository.save(currentUser);
+            return currentUser;
+        } else {
+            throw new InvalidInputException("Current password does not match");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordRequest passwordRequest) {
+        User userWithForgottenPassword = userRepository.findByEmailAddress(passwordRequest.getEmail()).orElseThrow(() ->
+                new RecordNotFoundException("Provided email is invalid"));
+        String generatedPassword = "";
+        while (!generatedPassword.matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\\w\\s]).{8,}$")) {
+            generatedPassword = RandomStringUtils.randomAscii(25);
+        }
+        userWithForgottenPassword.setPassword(passwordEncoder.encode(generatedPassword));
+        userRepository.save(userWithForgottenPassword);
+        emailService.sendEmailForForgottenPassword(passwordRequest.getEmail(), generatedPassword);
+    }
+
 }
