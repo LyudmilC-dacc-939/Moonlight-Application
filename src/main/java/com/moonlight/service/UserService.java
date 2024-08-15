@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
-
 public interface UserService {
     @Operation(summary = "Register a new user", description = "Creates a new user in the database.")
     void registerUser(UserRequest userRequest);
