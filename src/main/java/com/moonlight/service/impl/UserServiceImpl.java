@@ -13,11 +13,16 @@ import com.moonlight.service.EmailService;
 import com.moonlight.service.UserService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
+import org.hibernate.mapping.List;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 import java.time.Instant;
 import java.util.Optional;
@@ -128,5 +133,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("No results found"));
+    }
+
+    @Override
+    public java.util.List<User> getPeageableUsersList(int skip, int take) {
+        Pageable pageable = PageRequest.of(skip, take);
+        Page<User> pagedResult = userRepository.findAll(pageable);
+        return pagedResult.toList();
     }
 }

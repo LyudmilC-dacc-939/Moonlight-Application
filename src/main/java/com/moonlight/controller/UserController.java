@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/users")
@@ -115,5 +117,25 @@ public class UserController {
     @PostMapping(path = "/login")
     ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(loginRequest));
+    }
+
+    @Operation(summary = "List all users", description = "Provide pageable list of users to admin")
+    @GetMapping(path = "/list")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User successfully found with id",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden: You do not have the necessary permissions",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)))})
+    ResponseEntity<List<User>> getPageableUsersList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10")int size){
+        List<User> users = userService.getPeageableUsersList(page, size);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }
