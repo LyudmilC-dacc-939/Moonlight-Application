@@ -41,7 +41,8 @@ public class SecurityConfiguration {
                                         "/api/v1/users/login",
                                         "/swagger-ui/*",
                                         "/api-docs",
-                                        "api/v1/cars/search/*")
+                                        "api/v1/cars/search/*",
+                                        "/api/v1/users/reset-password")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

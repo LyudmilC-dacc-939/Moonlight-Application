@@ -1,6 +1,8 @@
 package com.moonlight.controller;
 
+import com.moonlight.dto.ChangePasswordRequest;
 import com.moonlight.dto.LoginRequest;
+import com.moonlight.dto.ResetPasswordRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.repository.UserRepository;
@@ -137,5 +139,17 @@ public class UserController {
             @RequestParam(defaultValue = "10")int size){
         List<User> users = userService.getPeageableUsersList(page, size);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PutMapping(path = "/change-password")
+    ResponseEntity<User> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest){
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(changePasswordRequest));
+    }
+
+    @PutMapping(path = "/reset-password")
+    ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
+        userService.resetPassword(resetPasswordRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
