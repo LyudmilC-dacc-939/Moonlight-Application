@@ -3,11 +3,12 @@ package com.moonlight.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@AllArgsConstructor
+
+@Data
+@NoArgsConstructor
 public class ResetPasswordRequest {
 
     @NotNull(message = "Email cannot be null!")
@@ -15,5 +16,4 @@ public class ResetPasswordRequest {
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
             message = "Invalid Email")
     private String email;
-
 }

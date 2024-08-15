@@ -34,6 +34,10 @@ public class ApplicationConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+    public boolean matchesEncodedPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder().matches(rawPassword, encodedPassword);
+    }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();

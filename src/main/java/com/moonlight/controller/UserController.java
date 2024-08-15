@@ -170,6 +170,10 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Format is not valid",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResetPasswordRequest.class))),
+            @ApiResponse(responseCode = "403", description = "Unauthorized",
+                    //Unauthorized is an indication that the implementation has an issue
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResetPasswordRequest.class))),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResetPasswordRequest.class)))

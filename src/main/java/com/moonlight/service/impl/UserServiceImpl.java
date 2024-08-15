@@ -11,6 +11,7 @@ import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.repository.UserRoleRepository;
+import com.moonlight.security.ApplicationConfiguration;
 import com.moonlight.security.JwtService;
 import com.moonlight.service.EmailService;
 import com.moonlight.service.UserService;
@@ -39,10 +40,17 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final CurrentUserImpl currentUserImpl;
     private final EmailService emailService;
-
     private final UserRoleRepository userRoleRepository;
+    private final ApplicationConfiguration applicationConfiguration;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, @Lazy CurrentUserImpl currentUserImpl, EmailService emailService, UserRoleRepository userRoleRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder,
+                           AuthenticationManager authenticationManager,
+                           JwtService jwtService,
+                           @Lazy CurrentUserImpl currentUserImpl,
+                           EmailService emailService,
+                           UserRoleRepository userRoleRepository,
+                           ApplicationConfiguration applicationConfiguration) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -50,6 +58,7 @@ public class UserServiceImpl implements UserService {
         this.currentUserImpl = currentUserImpl;
         this.emailService = emailService;
         this.userRoleRepository = userRoleRepository;
+        this.applicationConfiguration = applicationConfiguration;
     }
 
     @Override
@@ -152,7 +161,7 @@ public class UserServiceImpl implements UserService {
         if (!currentUserImpl.isCurrentUserMatch(currentUser)) {
             throw new IllegalAccessException("Unauthorized Access!");
         }
-        if (passwordEncoder.encode(changePasswordRequest.getCurrentPassword()).equals(currentUser.getPassword())) {
+        if (applicationConfiguration.matchesEncodedPassword(changePasswordRequest.getCurrentPassword(), currentUser.getPassword())) {
             currentUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             userRepository.save(currentUser);
             return currentUser;
