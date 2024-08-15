@@ -1,8 +1,6 @@
 package com.moonlight.controller;
 
-import com.moonlight.dto.ChangePasswordRequest;
 import com.moonlight.dto.LoginRequest;
-import com.moonlight.dto.ResetPasswordRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.repository.UserRepository;

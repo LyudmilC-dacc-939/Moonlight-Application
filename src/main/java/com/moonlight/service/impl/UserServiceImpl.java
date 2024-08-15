@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.mapping.List;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,7 +59,6 @@ public class UserServiceImpl implements UserService {
         this.currentUserImpl = currentUserImpl;
         this.emailService = emailService;
         this.userRoleRepository = userRoleRepository;
-        this.applicationConfiguration = applicationConfiguration;
     }
 
     @Override
