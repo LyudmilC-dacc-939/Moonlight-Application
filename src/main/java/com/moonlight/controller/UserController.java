@@ -141,14 +141,41 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    @Operation(summary = "Authenticated user changes password by request",
+            description = "Changes password for user's personal account, when provided with current password and " +
+                    "designated new password, by his request")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User successfully changed password",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ChangePasswordRequest.class))),
+            @ApiResponse(responseCode = "401", description = "Access Denied. Unauthenticated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ChangePasswordRequest.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden. Unauthorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ChangePasswordRequest.class)))
+    })
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PutMapping(path = "/change-password")
-    ResponseEntity<User> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest){
+    ResponseEntity<User> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(changePasswordRequest));
     }
 
+    @Operation(summary = "Unauthenticated user requests a password reset",
+            description = "Changes password for user, when provided with valid email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successful password change request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResetPasswordRequest.class))),
+            @ApiResponse(responseCode = "400", description = "Format is not valid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResetPasswordRequest.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResetPasswordRequest.class)))
+    })
     @PutMapping(path = "/reset-password")
-    ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
+    ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         userService.resetPassword(resetPasswordRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
