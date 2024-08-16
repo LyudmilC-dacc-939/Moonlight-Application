@@ -7,6 +7,7 @@ import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.util.List;
 
 public interface UserService {
     @Operation(summary = "Register a new user", description = "Creates a new user in the database.")
@@ -26,6 +27,9 @@ public interface UserService {
 
     @Operation(summary = "Gets user email", description = "Gets user by his email.")
     User findByEmail(String email);
+
+    @Operation(summary = "List all users", description = "Provides a pageable list of users to admin")
+    List<User> getPeageableUsersList(int skip, int take);
 
     @Operation(summary = "Logged user changes personal password", description = "Changes password for user's personal account by his request")
     User changePassword(ChangePasswordRequest changePasswordRequest);

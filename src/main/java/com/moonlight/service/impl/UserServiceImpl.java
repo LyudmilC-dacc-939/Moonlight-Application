@@ -20,6 +20,9 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
@@ -144,6 +147,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("No results found"));
+    }
+
+    @Override
+    public java.util.List<User> getPeageableUsersList(int skip, int take) {
+        Pageable pageable = PageRequest.of(skip, take);
+        Page<User> pagedResult = userRepository.findAll(pageable);
+        return pagedResult.toList();
     }
 
     @Override
