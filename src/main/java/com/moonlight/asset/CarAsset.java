@@ -1,6 +1,7 @@
 package com.moonlight.asset;
 
 import com.moonlight.model.Car;
+import com.moonlight.model.FileResource;
 import com.moonlight.model.enums.CarType;
 import com.moonlight.repository.CarRepository;
 import com.moonlight.service.CsvService;
@@ -9,9 +10,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 
 @Component
 @Order(5)
@@ -27,7 +30,8 @@ public class CarAsset implements CommandLineRunner {
         List<String[]> carsFromCsv = csvService.readCarsFromCsv("assetDocs/cars.csv");
         saveCars(carsFromCsv);
     }
-    private void saveCars(List<String[]> carsFromCsv) {
+
+    private void saveCars(List<String[]> carsFromCsv) throws Exception {
         List<Car> carsInDataBase = carRepository.findAll();
         Set<String> carsInCsvSet = new HashSet<>();
         // Save or update cars from the CSV
@@ -38,17 +42,32 @@ public class CarAsset implements CommandLineRunner {
             CarType carType = CarType.valueOf(carTypeStr);
             String carBrand = carData[1];
 
-            Car newCar = new Car();
-            newCar.setType(carType);
-            newCar.setCarBrand(carBrand);
+            try {
+                Car car = carRepository.findByTypeAndCarBrand(carType, carBrand).orElse(new Car());
+                car.setType(carType);
+                car.setCarBrand(carBrand);
+
+
+                List<FileResource> fileResources = new ArrayList<>();
+                for (int i = 2; i <= 4; i++) {
+                    String imagePath = carData[i];
+                    FileResource fileResource = createFileResource(imagePath);
+                    fileResource.setCar(car);
+                    fileResources.add(fileResource);
+                }
+                car.setFileResources(fileResources);
+
+                if (carRepository.findByTypeAndCarBrand(car.getType(), car.getCarBrand()).isEmpty()) {
+                    carRepository.save(car);
+                }
+            } catch (Exception e) {
+                System.err.println("Error saving car: " + e.getMessage());
+            }
 
             carsInCsvSet.add(carTypeStr + ":" + carBrand);
             // Combine type and brand as unique identifier
-
-            if (carRepository.findByTypeAndCarBrand(newCar.getType(), newCar.getCarBrand()).isEmpty()) {
-                carRepository.save(newCar);
-            }
         }
+
         for (Car car : carsInDataBase) {
             String carIdentifier = car.getType().name() + ":" + car.getCarBrand();
             if (!carsInCsvSet.contains(carIdentifier)) {
@@ -56,5 +75,18 @@ public class CarAsset implements CommandLineRunner {
                 // Remove cars that are in the database but not in the CSV
             }
         }
+
     }
+
+    private FileResource createFileResource(String imagePath) throws Exception {
+        String filePath = "src/main/resources/assetDocs/images/" + imagePath;
+        Path path = Paths.get(filePath);
+        FileResource fileResource = null;
+        byte[] imageData = Files.readAllBytes(path);
+        fileResource = new FileResource();
+        fileResource.setDataValue(imageData);
+
+        return fileResource;
+    }
+
 }
