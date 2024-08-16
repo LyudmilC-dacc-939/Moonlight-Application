@@ -1,5 +1,6 @@
 package com.moonlight.advice;
 
+import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UserAlreadyExistsException;
@@ -26,5 +27,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<?> invalidInputException(InvalidInputException invalidInputException) {
         return new ResponseEntity<>(invalidInputException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<?> IllegalAccessException(IllegalAccessException illegalAccessException){
+        return new ResponseEntity<>(illegalAccessException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

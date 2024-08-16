@@ -1,22 +1,30 @@
 package com.moonlight.service.impl;
 
+import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
+import com.moonlight.dto.ChangePasswordRequest;
 import com.moonlight.dto.LoginRequest;
+import com.moonlight.dto.ResetPasswordRequest;
 import com.moonlight.dto.UserRequest;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.repository.UserRoleRepository;
+import com.moonlight.security.ApplicationConfiguration;
 import com.moonlight.security.JwtService;
 import com.moonlight.service.EmailService;
 import com.moonlight.service.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -31,10 +39,17 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final CurrentUserImpl currentUserImpl;
     private final EmailService emailService;
-
     private final UserRoleRepository userRoleRepository;
+    private final ApplicationConfiguration applicationConfiguration;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, @Lazy CurrentUserImpl currentUserImpl, EmailService emailService, UserRoleRepository userRoleRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder,
+                           AuthenticationManager authenticationManager,
+                           JwtService jwtService,
+                           @Lazy CurrentUserImpl currentUserImpl,
+                           EmailService emailService,
+                           UserRoleRepository userRoleRepository,
+                           ApplicationConfiguration applicationConfiguration) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -42,6 +57,7 @@ public class UserServiceImpl implements UserService {
         this.currentUserImpl = currentUserImpl;
         this.emailService = emailService;
         this.userRoleRepository = userRoleRepository;
+        this.applicationConfiguration = applicationConfiguration;
     }
 
     @Override
@@ -129,4 +145,35 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("No results found"));
     }
+
+    @Override
+    @SneakyThrows
+    public User changePassword(ChangePasswordRequest changePasswordRequest) {
+        User currentUser = currentUserImpl.extractCurrentUser();
+        if (!currentUserImpl.isCurrentUserMatch(currentUser)) {
+            throw new IllegalAccessException("Unauthorized Access!");
+        }
+        if (applicationConfiguration.matchesEncodedPassword(changePasswordRequest.getCurrentPassword(), currentUser.getPassword())) {
+            currentUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+            userRepository.save(currentUser);
+            return currentUser;
+        } else {
+            throw new InvalidInputException("Current password does not match");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordRequest passwordRequest) {
+        User userWithForgottenPassword = userRepository.findByEmailAddress(passwordRequest.getEmail()).orElseThrow(() ->
+                new RecordNotFoundException("Provided email is invalid"));
+        String generatedPassword = "";
+        while (!generatedPassword.matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\\w\\s]).{8,}$")) {
+            generatedPassword = RandomStringUtils.randomAscii(25);
+        }
+        userWithForgottenPassword.setPassword(passwordEncoder.encode(generatedPassword));
+        userRepository.save(userWithForgottenPassword);
+        emailService.sendEmailForForgottenPassword(passwordRequest.getEmail(), generatedPassword);
+    }
+
 }

@@ -28,4 +28,19 @@ public class EmailServiceImpl implements EmailService {
             System.out.println("Error sending registration email: " + ex.getMessage());
         }
     }
+
+    @Override
+    public void sendEmailForForgottenPassword(String to, String password) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(to);
+        message.setSubject("Moonlight - Reset Password");
+        message.setText("Your new password is: " + password + "\nWe recommend, for security purpose, " +
+                "to update your password once you log in your account" + "\n\nBest regards, \nYour service Team");
+        try {
+            mailSender.send(message);
+        } catch (Exception ex) {
+            System.out.println("Error sending registration email: " + ex.getMessage());
+        }
+    }
 }
