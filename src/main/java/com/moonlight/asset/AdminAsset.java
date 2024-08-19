@@ -1,9 +1,9 @@
 package com.moonlight.asset;
 
-import com.moonlight.model.User;
-import com.moonlight.model.UserRole;
-import com.moonlight.repository.UserRepository;
-import com.moonlight.repository.UserRoleRepository;
+import com.moonlight.model.user.User;
+import com.moonlight.model.user.UserRole;
+import com.moonlight.repository.user.UserRepository;
+import com.moonlight.repository.user.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;

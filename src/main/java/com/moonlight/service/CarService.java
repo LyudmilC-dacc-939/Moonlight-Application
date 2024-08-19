@@ -1,6 +1,6 @@
 package com.moonlight.service;
 
-import com.moonlight.model.Car;
+import com.moonlight.model.car.Car;
 
 import java.util.List;
 

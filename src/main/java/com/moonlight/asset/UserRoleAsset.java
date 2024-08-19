@@ -1,7 +1,7 @@
 package com.moonlight.asset;
 
-import com.moonlight.model.UserRole;
-import com.moonlight.repository.UserRoleRepository;
+import com.moonlight.model.user.UserRole;
+import com.moonlight.repository.user.UserRoleRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.CommandLineRunner;

@@ -1,7 +1,7 @@
 package com.moonlight.asset;
 
-import com.moonlight.model.Amenity;
-import com.moonlight.repository.AmenityRepository;
+import com.moonlight.model.hotel.Amenity;
+import com.moonlight.repository.hotel.AmenityRepository;
 import com.moonlight.service.CsvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

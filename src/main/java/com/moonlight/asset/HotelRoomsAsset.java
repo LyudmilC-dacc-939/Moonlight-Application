@@ -1,13 +1,13 @@
 package com.moonlight.asset;
 
 
-import com.moonlight.model.Amenity;
-import com.moonlight.model.HotelRoom;
+import com.moonlight.model.hotel.Amenity;
+import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.enums.RoomBedType;
 import com.moonlight.model.enums.RoomType;
 import com.moonlight.model.enums.RoomView;
-import com.moonlight.repository.AmenityRepository;
-import com.moonlight.repository.HotelRoomRepository;
+import com.moonlight.repository.hotel.AmenityRepository;
+import com.moonlight.repository.hotel.HotelRoomRepository;
 import com.moonlight.service.CsvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

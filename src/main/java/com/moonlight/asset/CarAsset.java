@@ -1,9 +1,9 @@
 package com.moonlight.asset;
 
-import com.moonlight.model.Car;
-import com.moonlight.model.FileResource;
+import com.moonlight.model.car.Car;
+import com.moonlight.model.car.FileResource;
 import com.moonlight.model.enums.CarType;
-import com.moonlight.repository.CarRepository;
+import com.moonlight.repository.car.CarRepository;
 import com.moonlight.service.CsvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

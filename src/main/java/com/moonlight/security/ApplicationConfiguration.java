@@ -1,7 +1,7 @@
 package com.moonlight.security;
 
 import com.moonlight.advice.exception.RecordNotFoundException;
-import com.moonlight.repository.UserRepository;
+import com.moonlight.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

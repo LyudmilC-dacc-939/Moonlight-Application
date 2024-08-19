@@ -1,6 +1,6 @@
 package com.moonlight.service;
 
-import com.moonlight.model.HotelRoom;
+import com.moonlight.model.hotel.HotelRoom;
 
 import java.util.Set;
 

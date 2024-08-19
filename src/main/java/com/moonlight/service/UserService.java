@@ -1,7 +1,7 @@
 package com.moonlight.service;
 
-import com.moonlight.dto.*;
-import com.moonlight.model.User;
+import com.moonlight.dto.user.*;
+import com.moonlight.model.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
