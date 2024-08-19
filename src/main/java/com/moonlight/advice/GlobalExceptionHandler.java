@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalAccessException.class)
-    public ResponseEntity<?> IllegalAccessException(IllegalAccessException illegalAccessException){
+    public ResponseEntity<?> IllegalAccessException(IllegalAccessException illegalAccessException) {
         return new ResponseEntity<>(illegalAccessException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

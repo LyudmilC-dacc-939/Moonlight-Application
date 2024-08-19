@@ -40,7 +40,7 @@ public class HotelRoomsAsset implements CommandLineRunner {
     }
 
     private void saveHotelRooms(List<String[]> rooms, Set<Amenity> amenities) {
-        for (String [] roomData : rooms) {
+        for (String[] roomData : rooms) {
             Long roomNumber = Long.parseLong(roomData[0]);
             RoomType roomType = RoomType.valueOf(roomData[1].toUpperCase());
             RoomView roomView = RoomView.valueOf(roomData[2].toUpperCase());

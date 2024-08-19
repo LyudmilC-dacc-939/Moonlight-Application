@@ -1,7 +1,6 @@
 package com.moonlight.controller;
 
 import com.moonlight.model.HotelRoom;
-import com.moonlight.model.User;
 import com.moonlight.service.HotelRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

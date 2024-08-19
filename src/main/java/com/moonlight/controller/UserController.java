@@ -1,9 +1,6 @@
 package com.moonlight.controller;
 
-import com.moonlight.dto.ChangePasswordRequest;
-import com.moonlight.dto.LoginRequest;
-import com.moonlight.dto.ResetPasswordRequest;
-import com.moonlight.dto.UserRequest;
+import com.moonlight.dto.*;
 import com.moonlight.model.User;
 import com.moonlight.repository.UserRepository;
 import com.moonlight.service.UserService;
@@ -121,6 +118,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(loginRequest));
     }
 
+    @PutMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Updating user")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User successfully updated",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)))})
+    ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("id") Long userId) {
+        return new ResponseEntity<>(userService.updateUser(updateUserRequest, userId), HttpStatus.OK);
+    }
+
     @Operation(summary = "List all users", description = "Provide pageable list of users to admin")
     @GetMapping(path = "/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -136,7 +149,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     ResponseEntity<List<User>> getPageableUsersList(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10")int size){
+            @RequestParam(defaultValue = "10") int size) {
         List<User> users = userService.getPeageableUsersList(page, size);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }

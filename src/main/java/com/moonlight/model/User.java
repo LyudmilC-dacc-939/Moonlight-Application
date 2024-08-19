@@ -45,7 +45,7 @@ public class User implements UserDetails {
 
     private Instant dateCreated;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id")
     @JsonBackReference
     private UserRole userRole;

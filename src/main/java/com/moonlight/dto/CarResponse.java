@@ -4,7 +4,6 @@ import com.moonlight.model.FileResource;
 import com.moonlight.model.enums.CarType;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

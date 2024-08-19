@@ -10,11 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
     @Value("${spring.mail.username}")
     String fromEmail;
+    @Autowired
+    private JavaMailSender mailSender;
 
     public void sendEmailUponRegister(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();

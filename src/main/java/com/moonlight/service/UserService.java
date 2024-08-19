@@ -1,9 +1,6 @@
 package com.moonlight.service;
 
-import com.moonlight.dto.ChangePasswordRequest;
-import com.moonlight.dto.LoginRequest;
-import com.moonlight.dto.ResetPasswordRequest;
-import com.moonlight.dto.UserRequest;
+import com.moonlight.dto.*;
 import com.moonlight.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -27,6 +24,9 @@ public interface UserService {
 
     @Operation(summary = "Gets user email", description = "Gets user by his email.")
     User findByEmail(String email);
+
+    @Operation(summary = "User updates information", description = "User can update his own information")
+    User updateUser(UpdateUserRequest updateUserRequest, Long userId);
 
     @Operation(summary = "List all users", description = "Provides a pageable list of users to admin")
     List<User> getPeageableUsersList(int skip, int take);

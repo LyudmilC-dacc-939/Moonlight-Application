@@ -3,10 +3,7 @@ package com.moonlight.service.impl;
 import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
-import com.moonlight.dto.ChangePasswordRequest;
-import com.moonlight.dto.LoginRequest;
-import com.moonlight.dto.ResetPasswordRequest;
-import com.moonlight.dto.UserRequest;
+import com.moonlight.dto.*;
 import com.moonlight.model.User;
 import com.moonlight.model.UserRole;
 import com.moonlight.repository.UserRepository;
@@ -25,9 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -148,14 +143,12 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("No results found"));
     }
-
     @Override
     public java.util.List<User> getPeageableUsersList(int skip, int take) {
         Pageable pageable = PageRequest.of(skip, take);
         Page<User> pagedResult = userRepository.findAll(pageable);
         return pagedResult.toList();
     }
-
     @Override
     @SneakyThrows
     public User changePassword(ChangePasswordRequest changePasswordRequest) {
@@ -185,5 +178,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userWithForgottenPassword);
         emailService.sendEmailForForgottenPassword(passwordRequest.getEmail(), generatedPassword);
     }
-
+    @Override
+    public User updateUser(UpdateUserRequest updateUserRequest, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new RecordNotFoundException(String.format("User with id %S not found", userId)));
+        boolean canUpdateUser = currentUserImpl.isCurrentUserMatch(user);
+        if (!canUpdateUser) {
+            throw new RecordNotFoundException("This user is not authorize to proceed this operation");
+        }
+        if (updateUserRequest.getFirstName() != null) {
+            user.setFirstName(updateUserRequest.getFirstName());
+        }
+        if (updateUserRequest.getLastName() != null) {
+            user.setLastName(updateUserRequest.getLastName());
+        }
+        if (updateUserRequest.getPhoneNumber() != null) {
+            user.setPhoneNumber(updateUserRequest.getPhoneNumber());
+        }
+        return userRepository.save(user);
+    }
 }

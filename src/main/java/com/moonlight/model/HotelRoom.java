@@ -4,10 +4,11 @@ import com.moonlight.model.enums.RoomBedType;
 import com.moonlight.model.enums.RoomType;
 import com.moonlight.model.enums.RoomView;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class HotelRoom {
     @ManyToMany
     @JoinTable(
             name = "room_amenities",
-            joinColumns =  @JoinColumn(name = "room_id"),
+            joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "amenity_id")
     )
     @NotEmpty(message = "Must include at least one amenity")
