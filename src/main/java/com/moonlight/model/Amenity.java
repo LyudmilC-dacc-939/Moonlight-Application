@@ -2,8 +2,7 @@ package com.moonlight.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +10,9 @@ import java.util.Set;
 @Entity(name = "Amenity")
 @Table(name = "amenities")
 @NoArgsConstructor
-@Data
+@ToString
+@Getter
+@Setter
 public class Amenity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
