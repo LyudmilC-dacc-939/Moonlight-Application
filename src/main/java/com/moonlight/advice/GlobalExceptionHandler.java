@@ -1,5 +1,6 @@
 package com.moonlight.advice;
 
+import com.moonlight.advice.exception.*;
 import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(illegalAccessException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+
+    @ExceptionHandler(RoomNotAvailableException.class)
+    public ResponseEntity<?> handleRoomNotAvailableException (RoomNotAvailableException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidDateRangeException.class)
     public ResponseEntity<?> InvalidDateRangeException(InvalidDateRangeException invalidDateRangeException) {
         return new ResponseEntity<>(invalidDateRangeException.getMessage(), HttpStatus.BAD_REQUEST);
@@ -55,4 +62,5 @@ public class GlobalExceptionHandler {
 //        return new ResponseEntity<>("Access denied: " + exception.getMessage(), HttpStatus.FORBIDDEN);
 //    }
     // ^ Uncomment these 2 for testing Responses and bug fixing
+
 }

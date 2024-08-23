@@ -1,5 +1,6 @@
 package com.moonlight.model.hotel;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.moonlight.model.enums.RoomBedType;
 import com.moonlight.model.enums.RoomType;
 import com.moonlight.model.enums.RoomView;
@@ -11,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "HOTEL_ROOMS")
@@ -51,5 +53,9 @@ public class HotelRoom {
     )
     @NotEmpty(message = "Must include at least one amenity")
     private Set<Amenity> amenities = new HashSet<>();
+
+    @OneToMany(mappedBy = "hotelRoom")
+    @JsonManagedReference
+    private List<HotelRoomReservation> hotelRoomReservations;
 
 }

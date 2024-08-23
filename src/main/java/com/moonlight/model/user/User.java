@@ -1,6 +1,8 @@
 package com.moonlight.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.car.CarReservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -52,9 +54,14 @@ public class User implements UserDetails {
     @JsonBackReference
     private UserRole userRole;
 
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<HotelRoomReservation> hotelRoomReservations;
+
     // This is not necessary, but I am adding it in case we want two-way connection between User/CarReservation
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<CarReservation> reservations = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
