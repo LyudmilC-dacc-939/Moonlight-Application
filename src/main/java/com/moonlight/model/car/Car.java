@@ -41,4 +41,8 @@ public class Car {
     @Column(name = "Reservation_date")
     private LocalDate reservationDate;
 
+    // This is not necessary, but I am adding it in case we want a two-way connection between Car/CarResevation for query purposes
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
+    private List<CarReservation> reservations = new ArrayList<>();
+
 }

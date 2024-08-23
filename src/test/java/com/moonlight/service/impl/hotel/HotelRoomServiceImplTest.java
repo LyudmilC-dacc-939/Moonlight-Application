@@ -1,11 +1,10 @@
-package com.moonlight.service.impl;
+package com.moonlight.service.impl.hotel;
 
 import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.enums.RoomBedType;
 import com.moonlight.model.enums.RoomType;
 import com.moonlight.model.enums.RoomView;
 import com.moonlight.repository.hotel.HotelRoomRepository;
-import com.moonlight.service.impl.hotel.HotelRoomServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

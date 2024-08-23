@@ -1,9 +1,7 @@
 package com.moonlight.advice;
 
 import com.moonlight.advice.exception.IllegalAccessException;
-import com.moonlight.advice.exception.InvalidInputException;
-import com.moonlight.advice.exception.RecordNotFoundException;
-import com.moonlight.advice.exception.UserAlreadyExistsException;
+import com.moonlight.advice.exception.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,4 +31,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> IllegalAccessException(IllegalAccessException illegalAccessException) {
         return new ResponseEntity<>(illegalAccessException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(InvalidDateRangeException.class)
+    public ResponseEntity<?> InvalidDateRangeException(InvalidDateRangeException invalidDateRangeException) {
+        return new ResponseEntity<>(invalidDateRangeException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnavailableResourceException.class)
+    public ResponseEntity<?> UnavailableResourceException(UnavailableResourceException unavailableResourceException) {
+        return new ResponseEntity<>(unavailableResourceException.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> handleAllExceptions(Exception exception) {
+//        // Log the exception for debugging purposes
+//        log.error("An error occurred: ", exception);
+//        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+//
+//    @ExceptionHandler(AccessDeniedException.class)
+//    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
+//        log.error("Access denied: ", exception);
+//        return new ResponseEntity<>("Access denied: " + exception.getMessage(), HttpStatus.FORBIDDEN);
+//    }
+    // ^ Uncomment these 2 for testing Responses and bug fixing
 }

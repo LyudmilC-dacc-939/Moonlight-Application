@@ -1,6 +1,7 @@
 package com.moonlight.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.moonlight.model.car.CarReservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -10,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,6 +51,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "role_id")
     @JsonBackReference
     private UserRole userRole;
+
+    // This is not necessary, but I am adding it in case we want two-way connection between User/CarReservation
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<CarReservation> reservations = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
