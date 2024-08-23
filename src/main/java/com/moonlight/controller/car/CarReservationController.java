@@ -1,5 +1,8 @@
 package com.moonlight.controller.car;
 
+
+import com.moonlight.dto.car.CarAvailabilityRequest;
+import com.moonlight.dto.car.CarAvailabilityResponse;
 import com.moonlight.dto.car.CarReservationRequest;
 import com.moonlight.dto.car.CarReservationResponse;
 import com.moonlight.model.car.CarReservation;
@@ -14,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/reservations/car")
@@ -57,6 +60,30 @@ public class CarReservationController {
                 reservation.getTotalCost()
         );
 
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Check Available Cars", description = "Checks which cars are free for given date range")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cars are listed",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarReservation.class))),
+            @ApiResponse(responseCode = "400", description = "Format is not valid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarReservation.class))),
+            @ApiResponse(responseCode = "403", description = "Given dates are invalid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarReservation.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CarReservation.class)))})
+    @GetMapping("/available/")
+    public ResponseEntity<CarAvailabilityResponse> getAvailableCars(
+            @RequestBody CarAvailabilityRequest request) {
+
+        Map<LocalDate, List<String>> dailyAvailability = carReservationService.getAvailableCarsByDateRange(request);
+
+        CarAvailabilityResponse response = new CarAvailabilityResponse(dailyAvailability);
         return ResponseEntity.ok(response);
     }
 }

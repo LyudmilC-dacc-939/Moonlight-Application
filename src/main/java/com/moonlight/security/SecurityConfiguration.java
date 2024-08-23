@@ -42,7 +42,8 @@ public class SecurityConfiguration {
                                         "/swagger-ui/*",
                                         "/api-docs",
                                         "api/v1/cars/search/*",
-                                        "/api/v1/users/reset-password")
+                                        "/api/v1/users/reset-password",
+                                        "api/v1/reservations/car/available/*")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

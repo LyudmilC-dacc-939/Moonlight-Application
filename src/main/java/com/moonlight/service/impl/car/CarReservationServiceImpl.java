@@ -3,6 +3,7 @@ package com.moonlight.service.impl.car;
 import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UnavailableResourceException;
+import com.moonlight.dto.car.CarAvailabilityRequest;
 import com.moonlight.dto.car.CarReservationRequest;
 import com.moonlight.model.car.Car;
 import com.moonlight.model.car.CarReservation;
@@ -19,6 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -40,6 +45,7 @@ public class CarReservationServiceImpl implements CarReservationService {
     public CarReservation createReservation(CarReservationRequest request, String email) {
 
         // Checking Date Selection
+        dateRangeValidator(request.getStartDate(), request.getEndDate());
         boolean isValidDateRange = request.getStartDate() != null &&
                 request.getEndDate() != null &&
                 !request.getEndDate().isBefore(request.getStartDate());
@@ -50,7 +56,6 @@ public class CarReservationServiceImpl implements CarReservationService {
         if (request.getStartDate().isBefore(currentDate)) {
             throw new InvalidDateRangeException("Selected date must be in the Present or in the Future");
         }
-
 
         User user = userRepository.findByEmailAddress(email).orElseThrow(() ->
                 new RecordNotFoundException(String.format("User with email %s does not exist", email)));
@@ -89,5 +94,44 @@ public class CarReservationServiceImpl implements CarReservationService {
         reservation.setStatus(ReservationStatus.PENDING); // Currently we have no logic for changing this TBD
 
         return carReservationRepository.save(reservation);
+    }
+
+    @Override
+    public Map<LocalDate, List<String>> getAvailableCarsByDateRange(CarAvailabilityRequest request) {
+        LocalDate startDate = request.getStartDate();
+        LocalDate endDate = request.getEndDate();
+
+        // Checking if the given date range is allowed
+        dateRangeValidator(startDate, endDate);
+
+
+        Map<LocalDate, List<String>> availabilityMap = new HashMap<>();
+
+        // Loop through each day in the range
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            List<Long> reservedCarIds = carReservationRepository.findReservedCarIdsByDateRange(date, date);
+
+            List<String> availableCarModels = carRepository.findAll().stream()
+                    .filter(car -> !reservedCarIds.contains(car.getId()))
+                    .map(Car::getCarBrand)
+                    .collect(Collectors.toList());
+
+            availabilityMap.put(date, availableCarModels);
+        }
+
+        return availabilityMap;
+    }
+
+    void dateRangeValidator(LocalDate startDate, LocalDate endDate) {
+        boolean isValidDateRange = startDate != null &&
+                endDate != null &&
+                !endDate.isBefore(startDate);
+        if (!isValidDateRange) {
+            throw new InvalidDateRangeException("End date must be after start date.");
+        }
+        LocalDate currentDate = LocalDate.now();
+        if (startDate.isBefore(currentDate)) {
+            throw new InvalidDateRangeException("Selected date must be in the Present or in the Future");
+        }
     }
 }

@@ -25,4 +25,13 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
     List<CarReservation> findOverlappingReservations(@Param("carId") Long carId,
                                                      @Param("startDate") LocalDate startDate,
                                                      @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT r.car.id FROM CarReservation r WHERE " +
+            "(:startDate BETWEEN r.startDate AND r.endDate OR " +
+            ":endDate BETWEEN r.startDate AND r.endDate OR " +
+            "(r.startDate BETWEEN :startDate AND :endDate) OR " +
+            "(r.endDate BETWEEN :startDate AND :endDate))")
+    List<Long> findReservedCarIdsByDateRange(@Param("startDate") LocalDate startDate,
+                                             @Param("endDate") LocalDate endDate);
+
 }

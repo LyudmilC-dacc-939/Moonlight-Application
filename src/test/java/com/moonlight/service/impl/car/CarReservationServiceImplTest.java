@@ -3,6 +3,7 @@ package com.moonlight.service.impl.car;
 import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UnavailableResourceException;
+import com.moonlight.dto.car.CarAvailabilityRequest;
 import com.moonlight.dto.car.CarReservationRequest;
 import com.moonlight.model.car.Car;
 import com.moonlight.model.car.CarReservation;
@@ -21,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.*;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -48,11 +50,16 @@ class CarReservationServiceImplTest {
     private User user;
     private Car car;
     private CarReservation reservation;
+    private CarAvailabilityRequest validRequest2;
+    private CarAvailabilityRequest invalidRequest2;
+    private Car car2;
+    private Car car3;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
+        // First Method Test SetUp
         validRequest = new CarReservationRequest();
         validRequest.setCarId(1L);
         validRequest.setStartDate(LocalDate.now().plusDays(1));
@@ -77,6 +84,23 @@ class CarReservationServiceImplTest {
         reservation.setEndDate(validRequest.getEndDate());
         reservation.setTotalCost(1000.0);
         reservation.setStatus(ReservationStatus.PENDING);
+
+        // Second method test SetUp
+        validRequest2 = new CarAvailabilityRequest();
+        validRequest2.setStartDate(LocalDate.now().plusDays(1));
+        validRequest2.setEndDate(LocalDate.now().plusDays(3));
+
+        invalidRequest2 = new CarAvailabilityRequest();
+        invalidRequest2.setStartDate(LocalDate.now().plusDays(3));
+        invalidRequest2.setEndDate(LocalDate.now().plusDays(1));
+
+        car2 = new Car();
+        car2.setId(1L);
+        car2.setCarBrand("Toyota");
+
+        car3 = new Car();
+        car3.setId(2L);
+        car3.setCarBrand("Honda");
     }
 
     @Test
@@ -190,5 +214,55 @@ class CarReservationServiceImplTest {
         });
 
         assertEquals("Selected date must be in the Present or in the Future", exception.getMessage());
+    }
+    // Second Service Method Tests
+    //
+    //
+    @Test
+    void testGetAvailableCarsByDateRange_validDates() {
+        // Mock the behavior of carRepository and carReservationRepository
+        when(carReservationRepository.findReservedCarIdsByDateRange(any(LocalDate.class), any(LocalDate.class)))
+                .thenReturn(Collections.emptyList());
+        when(carRepository.findAll()).thenReturn(Arrays.asList(car2, car3));
+
+        // Call the method
+        Map<LocalDate, List<String>> result = carReservationService.getAvailableCarsByDateRange(validRequest2);
+
+        // Verify the result
+        assertNotNull(result);
+        assertEquals(3, result.size());  // 3 days in the range
+        assertEquals(Arrays.asList("Toyota", "Honda"), result.get(validRequest2.getStartDate()));
+    }
+
+    @Test
+    void testGetAvailableCarsByDateRange_noAvailableCars() {
+        // Mock the behavior when all cars are reserved
+        when(carReservationRepository.findReservedCarIdsByDateRange(any(LocalDate.class), any(LocalDate.class)))
+                .thenReturn(Arrays.asList(1L, 2L));
+        when(carRepository.findAll()).thenReturn(Arrays.asList(car2, car3));
+
+        // Call the method
+        Map<LocalDate, List<String>> result = carReservationService.getAvailableCarsByDateRange(validRequest2);
+
+        // Verify the result
+        assertNotNull(result);
+        assertEquals(3, result.size());  // 3 days in the range
+        result.values().forEach(carModels -> assertTrue(carModels.isEmpty()));  // No available cars
+    }
+
+    @Test
+    void testGetAvailableCarsByDateRange_partialAvailability() {
+        // Mock the behavior when some cars are reserved
+        when(carReservationRepository.findReservedCarIdsByDateRange(any(LocalDate.class), any(LocalDate.class)))
+                .thenReturn(Collections.singletonList(1L));
+        when(carRepository.findAll()).thenReturn(Arrays.asList(car2, car3));
+
+        // Call the method
+        Map<LocalDate, List<String>> result = carReservationService.getAvailableCarsByDateRange(validRequest2);
+
+        // Verify the result
+        assertNotNull(result);
+        assertEquals(3, result.size());  // 3 days in the range
+        result.values().forEach(carModels -> assertEquals(Collections.singletonList("Honda"), carModels));  // Only Honda is available
     }
 }
