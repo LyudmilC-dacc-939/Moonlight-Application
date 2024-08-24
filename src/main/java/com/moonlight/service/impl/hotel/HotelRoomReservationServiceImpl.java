@@ -1,6 +1,5 @@
 package com.moonlight.service.impl.hotel;
 
-import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RoomNotAvailableException;
 import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
@@ -16,12 +15,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @Service
 @Data
@@ -129,6 +128,16 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
     }
 
+    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
+        HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
+        response.setRoomNumber(room.getRoomNumber());
+        response.setRoomType(room.getRoomType().name());
+        response.setRoomView(room.getRoomView().name());
+        response.setRoomBedType(room.getBedType().name());
+        response.setRoomPricePerNight(room.getRoomType().getRoomPricePerNight());
+        response.setMaxNumberOfGuests(room.getRoomType().getMaxNumberOfGuests());
+        return response;
+    }
     @Override
     public int duration(LocalDate startDate, LocalDate endDate) {
         int duration;
@@ -143,16 +152,5 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     @Override
     public double totalCost(int duration, HotelRoom hotelRoom) {
         return duration * hotelRoom.getRoomType().getRoomPricePerNight();
-    }
-
-    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
-        HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
-        response.setRoomNumber(room.getRoomNumber());
-        response.setRoomType(room.getRoomType().name());
-        response.setRoomView(room.getRoomView().name());
-        response.setRoomBedType(room.getBedType().name());
-        response.setRoomPricePerNight(room.getRoomType().getRoomPricePerNight());
-        response.setMaxNumberOfGuests(room.getRoomType().getMaxNumberOfGuests());
-        return response;
     }
 }

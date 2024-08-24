@@ -38,12 +38,16 @@ class HotelRoomReservationServiceImplTest {
 
     @Mock
     private HotelRoomRepository hotelRoomRepository;
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private HotelRoomReservationRepository hotelRoomReservationRepository;
+
     @InjectMocks
     private HotelRoomReservationServiceImpl hotelRoomReservationService;
+
     private Long userId;
     private Long roomNumber;
     private User user;
@@ -86,6 +90,7 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void checkRoomAvailability_roomNotAvailable() {
+
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
         existingReservation.setStartDate(startDate.minusDays(2));
