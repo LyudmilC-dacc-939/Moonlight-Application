@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("No results found"));
     }
     @Override
-    public java.util.List<User> getPeageableUsersList(int skip, int take) {
+    public java.util.List<User> getPageableUserList(int skip, int take) {
         Pageable pageable = PageRequest.of(skip, take);
         Page<User> pagedResult = userRepository.findAll(pageable);
         return pagedResult.toList();

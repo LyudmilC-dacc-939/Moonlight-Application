@@ -150,7 +150,7 @@ public class UserController {
     ResponseEntity<List<User>> getPageableUsersList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<User> users = userService.getPeageableUsersList(page, size);
+        List<User> users = userService.getPageableUserList(page, size);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -196,4 +196,6 @@ public class UserController {
         userService.resetPassword(resetPasswordRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }

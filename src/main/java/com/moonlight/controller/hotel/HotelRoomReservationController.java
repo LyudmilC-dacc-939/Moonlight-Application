@@ -51,7 +51,7 @@ public class HotelRoomReservationController {
             (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user) {
 
 
-        HotelRoomReservation reservation = hotelRoomReservationService.makeReservation(
+        HotelRoomReservation reservation = hotelRoomReservationService.createReservation(
                 user.getId(),
                 reservationRequest.getRoomNumber(),
                 reservationRequest.getStartDate(),
@@ -60,7 +60,7 @@ public class HotelRoomReservationController {
                 reservationRequest.getGuestsChildren()
         );
 
-        HotelRoomReservationResponse response = new HotelRoomReservationResponse();
+        var response = new HotelRoomReservationResponse();
         response.setStartDate(reservation.getStartDate());
         response.setDuration(reservation.getDuration());
         response.setEndDate(reservation.getEndDate());

@@ -23,6 +23,7 @@ import java.util.Optional;
 @Service
 @Data
 public class HotelRoomReservationServiceImpl implements HotelRoomReservationService {
+
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
     @Autowired
@@ -32,8 +33,8 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
 
     @Override
     public boolean datesOverlap(LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd) {
-        if(existingStart.isEqual(existingEnd)&&newStart.isEqual(existingEnd )
-                || newStart.isEqual(newEnd)&&existingEnd.isEqual(newStart)){
+        if (existingStart.isEqual(existingEnd) && newStart.isEqual(existingEnd)
+                || newStart.isEqual(newEnd) && existingEnd.isEqual(newStart)) {
             return true;
         }
         return (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart));
@@ -54,17 +55,17 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     @NotNull
     @Transactional
     @Override
-    public HotelRoomReservation makeReservation(
+    public HotelRoomReservation createReservation(
             Long userId, Long roomNumber, LocalDate startDate, LocalDate endDate
             , int guestsAdult, int guestChildren) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found with ID: " + userId);
         }
         User user = userOptional.get();
 
         Optional<HotelRoom> hotelRoomOptional = hotelRoomRepository.findByRoomNumber(roomNumber);
-        if (!hotelRoomOptional.isPresent()) {
+        if (hotelRoomOptional.isEmpty()) {
             throw new RuntimeException("Hotel room not found with ID" + roomNumber);
         }
         HotelRoom hotelRoom = hotelRoomOptional.get();
@@ -74,14 +75,14 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
                 throw new IllegalArgumentException("End date must be after or equal to the start date!");
             }
 
-            int totalGuests = guestsAdult+guestChildren;
-            if(totalGuests > hotelRoom.getRoomType().getMaxNumberOfGuests()){
+            int totalGuests = guestsAdult + guestChildren;
+            if (totalGuests > hotelRoom.getRoomType().getMaxNumberOfGuests()) {
                 throw new RoomNotAvailableException(
                         "Total number of guests exceeds maximum allowed guest for the room type.");
             }
 
-            int duration =duration(startDate,endDate);
-            double totalCost = totalCost(duration,hotelRoom);
+            int duration = duration(startDate, endDate);
+            double totalCost = totalCost(duration, hotelRoom);
 
             HotelRoomReservation reservation = new HotelRoomReservation();
             reservation.setUser(user);
@@ -95,24 +96,29 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
 
             return hotelRoomReservationRepository.save(reservation);
         } else {
-            throw new RoomNotAvailableException("The selected accommodation with number " +hotelRoom.getRoomNumber()+
-                    ", type "+ hotelRoom.getRoomType()
+            throw new RoomNotAvailableException("The selected accommodation with number " + hotelRoom.getRoomNumber() +
+                    ", type " + hotelRoom.getRoomType()
                     + ", featuring a " + hotelRoom.getRoomView() + " view is unavailable for the selected period." +
                     "\nPlease review the available rooms or select different period and try again.");
         }
     }
+
     @Override
-    public int duration(LocalDate startDate, LocalDate endDate) {
+    public List<HotelRoomReservation> getRoomReservationsByUserId(Long userId) {
+        return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
+    }
+
+    private int duration(LocalDate startDate, LocalDate endDate) {
         int duration;
-        if(startDate.isEqual(endDate)){
-           duration = (int) (ChronoUnit.DAYS.between(startDate,endDate)+1);
+        if (startDate.isEqual(endDate)) {
+            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
         } else {
-             duration = (int) (ChronoUnit.DAYS.between(startDate,endDate));
+            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate));
         }
         return duration;
     }
-    @Override
-    public double totalCost (int duration, HotelRoom hotelRoom) {
-        return duration*hotelRoom.getRoomType().getRoomPricePerNight();
+
+    private double totalCost(int duration, HotelRoom hotelRoom) {
+        return duration * hotelRoom.getRoomType().getRoomPricePerNight();
     }
 }

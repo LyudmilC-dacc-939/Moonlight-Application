@@ -29,7 +29,7 @@ public interface UserService {
     User updateUser(UpdateUserRequest updateUserRequest, Long userId);
 
     @Operation(summary = "List all users", description = "Provides a pageable list of users to admin")
-    List<User> getPeageableUsersList(int skip, int take);
+    List<User> getPageableUserList(int skip, int take);
 
     @Operation(summary = "Logged user changes personal password", description = "Changes password for user's personal account by his request")
     User changePassword(ChangePasswordRequest changePasswordRequest);

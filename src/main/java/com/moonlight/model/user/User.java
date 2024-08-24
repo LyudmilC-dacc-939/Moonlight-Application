@@ -60,7 +60,7 @@ public class User implements UserDetails {
 
     // This is not necessary, but I am adding it in case we want two-way connection between User/CarReservation
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<CarReservation> reservations = new ArrayList<>();
+    private List<CarReservation> reservations;
 
 
     @Override

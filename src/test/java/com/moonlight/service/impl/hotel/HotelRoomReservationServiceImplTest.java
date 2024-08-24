@@ -162,7 +162,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .makeReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
+                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(user, reservation.getUser());
@@ -185,7 +185,7 @@ class HotelRoomReservationServiceImplTest {
 
         assertThrows(RuntimeException.class, () -> {
             hotelRoomReservationService
-                    .makeReservation(userId, hotelRoomId, LocalDate.now(), LocalDate.now().plusDays(5)
+                    .createReservation(userId, hotelRoomId, LocalDate.now(), LocalDate.now().plusDays(5)
                     , guestsAdult, guestsChildren);
         });
         verify(userRepository, times(1)).findById(userId);
@@ -207,7 +207,7 @@ class HotelRoomReservationServiceImplTest {
 
         assertThrows(RuntimeException.class, () -> {
             hotelRoomReservationService
-                    .makeReservation(userId, hotelRoomId, LocalDate.now(), LocalDate.now().plusDays(5)
+                    .createReservation(userId, hotelRoomId, LocalDate.now(), LocalDate.now().plusDays(5)
                     , guestsAdult, guestsChildren);
         });
         verify(hotelRoomRepository, times(1)).findById(hotelRoomId);
@@ -243,7 +243,7 @@ class HotelRoomReservationServiceImplTest {
 
         assertThrows(RoomNotAvailableException.class, () -> {
             hotelRoomReservationService
-                    .makeReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
+                    .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
         });
 
         verify(hotelRoomRepository, times(1)).findById(hotelRoomId);
@@ -268,7 +268,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.of(hotelRoom));
 
         assertThrows(RuntimeException.class, () -> hotelRoomReservationService
-                .makeReservation(userId, hotelRoomId, startDate, endDate,  guestsAdult,  guestsChildren));
+                .createReservation(userId, hotelRoomId, startDate, endDate,  guestsAdult,  guestsChildren));
         verify(hotelRoomReservationRepository, never()).save(any(HotelRoomReservation.class));
     }
 
@@ -295,7 +295,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .makeReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
+                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
 
 
         assertNotNull(reservation);
@@ -329,7 +329,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .makeReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
+                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
 
 
         assertNotNull(reservation);
@@ -349,7 +349,7 @@ class HotelRoomReservationServiceImplTest {
         int guestsChildren = 0;
 
         assertThrows(RuntimeException.class, ()-> {
-            hotelRoomReservationService.makeReservation(userId, hotelRoomId, null, endDate, guestsAdult, guestsChildren);
+            hotelRoomReservationService.createReservation(userId, hotelRoomId, null, endDate, guestsAdult, guestsChildren);
         });
     }
 
@@ -362,7 +362,7 @@ class HotelRoomReservationServiceImplTest {
         int guestsChildren = 0;
 
         assertThrows(RuntimeException.class, ()-> {
-            hotelRoomReservationService.makeReservation(userId, hotelRoomId, startDate, null, guestsAdult, guestsChildren);
+            hotelRoomReservationService.createReservation(userId, hotelRoomId, startDate, null, guestsAdult, guestsChildren);
         });
     }
 

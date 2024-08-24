@@ -9,10 +9,11 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "car_reservations")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
 public class CarReservation {
 
     @Id

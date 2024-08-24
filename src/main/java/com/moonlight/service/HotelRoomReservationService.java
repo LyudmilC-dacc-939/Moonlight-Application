@@ -4,18 +4,18 @@ import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.hotel.HotelRoomReservation;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface HotelRoomReservationService {
 
-    boolean datesOverlap (LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd);
+    boolean datesOverlap(LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd);
 
-    boolean CheckRoomAvailability (HotelRoom room, LocalDate startDate, LocalDate endDate);
+    boolean CheckRoomAvailability(HotelRoom room, LocalDate startDate, LocalDate endDate);
 
-    HotelRoomReservation makeReservation(
-            Long userId, Long  roomNumber, LocalDate startDate, LocalDate endDate
+    HotelRoomReservation createReservation(
+            Long userId, Long roomNumber, LocalDate startDate, LocalDate endDate
             , int guestsAdult, int guestChildren);
 
-    int duration(LocalDate startDate, LocalDate endDate);
+    List<HotelRoomReservation> getRoomReservationsByUserId(Long userId);
 
-    double totalCost (int duration, HotelRoom hotelRoom);
 }
