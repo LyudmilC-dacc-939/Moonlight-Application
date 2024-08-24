@@ -43,7 +43,7 @@ public class SecurityConfiguration {
                                         "/api-docs",
                                         "api/v1/cars/search/*",
                                         "/api/v1/users/reset-password",
-                                        "/api/v1/users/reset-password",
+                                        "api/v1/hotel/search",
                                         "api/v1/reservations/car/available/*")
                                 .permitAll()
                                 .anyRequest()

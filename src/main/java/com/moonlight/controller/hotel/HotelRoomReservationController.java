@@ -48,7 +48,7 @@ public class HotelRoomReservationController {
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/create-reservation/")
     public ResponseEntity<HotelRoomReservationResponse> createReservation
-            (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user){
+            (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user) {
 
 
         HotelRoomReservation reservation = hotelRoomReservationService.makeReservation(
@@ -61,13 +61,13 @@ public class HotelRoomReservationController {
         );
 
         HotelRoomReservationResponse response = new HotelRoomReservationResponse();
-                response.setStartDate(reservation.getStartDate());
-                response.setDuration(reservation.getDuration());
-                response.setEndDate(reservation.getEndDate());
-                response.setGuestsAdult(reservation.getGuestsAdult());
-                response.setGuestsChildren(reservation.getGuestsChildren());
-                response.setHotelRoomType(reservation.getHotelRoom().getRoomType().name());
-                response.setTotalCost(reservation.getTotalCost());
+        response.setStartDate(reservation.getStartDate());
+        response.setDuration(reservation.getDuration());
+        response.setEndDate(reservation.getEndDate());
+        response.setGuestsAdult(reservation.getGuestsAdult());
+        response.setGuestsChildren(reservation.getGuestsChildren());
+        response.setHotelRoomType(reservation.getHotelRoom().getRoomType().name());
+        response.setTotalCost(reservation.getTotalCost());
 
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
