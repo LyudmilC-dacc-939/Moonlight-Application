@@ -124,6 +124,8 @@ public class CarReservationServiceImpl implements CarReservationService {
 
     @Override
     public List<CarReservation> getCarReservationsByUserId(Long userId) {
+        userRepository.findById(userId).orElseThrow(() ->
+                new RecordNotFoundException("User with id: " + userId + " not exist"));
         return carReservationRepository.findByUserIdOrderByStartDate(userId);
     }
 
