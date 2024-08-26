@@ -1,8 +1,12 @@
 package com.moonlight.controller.user;
 
+import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
+import com.moonlight.model.car.CarReservation;
+import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.user.User;
-import com.moonlight.repository.user.UserRepository;
+import com.moonlight.service.CarReservationService;
+import com.moonlight.service.HotelRoomReservationService;
 import com.moonlight.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +34,9 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserRepository userRepository;
+    private HotelRoomReservationService roomReservationService;
+    @Autowired
+    private CarReservationService carReservationService;
 
     @Operation(summary = "User Registration", description = "Registers new user")
     @ApiResponses(value = {
@@ -49,8 +56,6 @@ public class UserController {
     }
 
     @Operation(summary = "Searches an user by their id", description = "Returns user information by id")
-    @GetMapping(path = "/{id}")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully found with id",
                     content = @Content(mediaType = "application/json",
@@ -61,12 +66,13 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
+    @GetMapping(path = "/{id}")
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
     ResponseEntity<User> getUser(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserById(id));
     }
 
     @Operation(summary = "Searches an user by email", description = "Returns user information by email")
-    @GetMapping(path = "/get-by-email")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully found with email",
                     content = @Content(mediaType = "application/json",
@@ -77,13 +83,13 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
+    @GetMapping(path = "/get-by-email")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     ResponseEntity<User> getUser(@RequestParam("userEmail") String userEmail) {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserByEmail(userEmail));
     }
 
     @Operation(summary = "Deletes user by id", description = "Deletes user information by id")
-    @DeleteMapping(path = "/account-deletion")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully deleted",
                     content = @Content(mediaType = "application/json",
@@ -94,6 +100,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
+    @DeleteMapping(path = "/account-deletion")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     ResponseEntity<?> deleteUser(@RequestParam("userId") Long userId) {
         userService.deleteUser(userId);
@@ -118,8 +125,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(loginRequest));
     }
 
-    @PutMapping("{id}")
-    @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     @Operation(summary = "Updating user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User successfully updated",
             content = @Content(mediaType = "application/json",
@@ -130,13 +135,13 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
+    @PutMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("id") Long userId) {
         return new ResponseEntity<>(userService.updateUser(updateUserRequest, userId), HttpStatus.OK);
     }
 
     @Operation(summary = "List all users", description = "Provide pageable list of users to admin")
-    @GetMapping(path = "/list")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully found with id",
                     content = @Content(mediaType = "application/json",
@@ -147,6 +152,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
+    @GetMapping(path = "/list")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     ResponseEntity<List<User>> getPageableUsersList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -195,6 +202,54 @@ public class UserController {
     ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         userService.resetPassword(resetPasswordRequest);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "Admin can list reservations for a specific user",
+            description = "Admin can choose an user and list their reservations by type")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully fetched data",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+            @ApiResponse(responseCode = "400", description = "Request is not valid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+            @ApiResponse(responseCode = "403", description = "Unauthorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+            @ApiResponse(responseCode = "404", description = "No data matching input found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class})))
+    })
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/list-reservations/")
+    ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
+                                      @RequestParam(value = "reservation", defaultValue = "all", required = false) String reservation) {
+
+        switch (reservation) {
+            case "hotel rooms", "hotel", "rooms":
+                List<HotelRoomReservation> roomReservations = roomReservationService.getRoomReservationsByUserId(userId);
+                return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(roomReservations);
+            case "cars", "car":
+                List<CarReservation> carReservations = carReservationService.getCarReservationsByUserId(userId);
+                return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(carReservations);
+            case "restaurant":
+                //todo: add return function for restaurantReservationService once its added
+                System.out.println("future restaurant list");
+                break;
+            case "bar":
+                //todo: add return function for BarReservationService once its added
+                System.out.println("future bar list");
+                break;
+            case "all":
+                List<Object> allReservations = List.of(
+                        roomReservationService.getRoomReservationsByUserId(userId),
+                        carReservationService.getCarReservationsByUserId(userId));
+                return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(allReservations);
+            default:
+                return ResponseEntity.status(HttpStatusCode.valueOf(400)).build();
+        }
+        System.out.println("You shouldn't see this localized message if switch statement works fine");
+        return ResponseEntity.status(HttpStatusCode.valueOf(422)).build();
     }
 
 

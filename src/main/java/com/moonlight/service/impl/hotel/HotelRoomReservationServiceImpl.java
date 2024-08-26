@@ -1,6 +1,7 @@
 package com.moonlight.service.impl.hotel;
 
 
+import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.RoomNotAvailableException;
 import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.hotel.HotelRoomReservation;
@@ -105,6 +106,8 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
 
     @Override
     public List<HotelRoomReservation> getRoomReservationsByUserId(Long userId) {
+        userRepository.findById(userId).orElseThrow(() ->
+                new RecordNotFoundException("User with id: " + userId + " not exist"));
         return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
     }
 
