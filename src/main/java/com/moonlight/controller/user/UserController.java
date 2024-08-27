@@ -24,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -224,6 +225,10 @@ public class UserController {
     @GetMapping(path = "/list-reservations/")
     ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
                                       @RequestParam(value = "reservation", defaultValue = "all", required = false) String reservation) {
+        if (!userId.toString().isEmpty()) {
+            Optional.ofNullable(userService.getUserById(userId)).orElseThrow(() ->
+                    new RecordNotFoundException("User with id: " + userId + " not exist"));
+        }
         switch (reservation) {
             case "hotel rooms", "hotel", "rooms":
                 List<HotelRoomReservation> roomReservations = roomReservationService.getRoomReservationsByUserId(userId);
