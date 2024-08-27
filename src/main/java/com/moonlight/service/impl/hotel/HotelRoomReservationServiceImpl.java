@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
 @Data
 public class HotelRoomReservationServiceImpl implements HotelRoomReservationService {
@@ -106,21 +107,6 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     }
 
     @Override
-    public List<HotelRoomReservation> getRoomReservationsByUserId(Long userId) {
-        return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
-    }
-
-    private int duration(LocalDate startDate, LocalDate endDate) {
-        int duration;
-        if (startDate.isEqual(endDate)) {
-            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
-        } else {
-            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate));
-        }
-        return duration;
-    }
-  
-    @Override
     @Transactional
     public List<HotelRoomAvailabilityResponse> getAvailableRooms
             (LocalDate startDate, LocalDate endDate) {
@@ -130,15 +116,32 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         }
         // fetch all rooms
         List <HotelRoom> allRooms = hotelRoomRepository.findAll();
-      // Filter available rooms, without overlapping reservation
+        // Filter available rooms, without overlapping reservation
         List<HotelRoom> availableRooms = allRooms.stream()
                 .filter(hotelRoom -> checkRoomAvailability(hotelRoom,startDate,endDate))
                 .toList();
         return availableRooms.stream().map(this::convertToAvailableHotelRoomResponse)
                 .collect(Collectors.toList());
     }
-  
-   private double totalCost(int duration, HotelRoom hotelRoom) {
+
+    @Override
+    public List<HotelRoomReservation> getRoomReservationsByUserId(Long userId) {
+        return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
+    }
+
+    @Override
+    public int duration(LocalDate startDate, LocalDate endDate) {
+        int duration;
+        if (startDate.isEqual(endDate)) {
+            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
+        } else {
+            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate));
+        }
+        return duration;
+    }
+
+    @Override
+    public double totalCost(int duration, HotelRoom hotelRoom) {
         return duration * hotelRoom.getRoomType().getRoomPricePerNight();
     }
 

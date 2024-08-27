@@ -13,8 +13,6 @@ public interface HotelRoomReservationService {
 
     boolean checkRoomAvailability (HotelRoom room, LocalDate startDate, LocalDate endDate);
 
-    double totalCost (int duration, HotelRoom hotelRoom);
-  
     HotelRoomReservation createReservation(
             Long userId, Long roomNumber, LocalDate startDate, LocalDate endDate
             , int guestsAdult, int guestChildren);
@@ -23,5 +21,9 @@ public interface HotelRoomReservationService {
 
     List<HotelRoomAvailabilityResponse> getAvailableRooms
             (LocalDate startDate, LocalDate endDate);
+
+    int duration(LocalDate startDate, LocalDate endDate);
+
+    double totalCost (int duration, HotelRoom hotelRoom);
 
 }

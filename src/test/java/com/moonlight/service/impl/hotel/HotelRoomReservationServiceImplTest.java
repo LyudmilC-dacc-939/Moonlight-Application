@@ -33,28 +33,46 @@ class HotelRoomReservationServiceImplTest {
 
     @Mock
     private HotelRoomRepository hotelRoomRepository;
-
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private HotelRoomReservationRepository hotelRoomReservationRepository;
-
     @InjectMocks
     private HotelRoomReservationServiceImpl hotelRoomReservationService;
+    private Long userId;
+    private Long roomNumber;
+    private User user;
+    private HotelRoom hotelRoom;
+    private Integer guestsAdult;
+    private Integer guestsChildren;
+    private LocalDate startDate;
+    private LocalDate endDate;
+
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        userId = 1L;
+        roomNumber = 1L;
+
+        user = new User();
+        user.setId(userId);
+
+        hotelRoom = new HotelRoom();
+        hotelRoom.setRoomNumber(roomNumber);
+        hotelRoom.setRoomType(RoomType.STANDARD);
+
+        guestsAdult = 2;
+        guestsChildren = 0;
+
+        startDate = LocalDate.now().plusDays(1);
+        endDate=LocalDate.now().plusDays(10);
     }
 
 
     @Test
     void checkRoomAvailability_roomAvailable() {
-        HotelRoom hotelRoom = new HotelRoom();
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(Collections.emptyList());
 
         boolean result =
@@ -65,10 +83,6 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void checkRoomAvailability_roomNotAvailable() {
-        HotelRoom hotelRoom = new HotelRoom();
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
         existingReservation.setStartDate(LocalDate.of(2024, 8, 30));
@@ -83,15 +97,26 @@ class HotelRoomReservationServiceImplTest {
     }
 
     @Test
-    void checkRoomAvailability_EdgeReservationEndBeforeStart() {
-        HotelRoom hotelRoom = new HotelRoom();
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-
+    void checkRoomAvailability_roomNotAvailableIfBookedForOneDayDueToOverlapping() {
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
-        existingReservation.setStartDate(LocalDate.of(2024, 8, 30));
-        existingReservation.setEndDate(LocalDate.of(2024, 8, 31));
+        existingReservation.setStartDate(LocalDate.now().plusDays(1));
+        existingReservation.setEndDate(LocalDate.now().plusDays(1));
+
+        when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
+
+        boolean result =
+                hotelRoomReservationService.checkRoomAvailability(hotelRoom, startDate, endDate);
+
+        assertFalse(result, "Room shall not be available, when overlapping reservations exist");
+    }
+
+    @Test
+    void checkRoomAvailability_EdgeReservationEndBeforeStart() {
+        HotelRoomReservation existingReservation = new HotelRoomReservation();
+        existingReservation.setHotelRoom(hotelRoom);
+        existingReservation.setStartDate(startDate.minusDays(10));
+        existingReservation.setEndDate(startDate.minusDays(1));
 
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
@@ -103,14 +128,10 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void checkRoomAvailability_EdgeReservationStartAfterEnd() {
-        HotelRoom hotelRoom = new HotelRoom();
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
-        existingReservation.setStartDate(LocalDate.of(2024, 8, 30));
-        existingReservation.setEndDate(LocalDate.of(2024, 9, 1));
+        existingReservation.setStartDate(startDate.minusDays(10));
+        existingReservation.setEndDate(startDate);
 
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
@@ -122,10 +143,6 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void checkRoomAvailability_FullOverlappingReservation() {
-        HotelRoom hotelRoom = new HotelRoom();
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
         existingReservation.setStartDate(LocalDate.of(2024, 9, 1));
@@ -141,20 +158,6 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void makeReservation_success() {
-        Long userId = 1L;
-        Long roomNumber = 1L;
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
-        User user = new User();
-        user.setId(userId);
-
-        HotelRoom hotelRoom = new HotelRoom();
-        hotelRoom.setRoomNumber(roomNumber);
-        hotelRoom.setRoomType(RoomType.STANDARD);
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
@@ -162,7 +165,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
+                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(user, reservation.getUser());
@@ -175,17 +178,11 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void makeReservation_userNotFound() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
 
         assertThrows(RuntimeException.class, () -> {
             hotelRoomReservationService
-                    .createReservation(userId, hotelRoomId, LocalDate.now(), LocalDate.now().plusDays(5)
+                    .makeReservation(userId, roomNumber, LocalDate.now(), LocalDate.now().plusDays(5)
                             , guestsAdult, guestsChildren);
         });
         verify(userRepository, times(1)).findById(userId);
@@ -193,44 +190,21 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void makeReservation_hotelRoomNotFound() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
-        User user = new User();
-        user.setId(userId);
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.empty());
-
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> {
             hotelRoomReservationService
-                    .createReservation(userId, hotelRoomId, LocalDate.now(), LocalDate.now().plusDays(5)
+                    .makeReservation(userId, roomNumber, LocalDate.now(), LocalDate.now().plusDays(5)
                             , guestsAdult, guestsChildren);
         });
-        verify(hotelRoomRepository, times(1)).findById(hotelRoomId);
+        verify(hotelRoomRepository, times(1)).findByRoomNumber(roomNumber);
     }
 
     @Test
     void makeReservation_roomNotAvailable() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 6);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
-        User user = new User();
-        user.setId(userId);
-
-        HotelRoom hotelRoom = new HotelRoom();
-        hotelRoom.setId(hotelRoomId);
-        hotelRoom.setRoomType(RoomType.STANDARD);
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.of(hotelRoom));
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         HotelRoomReservation reservation = new HotelRoomReservation();
         reservation.setUser(user);
@@ -240,67 +214,44 @@ class HotelRoomReservationServiceImplTest {
 
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(reservation));
 
-
         assertThrows(RoomNotAvailableException.class, () -> {
             hotelRoomReservationService
-                    .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
+                    .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
         });
 
-        verify(hotelRoomRepository, times(1)).findById(hotelRoomId);
+        verify(hotelRoomRepository, times(1)).findByRoomNumber(roomNumber);
     }
 
     @Test
     void makeReservation_endDateBeforeStartDate() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 8, 30);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
+        LocalDate endDate = startDate.minusDays(2);
 
-        User user = new User();
-        user.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        HotelRoom hotelRoom = new HotelRoom();
-        hotelRoom.setId(hotelRoomId);
-        hotelRoom.setRoomType(RoomType.STANDARD);
-
-        when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.of(hotelRoom));
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         assertThrows(RuntimeException.class, () -> hotelRoomReservationService
-                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren));
+                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren));
         verify(hotelRoomReservationRepository, never()).save(any(HotelRoomReservation.class));
     }
 
     @Test
     void makeReservation_endDateEqualsStartDateSuccess() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 1);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
+        LocalDate endDate = startDate;
 
-        User user = new User();
-        user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        HotelRoom hotelRoom = new HotelRoom();
-        hotelRoom.setId(hotelRoomId);
-        hotelRoom.setRoomType(RoomType.STANDARD);
-
-        when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.of(hotelRoom));
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         when(hotelRoomReservationRepository.save(any(HotelRoomReservation.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
-
+                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(userId, reservation.getUser().getId());
-        assertEquals(hotelRoomId, reservation.getHotelRoom().getId());
+        assertEquals(roomNumber, reservation.getHotelRoom().getRoomNumber());
         assertEquals(startDate, reservation.getStartDate());
         assertEquals(endDate, reservation.getEndDate());
 
@@ -309,32 +260,19 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void makeReservation_endDateAfterStartDateSuccess() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        LocalDate startDate = LocalDate.of(2024, 9, 1);
-        LocalDate endDate = LocalDate.of(2024, 9, 10);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
-        User user = new User();
-        user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        HotelRoom hotelRoom = new HotelRoom();
-        hotelRoom.setId(hotelRoomId);
-        hotelRoom.setRoomType(RoomType.STANDARD);
-        when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.of(hotelRoom));
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         when(hotelRoomReservationRepository.save(any(HotelRoomReservation.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .createReservation(userId, hotelRoomId, startDate, endDate, guestsAdult, guestsChildren);
-
+                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(userId, reservation.getUser().getId());
-        assertEquals(hotelRoomId, reservation.getHotelRoom().getId());
+        assertEquals(roomNumber, reservation.getHotelRoom().getRoomNumber());
         assertEquals(startDate, reservation.getStartDate());
         assertEquals(endDate, reservation.getEndDate());
 
@@ -343,29 +281,33 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void makeReservation_nullStartDateShouldFail() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        LocalDate endDate = LocalDate.of(2024, 9, 10);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
         assertThrows(RuntimeException.class, () -> {
-            hotelRoomReservationService.createReservation(userId, hotelRoomId, null, endDate, guestsAdult, guestsChildren);
+            hotelRoomReservationService.makeReservation(userId, roomNumber, null, endDate, guestsAdult, guestsChildren);
         });
     }
 
     @Test
     void makeReservation_nullEndDateShouldFail() {
-        Long userId = 1L;
-        Long hotelRoomId = 1L;
-        LocalDate startDate = LocalDate.of(2024, 9, 10);
-        int guestsAdult = 2;
-        int guestsChildren = 0;
-
         assertThrows(RuntimeException.class, () -> {
-            hotelRoomReservationService.createReservation(userId, hotelRoomId, startDate, null, guestsAdult, guestsChildren);
+            hotelRoomReservationService.makeReservation(userId, roomNumber, startDate, null, guestsAdult, guestsChildren);
         });
     }
+    @Test
+    void makeReservation_guestsNumberExceedRoomCapacity() {
+        int guestsAdult = 6;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
+
+        RoomNotAvailableException thrown = assertThrows(RoomNotAvailableException.class, () ->
+                hotelRoomReservationService.makeReservation(userId, roomNumber, startDate, endDate
+                        , guestsAdult, guestsChildren));
+
+        assertEquals("Total number of guests exceeds maximum allowed guest for the room type.", thrown.getMessage());
+        verify(hotelRoomReservationRepository, never()).save(any(HotelRoomReservation.class));
+    }
+
 
     @Test
     void getRoomReservationsByUserId_ifIdIsValid_noReservations() {
@@ -431,15 +373,15 @@ class HotelRoomReservationServiceImplTest {
         assertNotNull(actualReservations, "The returned list should not be null");
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
+}
+        @Test
+        void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
+            LocalDate startDate = LocalDate.now().plusDays(5);
+            LocalDate endDate = LocalDate.now().plusDays(2);
 
-    @Test
-    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
-        LocalDate startDate = LocalDate.now().plusDays(5);
-        LocalDate endDate = LocalDate.now().plusDays(2);
-
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
-                        .getAvailableRooms(startDate, endDate));
-        assertEquals("End date cannot be before start date", exception.getMessage());
-    }
+            IllegalArgumentException exception =
+                    assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
+                            .getAvailableRooms(startDate, endDate));
+            assertEquals("End date cannot be before start date", exception.getMessage());
+        }
 }
