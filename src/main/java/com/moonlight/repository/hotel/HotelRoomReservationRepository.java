@@ -14,8 +14,8 @@ import java.util.List;
 public interface HotelRoomReservationRepository extends JpaRepository<HotelRoomReservation, Long> {
     List<HotelRoomReservation> findByHotelRoom(HotelRoom hotelRoom);
 
-    @Query(value = "SELECT * FROM HotelRoomReservation r WHERE " +
-            ":userId IS NULL OR r.user.id = :userId ORDER BY " +
+    @Query(value = "SELECT * FROM room_reservations r WHERE " +
+            ":userId IS NULL OR r.user_id = :userId ORDER BY " +
             "r.start_date ASC", nativeQuery = true)
     List<HotelRoomReservation> findByUserIdOrderByStartDate(@Param("userId") Long userId);
 }

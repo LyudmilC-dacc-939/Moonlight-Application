@@ -13,17 +13,21 @@ import com.moonlight.model.user.User;
 import com.moonlight.repository.car.CarRepository;
 import com.moonlight.repository.car.CarReservationRepository;
 import com.moonlight.repository.user.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,8 +52,11 @@ class CarReservationServiceImplTest {
     private CarReservationRequest validRequest;
     private CarReservationRequest invalidRequest;
     private User user;
+    private User userWhoHasNoReservations;
     private Car car;
     private CarReservation reservation;
+    private CarReservation reservation2;
+    List<CarReservation> carReservations;
     private CarAvailabilityRequest validRequest2;
     private CarAvailabilityRequest invalidRequest2;
     private Car car2;
@@ -71,11 +78,25 @@ class CarReservationServiceImplTest {
         invalidRequest.setEndDate(LocalDate.now().plusDays(1));
 
         user = new User();
+        user.setId(1L);
         user.setEmailAddress("test@test.com");
+        user.setCarReservations(carReservations);
+
+        userWhoHasNoReservations = new User();
+        userWhoHasNoReservations.setId(2L);
+        userWhoHasNoReservations.setEmailAddress("test2@test.com");
 
         car = new Car();
         car.setId(1L);
         car.setType(CarType.SPORT);
+
+        car2 = new Car();
+        car2.setId(1L);
+        car2.setCarBrand("Toyota");
+
+        car3 = new Car();
+        car3.setId(2L);
+        car3.setCarBrand("Honda");
 
         reservation = new CarReservation();
         reservation.setUser(user);
@@ -84,6 +105,14 @@ class CarReservationServiceImplTest {
         reservation.setEndDate(validRequest.getEndDate());
         reservation.setTotalCost(1000.0);
         reservation.setStatus(ReservationStatus.PENDING);
+
+        reservation2 = new CarReservation();
+        reservation2.setUser(user);
+        reservation2.setCar(car2);
+        reservation2.setStartDate(validRequest.getStartDate());
+        reservation2.setEndDate(validRequest.getEndDate());
+        reservation2.setTotalCost(1500.0);
+        reservation2.setStatus(ReservationStatus.PENDING);
 
         // Second method test SetUp
         validRequest2 = new CarAvailabilityRequest();
@@ -94,13 +123,6 @@ class CarReservationServiceImplTest {
         invalidRequest2.setStartDate(LocalDate.now().plusDays(3));
         invalidRequest2.setEndDate(LocalDate.now().plusDays(1));
 
-        car2 = new Car();
-        car2.setId(1L);
-        car2.setCarBrand("Toyota");
-
-        car3 = new Car();
-        car3.setId(2L);
-        car3.setCarBrand("Honda");
     }
 
     @Test
@@ -215,6 +237,7 @@ class CarReservationServiceImplTest {
 
         assertEquals("Selected date must be in the Present or in the Future", exception.getMessage());
     }
+
     // Second Service Method Tests
     //
     //
@@ -264,5 +287,46 @@ class CarReservationServiceImplTest {
         assertNotNull(result);
         assertEquals(3, result.size());  // 3 days in the range
         result.values().forEach(carModels -> assertEquals(Collections.singletonList("Honda"), carModels));  // Only Honda is available
+    }
+
+    @Test
+    void getCarReservationsByUserId_ifIdIsValid_NoReservations() {
+        when(carReservationRepository.findByUserIdOrderByStartDate(anyLong())).thenReturn(Collections.emptyList());
+        Mockito.lenient().when(carReservationRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<CarReservation> reservations = carReservationService.getCarReservationsByUserId(userWhoHasNoReservations.getId());
+
+        assertNull(userWhoHasNoReservations.getCarReservations());
+        Assertions.assertThat(reservations).isInstanceOf(List.class).isEmpty();
+        assertEquals(Collections.EMPTY_LIST, reservations, "User with NO reservations should return " +
+                "an empty list when method which desires list of reservations prompts return");
+    }
+
+    @Test
+    void getCarReservationsByUserId_ifIdIsValid_WithReservations() {
+        when(carReservationRepository.findByUserIdOrderByStartDate(user.getId())).thenReturn(List.of(reservation, reservation2));
+        Mockito.lenient().when(carReservationRepository.findAll()).thenReturn(Arrays.asList(reservation, reservation2));
+
+        List<CarReservation> reservationsACTUAL = carReservationRepository.findByUserIdOrderByStartDate(user.getId());
+        List<CarReservation> reservationsEXPECTED = List.of(reservation, reservation2);
+
+        assertNotSame(null, reservationsACTUAL);
+        assertEquals(2, reservationsACTUAL.size());
+        Assertions.assertThat(reservationsACTUAL).isEqualTo(reservationsEXPECTED);
+    }
+
+    @Test
+    void getCarReservationsByUserId_ifUserNotFound() {
+        when(carReservationRepository.findByUserIdOrderByStartDate(anyLong())).thenReturn(null);
+        //^instead of leaving the input as null, I left the thenReturn value as null, as the current method in the service
+        //does NOT check if user not exist, but instead throws an empty list, even if its null, as the userId is not required
+        //in the controller for this endpoint
+        Mockito.lenient().when(carReservationRepository.findAll()).thenReturn(null);
+
+        List<CarReservation> reservationsACTUAL = carReservationRepository.findByUserIdOrderByStartDate(user.getId());
+        List<CarReservation> reservationsEXPECTED = List.of(reservation, reservation2);
+
+        assertNotSame(reservationsEXPECTED, reservationsACTUAL);
+        assertNull(reservationsACTUAL);
     }
 }

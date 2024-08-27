@@ -1,7 +1,6 @@
 package com.moonlight.repository.car;
 
 import com.moonlight.model.car.CarReservation;
-import com.moonlight.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,7 +33,7 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
                                              @Param("endDate") LocalDate endDate);
 
     @Query(value = "SELECT * FROM car_reservations r WHERE " +
-            ":userId IS NULL OR r.user.id = :userId ORDER BY r.start_date ASC", nativeQuery = true)
+            ":userId IS NULL OR r.user_id = :userId ORDER BY r.start_date ASC", nativeQuery = true)
     List<CarReservation> findByUserIdOrderByStartDate(@Param("userId") Long userId);
 
 }

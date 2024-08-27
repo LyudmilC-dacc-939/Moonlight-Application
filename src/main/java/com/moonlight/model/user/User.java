@@ -59,8 +59,9 @@ public class User implements UserDetails {
     private List<HotelRoomReservation> hotelRoomReservations;
 
     // This is not necessary, but I am adding it in case we want two-way connection between User/CarReservation
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<CarReservation> reservations;
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<CarReservation> carReservations;
 
 
     @Override

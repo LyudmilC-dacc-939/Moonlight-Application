@@ -1,5 +1,6 @@
 package com.moonlight.model.car;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.user.User;
 import jakarta.persistence.*;
@@ -20,12 +21,16 @@ public class CarReservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    //^this prevented overflow of response when fetching all users
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "car_id", nullable = false)
+    @JsonBackReference
+    //^this prevented overflow of response when fetching reservations
     private Car car;
 
     @Column(name = "start_date", nullable = false)

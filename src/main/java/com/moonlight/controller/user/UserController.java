@@ -224,7 +224,6 @@ public class UserController {
     @GetMapping(path = "/list-reservations/")
     ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
                                       @RequestParam(value = "reservation", defaultValue = "all", required = false) String reservation) {
-
         switch (reservation) {
             case "hotel rooms", "hotel", "rooms":
                 List<HotelRoomReservation> roomReservations = roomReservationService.getRoomReservationsByUserId(userId);
