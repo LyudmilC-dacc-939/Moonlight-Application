@@ -21,7 +21,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -419,6 +418,17 @@ class HotelRoomReservationServiceImplTest {
         assertNotNull(actualReservations, "The returned list should not be null");
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
+}
+
+    @Test
+    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
+        LocalDate startDate = LocalDate.now().plusDays(5);
+        LocalDate endDate = LocalDate.now().plusDays(2);
+
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
+                        .getAvailableRooms(startDate, endDate));
+        assertEquals("End date cannot be before start date", exception.getMessage());
     }
 
     @Test

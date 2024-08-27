@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -209,6 +209,7 @@ public class UserController {
         userService.resetPassword(resetPasswordRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @Operation(summary = "Finding User his own reservations", description = "Returns User all reservations")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "All user reservations found",
