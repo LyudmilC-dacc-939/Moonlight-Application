@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +36,6 @@ public class Car {
     @JsonManagedReference
     @Column(name = "image_url")
     private List<FileResource> fileResources = new ArrayList<>();
-
-    @Column(name = "Reservation_date")
-    private LocalDate reservationDate;
 
     // This is not necessary, but I am adding it in case we want a two-way connection between Car/CarResevation for query purposes
     @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
