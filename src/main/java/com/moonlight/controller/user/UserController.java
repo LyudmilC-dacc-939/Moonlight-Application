@@ -289,5 +289,4 @@ public class UserController {
         System.out.println("You shouldn't see this localized message if switch statement works fine");
         return ResponseEntity.status(HttpStatusCode.valueOf(422)).build();
     }
-
 }
