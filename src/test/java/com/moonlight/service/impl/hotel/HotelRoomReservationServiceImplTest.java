@@ -1,7 +1,11 @@
 package com.moonlight.service.impl.hotel;
 
+import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RoomNotAvailableException;
+import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
+import com.moonlight.model.enums.RoomBedType;
 import com.moonlight.model.enums.RoomType;
+import com.moonlight.model.enums.RoomView;
 import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.user.User;
@@ -17,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,8 +53,6 @@ class HotelRoomReservationServiceImplTest {
     private LocalDate startDate;
     private LocalDate endDate;
 
-
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -67,7 +70,7 @@ class HotelRoomReservationServiceImplTest {
         guestsChildren = 0;
 
         startDate = LocalDate.now().plusDays(1);
-        endDate=LocalDate.now().plusDays(10);
+        endDate = LocalDate.now().plusDays(10);
     }
 
 
@@ -85,8 +88,8 @@ class HotelRoomReservationServiceImplTest {
     void checkRoomAvailability_roomNotAvailable() {
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
-        existingReservation.setStartDate(LocalDate.of(2024, 8, 30));
-        existingReservation.setEndDate(LocalDate.of(2024, 9, 4));
+        existingReservation.setStartDate(startDate.minusDays(2));
+        existingReservation.setEndDate(endDate.minusDays(2));
 
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
@@ -145,8 +148,8 @@ class HotelRoomReservationServiceImplTest {
     void checkRoomAvailability_FullOverlappingReservation() {
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
-        existingReservation.setStartDate(LocalDate.of(2024, 9, 1));
-        existingReservation.setEndDate(LocalDate.of(2024, 9, 6));
+        existingReservation.setStartDate(startDate);
+        existingReservation.setEndDate(endDate);
 
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
@@ -292,6 +295,7 @@ class HotelRoomReservationServiceImplTest {
             hotelRoomReservationService.createReservation(userId, roomNumber, startDate, null, guestsAdult, guestsChildren);
         });
     }
+
     @Test
     void makeReservation_guestsNumberExceedRoomCapacity() {
         int guestsAdult = 6;
@@ -308,6 +312,43 @@ class HotelRoomReservationServiceImplTest {
         verify(hotelRoomReservationRepository, never()).save(any(HotelRoomReservation.class));
     }
 
+    @Test
+    void shouldThrowInvalidDateRangeExceptionWhenEndDateIsBeforeStartDate() {
+        LocalDate start = startDate.plusDays(10);
+        LocalDate end = endDate.minusDays(5);
+
+        InvalidDateRangeException exception = assertThrows(InvalidDateRangeException.class, () ->
+                hotelRoomReservationService.getAvailableRooms(start, end));
+
+        assertEquals("End date cannot be before start date", exception.getMessage());
+    }
+
+    @Test
+    void returnEmptyListWhenNoRoomAvailable() {
+        when(hotelRoomRepository.findAll()).thenReturn(Collections.emptyList());
+        List<HotelRoomAvailabilityResponse> availableRooms =
+                hotelRoomReservationService.getAvailableRooms(startDate, endDate);
+        assertTrue(availableRooms.isEmpty());
+    }
+
+    @Test
+    void convertHotelRoomToAvailabilityResponse() {
+        HotelRoom room = new HotelRoom();
+        room.setRoomNumber(101L);
+        room.setRoomType(RoomType.STANDARD);
+        room.setRoomView(RoomView.SEA);
+        room.setBedType(RoomBedType.SINGLE_BED);
+
+        HotelRoomReservationServiceImpl service = new HotelRoomReservationServiceImpl();
+        HotelRoomAvailabilityResponse response = service.convertToAvailableHotelRoomResponse(room);
+
+        assertEquals(101L, response.getRoomNumber());
+        assertEquals("STANDARD", response.getRoomType());
+        assertEquals("SEA", response.getRoomView());
+        assertEquals("SINGLE_BED", response.getRoomBedType());
+        assertEquals(220, response.getRoomPricePerNight());
+        assertEquals(2, response.getMaxNumberOfGuests());
+    }
 
     @Test
     void getRoomReservationsByUserId_ifIdIsValid_noReservations() {
@@ -374,14 +415,14 @@ class HotelRoomReservationServiceImplTest {
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
     }
-        @Test
-        void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
-            LocalDate startDate = LocalDate.now().plusDays(5);
-            LocalDate endDate = LocalDate.now().plusDays(2);
+    @Test
+    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
+        LocalDate startDate = LocalDate.now().plusDays(5);
+        LocalDate endDate = LocalDate.now().plusDays(2);
 
-            IllegalArgumentException exception =
-                    assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
-                            .getAvailableRooms(startDate, endDate));
-            assertEquals("End date cannot be before start date", exception.getMessage());
-        }
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
+                        .getAvailableRooms(startDate, endDate));
+        assertEquals("End date cannot be before start date", exception.getMessage());
+    }
 }
