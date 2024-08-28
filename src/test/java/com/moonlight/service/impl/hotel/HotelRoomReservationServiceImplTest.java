@@ -397,7 +397,6 @@ class HotelRoomReservationServiceImplTest {
         reservation2.setStartDate(LocalDate.of(2024, 9, 15));
         reservation2.setEndDate(LocalDate.of(2024, 10, 25));
 
-
         List<HotelRoomReservation> expectedReservations = Arrays.asList(reservation1, reservation2);
         when(hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId)).thenReturn(expectedReservations);
 
@@ -410,11 +409,15 @@ class HotelRoomReservationServiceImplTest {
         assertEquals(expectedReservations, actualReservations);
         assertNotNull(actualReservations, "The returned list should not be null");
         assertEquals(2, actualReservations.size(), "The returned list should contain 2 reservations");
-        assertEquals(expectedReservations, actualReservations, "The returned list should match the expected reservations");
-        assertEquals(100L, actualReservations.get(0).getId(), "The first reservation ID should be 1");
-        assertEquals(LocalDate.of(2024, 8, 27), actualReservations.get(0).getStartDate(), "The first reservation start date should match");
+        assertEquals(expectedReservations, actualReservations,
+                "The returned list should match the expected reservations");
+        assertEquals(100L, actualReservations.get(0).getId(),
+                "The first reservation ID should be 1");
+        assertEquals(LocalDate.of(2024, 8, 27), actualReservations.get(0).getStartDate(),
+                "The first reservation start date should match");
         assertEquals(101L, actualReservations.get(1).getId(), "The second reservation ID should be 2");
-        assertEquals(LocalDate.of(2024, 10, 25), actualReservations.get(1).getEndDate(), "The second reservation end date should match");
+        assertEquals(LocalDate.of(2024, 10, 25), actualReservations.get(1).getEndDate(),
+                "The second reservation end date should match");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(userId);
     }
 

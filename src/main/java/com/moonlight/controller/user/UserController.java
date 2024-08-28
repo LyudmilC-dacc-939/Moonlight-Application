@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -208,7 +209,10 @@ public class UserController {
     @Operation(summary = "Admin can list reservations for a specific user",
             description = "Admin can choose an user and list their reservations by type")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successfully fetched data",
+            @ApiResponse(responseCode = "202", description = "Successfully fetched data",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+            @ApiResponse(responseCode = "204", description = "Successfully fetched, no data present",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
             @ApiResponse(responseCode = "400", description = "Request is not valid",
@@ -224,18 +228,24 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/list-reservations/")
     ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
-                                      @RequestParam(value = "reservation", defaultValue = "all", required = false) String reservation) {
-        if (!userId.toString().isEmpty()) {
+                                      @RequestParam(value = "reservationType", defaultValue = "all", required = false) String reservationType) {
+        if (userId != null) {
             Optional.ofNullable(userService.getUserById(userId)).orElseThrow(() ->
                     new RecordNotFoundException("User with id: " + userId + " not exist"));
         }
-        switch (reservation) {
+        switch (reservationType) {
             case "hotel rooms", "hotel", "rooms":
                 List<HotelRoomReservation> roomReservations = roomReservationService.getRoomReservationsByUserId(userId);
-                return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(roomReservations);
+                if (roomReservations.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no room reservations");
+                }
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(roomReservations);
             case "cars", "car":
                 List<CarReservation> carReservations = carReservationService.getCarReservationsByUserId(userId);
-                return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(carReservations);
+                if (carReservations.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no car reservations");
+                }
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(carReservations);
             case "restaurant":
                 //todo: add return function for restaurantReservationService once its added
                 System.out.println("future restaurant list");
@@ -248,7 +258,12 @@ public class UserController {
                 List<Object> allReservations = List.of(
                         roomReservationService.getRoomReservationsByUserId(userId),
                         carReservationService.getCarReservationsByUserId(userId));
-                return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(allReservations);
+                boolean isEmpty = allReservations.stream()
+                        .allMatch(list -> CollectionUtils.isEmpty((List<?>) list));
+                if (isEmpty) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no reservations");
+                }
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(allReservations);
             default:
                 return ResponseEntity.status(HttpStatusCode.valueOf(400)).build();
         }
