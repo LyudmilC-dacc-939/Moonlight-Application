@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -271,5 +275,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatusCode.valueOf(422)).build();
     }
 
-
+    @Operation(summary = "Finding User his own reservations", description = "Returns User all reservations")
+    @GetMapping(path = "/reservation")
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "All user reservations found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "403", description = "This user does not have permission to do that",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)))})
+    public ResponseEntity<Map<String, Object>> getUserReservations(@AuthenticationPrincipal User user) {
+        Map<String, Object> reservations = userService.getUserReservations(user);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
 }

@@ -1,8 +1,9 @@
 package com.moonlight.service.impl.hotel;
 
-
 import com.moonlight.advice.exception.RecordNotFoundException;
+import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RoomNotAvailableException;
+import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
 import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.user.User;
@@ -15,11 +16,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -42,7 +43,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     }
 
     @Override
-    public boolean CheckRoomAvailability(HotelRoom room, LocalDate startDate, LocalDate endDate) {
+    public boolean checkRoomAvailability(HotelRoom room, LocalDate startDate, LocalDate endDate) {
         List<HotelRoomReservation> existingReservation = hotelRoomReservationRepository.findByHotelRoom(room);
 
         for (HotelRoomReservation reservation : existingReservation) {
@@ -71,7 +72,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         }
         HotelRoom hotelRoom = hotelRoomOptional.get();
 
-        if (CheckRoomAvailability(hotelRoom, startDate, endDate)) {
+        if (checkRoomAvailability(hotelRoom, startDate, endDate)) {
             if (endDate.isBefore(startDate)) {
                 throw new IllegalArgumentException("End date must be after or equal to the start date!");
             }
@@ -118,8 +119,37 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         }
         return duration;
     }
+  
+    @Override
+    @Transactional
+    public List<HotelRoomAvailabilityResponse> getAvailableRooms
+            (LocalDate startDate, LocalDate endDate) {
 
-    private double totalCost(int duration, HotelRoom hotelRoom) {
+        if(endDate.isBefore(startDate)){
+            throw new InvalidDateRangeException("End date cannot be before start date");
+        }
+        // fetch all rooms
+        List <HotelRoom> allRooms = hotelRoomRepository.findAll();
+      // Filter available rooms, without overlapping reservation
+        List<HotelRoom> availableRooms = allRooms.stream()
+                .filter(hotelRoom -> checkRoomAvailability(hotelRoom,startDate,endDate))
+                .toList();
+        return availableRooms.stream().map(this::convertToAvailableHotelRoomResponse)
+                .collect(Collectors.toList());
+    }
+  
+   private double totalCost(int duration, HotelRoom hotelRoom) {
         return duration * hotelRoom.getRoomType().getRoomPricePerNight();
+    }
+
+    private HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
+        HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
+        response.setRoomNumber(room.getRoomNumber());
+        response.setRoomType(room.getRoomType().name());
+        response.setRoomView(room.getRoomView().name());
+        response.setRoomBedType(room.getBedType().name());
+        response.setRoomPricePerNight(room.getRoomType().getRoomPricePerNight());
+        response.setMaxNumberOfGuests(room.getRoomType().getMaxNumberOfGuests());
+        return response;
     }
 }

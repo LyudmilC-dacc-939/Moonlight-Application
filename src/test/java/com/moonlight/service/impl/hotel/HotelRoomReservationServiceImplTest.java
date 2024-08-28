@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,7 +58,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(Collections.emptyList());
 
         boolean result =
-                hotelRoomReservationService.CheckRoomAvailability(hotelRoom, startDate, endDate);
+                hotelRoomReservationService.checkRoomAvailability(hotelRoom, startDate, endDate);
 
         assertTrue(result, "Room shall be available, when no overlapping reservations exist");
     }
@@ -78,7 +77,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
         boolean result =
-                hotelRoomReservationService.CheckRoomAvailability(hotelRoom, startDate, endDate);
+                hotelRoomReservationService.checkRoomAvailability(hotelRoom, startDate, endDate);
 
         assertFalse(result, "Room shall not be available, when overlapping reservations exist");
     }
@@ -97,7 +96,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
         boolean result =
-                hotelRoomReservationService.CheckRoomAvailability(hotelRoom, startDate, endDate);
+                hotelRoomReservationService.checkRoomAvailability(hotelRoom, startDate, endDate);
 
         assertTrue(result, "Room shall be available, when a previous reservation ends exactly before new one starts");
     }
@@ -116,7 +115,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
         boolean result =
-                hotelRoomReservationService.CheckRoomAvailability(hotelRoom, startDate, endDate);
+                hotelRoomReservationService.checkRoomAvailability(hotelRoom, startDate, endDate);
 
         assertTrue(result, "Room shall be available, when a new reservation start exactly when the previous ends");
     }
@@ -135,7 +134,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomReservationRepository.findByHotelRoom(hotelRoom)).thenReturn(List.of(existingReservation));
 
         boolean result =
-                hotelRoomReservationService.CheckRoomAvailability(hotelRoom, startDate, endDate);
+                hotelRoomReservationService.checkRoomAvailability(hotelRoom, startDate, endDate);
 
         assertFalse(result, "Room shall not be available, when reservations fully overlap");
     }
@@ -143,7 +142,7 @@ class HotelRoomReservationServiceImplTest {
     @Test
     void makeReservation_success() {
         Long userId = 1L;
-        Long hotelRoomId = 1L;
+        Long roomNumber = 1L;
         LocalDate startDate = LocalDate.of(2024, 9, 1);
         LocalDate endDate = LocalDate.of(2024, 9, 6);
         int guestsAdult = 2;
@@ -153,11 +152,11 @@ class HotelRoomReservationServiceImplTest {
         user.setId(userId);
 
         HotelRoom hotelRoom = new HotelRoom();
-        hotelRoom.setId(hotelRoomId);
+        hotelRoom.setRoomNumber(roomNumber);
         hotelRoom.setRoomType(RoomType.STANDARD);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(hotelRoomRepository.findById(hotelRoomId)).thenReturn(Optional.of(hotelRoom));
+        when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         when(hotelRoomReservationRepository.save(any(HotelRoomReservation.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
@@ -432,5 +431,15 @@ class HotelRoomReservationServiceImplTest {
         assertNotNull(actualReservations, "The returned list should not be null");
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
+
+    @Test
+    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
+        LocalDate startDate = LocalDate.now().plusDays(5);
+        LocalDate endDate = LocalDate.now().plusDays(2);
+
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
+                        .getAvailableRooms(startDate, endDate));
+        assertEquals("End date cannot be before start date", exception.getMessage());
     }
 }

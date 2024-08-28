@@ -1,5 +1,6 @@
 package com.moonlight.service;
 
+import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
 import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.hotel.HotelRoomReservation;
 
@@ -10,12 +11,17 @@ public interface HotelRoomReservationService {
 
     boolean datesOverlap(LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd);
 
-    boolean CheckRoomAvailability(HotelRoom room, LocalDate startDate, LocalDate endDate);
+    boolean checkRoomAvailability (HotelRoom room, LocalDate startDate, LocalDate endDate);
 
+    double totalCost (int duration, HotelRoom hotelRoom);
+  
     HotelRoomReservation createReservation(
             Long userId, Long roomNumber, LocalDate startDate, LocalDate endDate
             , int guestsAdult, int guestChildren);
 
     List<HotelRoomReservation> getRoomReservationsByUserId(Long userId);
+
+    List<HotelRoomAvailabilityResponse> getAvailableRooms
+            (LocalDate startDate, LocalDate endDate);
 
 }

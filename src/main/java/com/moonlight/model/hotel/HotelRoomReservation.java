@@ -51,6 +51,5 @@ public class HotelRoomReservation {
     @Min(value = 0, message = "Number of children guests must be at least {value}")
     @Max(value = 4, message = "Number of adult guests must be at most {value}")
     private int guestsChildren;
-
-
+  
 }
