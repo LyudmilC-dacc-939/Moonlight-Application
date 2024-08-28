@@ -1,5 +1,7 @@
 package com.moonlight.controller.hotel;
 
+import com.moonlight.dto.hotel.HotelRoomAvailabilityRequest;
+import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
 import com.moonlight.dto.hotel.HotelRoomReservationRequest;
 import com.moonlight.dto.hotel.HotelRoomReservationResponse;
 import com.moonlight.model.hotel.HotelRoomReservation;
@@ -19,10 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/reservations/hotel")
@@ -48,7 +51,7 @@ public class HotelRoomReservationController {
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/create-reservation/")
     public ResponseEntity<HotelRoomReservationResponse> createReservation
-            (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user){
+            (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user) {
 
 
         HotelRoomReservation reservation = hotelRoomReservationService.makeReservation(
@@ -61,15 +64,43 @@ public class HotelRoomReservationController {
         );
 
         HotelRoomReservationResponse response = new HotelRoomReservationResponse();
-                response.setStartDate(reservation.getStartDate());
-                response.setDuration(reservation.getDuration());
-                response.setEndDate(reservation.getEndDate());
-                response.setGuestsAdult(reservation.getGuestsAdult());
-                response.setGuestsChildren(reservation.getGuestsChildren());
-                response.setHotelRoomType(reservation.getHotelRoom().getRoomType().name());
-                response.setTotalCost(reservation.getTotalCost());
+        response.setStartDate(reservation.getStartDate());
+        response.setDuration(reservation.getDuration());
+        response.setEndDate(reservation.getEndDate());
+        response.setGuestsAdult(reservation.getGuestsAdult());
+        response.setGuestsChildren(reservation.getGuestsChildren());
+        response.setHotelRoomType(reservation.getHotelRoom().getRoomType().name());
+        response.setTotalCost(reservation.getTotalCost());
 
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "List available hotel rooms"
+            , description = "Generate a list for hotel rooms available for the selected period")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201"
+                    , description = "List of available accommodation successfully generated.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HotelRoomReservation.class))),
+            @ApiResponse(responseCode = "400", description = "Format is not valid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HotelRoomReservation.class))),
+            @ApiResponse(responseCode = "404", description = "List of available hotel rooms not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = HotelRoomReservation.class)))})
+    @GetMapping(path = "/available-rooms/")
+    public ResponseEntity<List<HotelRoomAvailabilityResponse>> getAvailableRooms
+            (@RequestBody @Validated HotelRoomAvailabilityRequest request) {
+
+        LocalDate startDate = request.getStartDate();
+        LocalDate endDate = request.getEndDate();
+
+        List<HotelRoomAvailabilityResponse> availableRooms =
+                hotelRoomReservationService.getAvailableRooms(startDate, endDate);
+
+        return new ResponseEntity<>(availableRooms, HttpStatus.OK);
+    }
+
+
 }

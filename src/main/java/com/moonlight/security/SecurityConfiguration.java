@@ -44,7 +44,8 @@ public class SecurityConfiguration {
                                         "api/v1/cars/search/*",
                                         "/api/v1/users/reset-password",
                                         "/api/v1/users/reset-password",
-                                        "api/v1/reservations/car/available/*")
+                                        "api/v1/reservations/car/available/*",
+                                        "api/v1/reservations/hotel/available-rooms/")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
