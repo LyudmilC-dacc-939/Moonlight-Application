@@ -1,6 +1,5 @@
 package com.moonlight.advice;
 
-import com.moonlight.advice.exception.*;
 import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +39,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(RoomNotAvailableException.class)
-    public ResponseEntity<?> handleRoomNotAvailableException (RoomNotAvailableException ex){
+    public ResponseEntity<?> handleRoomNotAvailableException(RoomNotAvailableException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

@@ -1,5 +1,6 @@
 package com.moonlight.model.car;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.user.User;
 import jakarta.persistence.*;
@@ -21,10 +22,12 @@ public class CarReservation {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "car_id", nullable = false)
+    @JsonBackReference
     private Car car;
 
     @Column(name = "start_date", nullable = false)

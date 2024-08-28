@@ -5,6 +5,7 @@ import com.moonlight.model.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     @Operation(summary = "Register a new user", description = "Creates a new user in the database.")
@@ -37,4 +38,6 @@ public interface UserService {
     @Operation(summary = "Generates new password for user", description = "Generates a new password if given a registered email" +
             " then saves the changes in the database")
     void resetPassword(ResetPasswordRequest passwordRequest);
+    @Operation(summary = "User can see his own reservation", description = "User can find all of his own reservations")
+    Map<String, Object> getUserReservations(User user);
 }

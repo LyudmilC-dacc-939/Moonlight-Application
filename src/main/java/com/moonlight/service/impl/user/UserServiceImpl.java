@@ -4,8 +4,12 @@ import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
+import com.moonlight.model.car.CarReservation;
+import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.model.user.UserRole;
+import com.moonlight.repository.car.CarReservationRepository;
+import com.moonlight.repository.hotel.HotelRoomReservationRepository;
 import com.moonlight.repository.user.UserRepository;
 import com.moonlight.repository.user.UserRoleRepository;
 import com.moonlight.security.ApplicationConfiguration;
@@ -26,6 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -39,6 +46,8 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final UserRoleRepository userRoleRepository;
     private final ApplicationConfiguration applicationConfiguration;
+    private final HotelRoomReservationRepository hotelRoomReservationRepository;
+    private final CarReservationRepository carReservationRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
@@ -47,7 +56,7 @@ public class UserServiceImpl implements UserService {
                            @Lazy CurrentUserImpl currentUserImpl,
                            EmailService emailService,
                            UserRoleRepository userRoleRepository,
-                           ApplicationConfiguration applicationConfiguration) {
+                           ApplicationConfiguration applicationConfiguration, HotelRoomReservationRepository hotelRoomReservationRepository, CarReservationRepository carReservationRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -56,6 +65,8 @@ public class UserServiceImpl implements UserService {
         this.emailService = emailService;
         this.userRoleRepository = userRoleRepository;
         this.applicationConfiguration = applicationConfiguration;
+        this.hotelRoomReservationRepository = hotelRoomReservationRepository;
+        this.carReservationRepository = carReservationRepository;
     }
 
     @Override
@@ -143,12 +154,14 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email).orElseThrow(() -> new RecordNotFoundException("No results found"));
     }
+
     @Override
     public java.util.List<User> getPeageableUsersList(int skip, int take) {
         Pageable pageable = PageRequest.of(skip, take);
         Page<User> pagedResult = userRepository.findAll(pageable);
         return pagedResult.toList();
     }
+
     @Override
     @SneakyThrows
     public User changePassword(ChangePasswordRequest changePasswordRequest) {
@@ -178,6 +191,33 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userWithForgottenPassword);
         emailService.sendEmailForForgottenPassword(passwordRequest.getEmail(), generatedPassword);
     }
+
+    @Override
+    public Map<String, Object> getUserReservations(User user) {
+        User foundUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RecordNotFoundException("User not found"));
+        boolean canGetUserById = currentUserImpl.isCurrentUserMatch(foundUser);
+        if (!canGetUserById) {
+            throw new RecordNotFoundException("This user is not authorize to proceed this operation");
+        } else {
+            List<HotelRoomReservation> hotelRoomReservations = hotelRoomReservationRepository.findByUserId(foundUser.getId());
+            List<CarReservation> carReservations = carReservationRepository.findByUserId(foundUser.getId());
+            Map<String, Object> reservations = new HashMap<>();
+            if (!hotelRoomReservations.isEmpty()) {
+                reservations.put("hotelRoomReservations", hotelRoomReservations);
+            } else {
+                reservations.put("hotelRoomReservations", "No hotel room reservations found");
+            }
+
+            if (!carReservations.isEmpty()) {
+                reservations.put("carReservations", carReservations);
+            } else {
+                reservations.put("carReservations", "No car reservations found");
+            }
+            return reservations;
+        }
+    }
+
     @Override
     public User updateUser(UpdateUserRequest updateUserRequest, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
