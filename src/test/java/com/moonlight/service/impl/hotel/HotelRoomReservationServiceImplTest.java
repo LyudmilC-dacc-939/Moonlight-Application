@@ -420,6 +420,7 @@ class HotelRoomReservationServiceImplTest {
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
     }
+
     @Test
     void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
         LocalDate startDate = LocalDate.now().plusDays(5);
