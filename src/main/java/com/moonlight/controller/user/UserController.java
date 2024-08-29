@@ -8,14 +8,17 @@ import com.moonlight.model.user.User;
 import com.moonlight.service.CarReservationService;
 import com.moonlight.service.HotelRoomReservationService;
 import com.moonlight.service.UserService;
+import com.moonlight.service.impl.user.CurrentUserImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -41,6 +44,8 @@ public class UserController {
     private HotelRoomReservationService roomReservationService;
     @Autowired
     private CarReservationService carReservationService;
+    @Autowired
+    private CurrentUserImpl currentUserImpl;
 
     @Operation(summary = "User Registration", description = "Registers new user")
     @ApiResponses(value = {
@@ -251,10 +256,14 @@ public class UserController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class})))
     })
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SneakyThrows
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_CLIENT')")
     @GetMapping(path = "/list-reservations/")
     ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
                                       @RequestParam(value = "reservationType", defaultValue = "all", required = false) String reservationType) {
+        if (currentUserImpl.isCurrentUserARole("ROLE_CLIENT")) {
+            throw new IllegalAccessException("User cannot access");
+        }
         if (userId != null) {
             Optional.ofNullable(userService.getUserById(userId)).orElseThrow(() ->
                     new RecordNotFoundException("User with id: " + userId + " not exist"));
