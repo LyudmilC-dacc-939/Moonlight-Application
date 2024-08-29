@@ -136,7 +136,7 @@ public class UserController {
     ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(loginRequest));
     }
-  
+
     @Operation(summary = "Updating user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User successfully updated",
             content = @Content(mediaType = "application/json",
@@ -257,12 +257,12 @@ public class UserController {
                             schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class})))
     })
     @SneakyThrows
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_CLIENT')")
     @GetMapping(path = "/list-reservations/")
     ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
-                                      @RequestParam(value = "reservationType", defaultValue = "all", required = false) String reservationType) {
-        if (currentUserImpl.isCurrentUserARole("ROLE_CLIENT")) {
-            throw new IllegalAccessException("User cannot access");
+                                      @RequestParam(value = "reservationType", defaultValue = "all", required = false) String reservationType,
+                                      @AuthenticationPrincipal User currentUser) {
+        if (currentUser.getUserRole().equals("ROLE_CLIENT")) {
+            return new ResponseEntity<>("403: User without authorities NOT permitted", HttpStatusCode.valueOf(403));
         }
         if (userId != null) {
             Optional.ofNullable(userService.getUserById(userId)).orElseThrow(() ->
