@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 public class HotelRoomAvailabilityRequest {
 
-    @NotNull (message = "Start date cannot be null")
+    @NotNull(message = "Start date cannot be null")
     @FutureOrPresent(message = "Start date cannot be in the past")
     private LocalDate startDate;
 

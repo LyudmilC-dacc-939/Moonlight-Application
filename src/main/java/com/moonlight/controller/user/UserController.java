@@ -72,6 +72,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<User> getUser(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserById(id));
     }
@@ -89,6 +90,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "/get-by-email")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<User> getUser(@RequestParam("userEmail") String userEmail) {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserByEmail(userEmail));
     }
@@ -106,6 +108,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     @DeleteMapping(path = "/account-deletion")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<?> deleteUser(@RequestParam("userId") Long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -128,7 +131,7 @@ public class UserController {
     ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(loginRequest));
     }
-
+  
     @Operation(summary = "Updating user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User successfully updated",
             content = @Content(mediaType = "application/json",
@@ -141,6 +144,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("id") Long userId) {
         return new ResponseEntity<>(userService.updateUser(updateUserRequest, userId), HttpStatus.OK);
     }
@@ -158,6 +162,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<List<User>> getPageableUsersList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -180,6 +185,7 @@ public class UserController {
                             schema = @Schema(implementation = ChangePasswordRequest.class)))
     })
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = "/change-password")
     ResponseEntity<User> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(changePasswordRequest));

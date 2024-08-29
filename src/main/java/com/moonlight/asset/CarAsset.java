@@ -33,6 +33,7 @@ public class CarAsset implements CommandLineRunner {
         List<String[]> carsFromCsv = csvService.readCarsFromCsv("assetDocs/cars.csv");
         saveCars(carsFromCsv);
     }
+
     private void saveCars(List<String[]> carsFromCsv) throws Exception {
         List<Car> carsInDataBase = carRepository.findAll();
         Set<String> carsInCsvSet = new HashSet<>();

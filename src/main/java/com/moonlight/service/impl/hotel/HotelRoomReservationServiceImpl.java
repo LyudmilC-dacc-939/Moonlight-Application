@@ -114,7 +114,8 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
             throw new InvalidDateRangeException("End date cannot be before start date");
         }
         // fetch all rooms
-        List <HotelRoom> allRooms = hotelRoomRepository.findAll();
+        List<HotelRoom> allRooms = hotelRoomRepository.findAll();
+
         // Filter available rooms, without overlapping reservation
         List<HotelRoom> availableRooms = allRooms.stream()
                 .filter(hotelRoom -> checkRoomAvailability(hotelRoom, startDate, endDate))
@@ -128,7 +129,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
     }
 
-    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
+    private HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room) {
         HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
         response.setRoomNumber(room.getRoomNumber());
         response.setRoomType(room.getRoomType().name());
