@@ -68,7 +68,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
 
         Optional<HotelRoom> hotelRoomOptional = hotelRoomRepository.findByRoomNumber(roomNumber);
         if (hotelRoomOptional.isEmpty()) {
-            throw new RuntimeException("Hotel room not found with ID" + roomNumber);
+            throw new RuntimeException("Hotel room not found with ID: " + roomNumber);
         }
         HotelRoom hotelRoom = hotelRoomOptional.get();
 
@@ -110,14 +110,14 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     public List<HotelRoomAvailabilityResponse> getAvailableRooms
             (LocalDate startDate, LocalDate endDate) {
 
-        if(endDate.isBefore(startDate)){
+        if (endDate.isBefore(startDate)) {
             throw new InvalidDateRangeException("End date cannot be before start date");
         }
         // fetch all rooms
         List <HotelRoom> allRooms = hotelRoomRepository.findAll();
         // Filter available rooms, without overlapping reservation
         List<HotelRoom> availableRooms = allRooms.stream()
-                .filter(hotelRoom -> checkRoomAvailability(hotelRoom,startDate,endDate))
+                .filter(hotelRoom -> checkRoomAvailability(hotelRoom, startDate, endDate))
                 .toList();
         return availableRooms.stream().map(this::convertToAvailableHotelRoomResponse)
                 .collect(Collectors.toList());
@@ -138,6 +138,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         response.setMaxNumberOfGuests(room.getRoomType().getMaxNumberOfGuests());
         return response;
     }
+
     @Override
     public int duration(LocalDate startDate, LocalDate endDate) {
         int duration;

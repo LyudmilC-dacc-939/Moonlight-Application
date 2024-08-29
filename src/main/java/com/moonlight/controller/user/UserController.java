@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.CollectionUtils;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Map;
 
@@ -231,7 +233,7 @@ public class UserController {
     @Operation(summary = "Admin can list reservations for a specific user",
             description = "Admin can choose an user and list their reservations by type")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Successfully fetched data",
+            @ApiResponse(responseCode = "200", description = "Successfully fetched data",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
             @ApiResponse(responseCode = "204", description = "Successfully fetched, no data present",
@@ -259,13 +261,13 @@ public class UserController {
             case "hotel rooms", "hotel", "rooms":
                 List<HotelRoomReservation> roomReservations = roomReservationService.getRoomReservationsByUserId(userId);
                 if (roomReservations.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no room reservations");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no room reservations");
                 }
                 return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(roomReservations);
             case "cars", "car":
                 List<CarReservation> carReservations = carReservationService.getCarReservationsByUserId(userId);
                 if (carReservations.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no car reservations");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no car reservations");
                 }
                 return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(carReservations);
             case "restaurant":
@@ -283,7 +285,7 @@ public class UserController {
                 boolean isEmpty = allReservations.stream()
                         .allMatch(list -> CollectionUtils.isEmpty((List<?>) list));
                 if (isEmpty) {
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no reservations");
+                    return ResponseEntity.status(HttpStatusCode.valueOf(204)).body("User has no reservations");
                 }
                 return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(allReservations);
             default:

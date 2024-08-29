@@ -30,7 +30,7 @@ public interface UserService {
     User updateUser(UpdateUserRequest updateUserRequest, Long userId);
 
     @Operation(summary = "List all users", description = "Provides a pageable list of users to admin")
-    List<User> getPageableUserList(int skip, int take);
+    List<User> getPageableUsersList(int skip, int take);
 
     @Operation(summary = "Logged user changes personal password", description = "Changes password for user's personal account by his request")
     User changePassword(ChangePasswordRequest changePasswordRequest);
@@ -38,6 +38,7 @@ public interface UserService {
     @Operation(summary = "Generates new password for user", description = "Generates a new password if given a registered email" +
             " then saves the changes in the database")
     void resetPassword(ResetPasswordRequest passwordRequest);
+
     @Operation(summary = "User can see his own reservation", description = "User can find all of his own reservations")
     Map<String, Object> getUserReservations(User user);
 }

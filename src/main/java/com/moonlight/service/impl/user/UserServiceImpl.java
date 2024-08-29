@@ -3,7 +3,11 @@ package com.moonlight.service.impl.user;
 import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
-import com.moonlight.dto.user.*;
+import com.moonlight.dto.user.ChangePasswordRequest;
+import com.moonlight.dto.user.LoginRequest;
+import com.moonlight.dto.user.ResetPasswordRequest;
+import com.moonlight.dto.user.UpdateUserRequest;
+import com.moonlight.dto.user.UserRequest;
 import com.moonlight.model.car.CarReservation;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.user.User;
@@ -56,7 +60,9 @@ public class UserServiceImpl implements UserService {
                            @Lazy CurrentUserImpl currentUserImpl,
                            EmailService emailService,
                            UserRoleRepository userRoleRepository,
-                           ApplicationConfiguration applicationConfiguration, HotelRoomReservationRepository hotelRoomReservationRepository, CarReservationRepository carReservationRepository) {
+                           ApplicationConfiguration applicationConfiguration,
+                           HotelRoomReservationRepository hotelRoomReservationRepository,
+                           CarReservationRepository carReservationRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -156,7 +162,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public java.util.List<User> getPageableUserList(int skip, int take) {
+    public List<User> getPageableUsersList(int skip, int take) {
         Pageable pageable = PageRequest.of(skip, take);
         Page<User> pagedResult = userRepository.findAll(pageable);
         return pagedResult.toList();

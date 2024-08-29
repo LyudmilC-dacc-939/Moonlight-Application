@@ -21,13 +21,18 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -243,6 +248,28 @@ class HotelRoomReservationServiceImplTest {
     }
 
     @Test
+    void createReservation_throwsRuntimeException() {
+        // Set up your test data
+        Long userId = 1L;
+        Long roomNumber = 1L;
+        LocalDate startDate = LocalDate.of(2024, 9, 1);
+        LocalDate endDate = LocalDate.of(2024, 9, 1);
+        int guestsAdult = 2;
+        int guestsChildren = 0;
+
+        // Mock the user repository to return empty, so it triggers the exception
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Perform the assertion
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            hotelRoomReservationService.createReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
+        });
+
+        // Optionally, you can also assert the message of the exception if needed
+        assertEquals("User not found with ID: " + userId, exception.getMessage());
+    }
+
+    @Test
     void makeReservation_endDateEqualsStartDateSuccess() {
         LocalDate endDate = startDate;
 
@@ -418,15 +445,15 @@ class HotelRoomReservationServiceImplTest {
         assertNotNull(actualReservations, "The returned list should not be null");
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
-}
+    }
 
     @Test
-    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
+    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate() {
         LocalDate startDate = LocalDate.now().plusDays(5);
         LocalDate endDate = LocalDate.now().plusDays(2);
 
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
+        InvalidDateRangeException exception =
+                assertThrows(InvalidDateRangeException.class,()-> hotelRoomReservationService
                         .getAvailableRooms(startDate, endDate));
         assertEquals("End date cannot be before start date", exception.getMessage());
     }
