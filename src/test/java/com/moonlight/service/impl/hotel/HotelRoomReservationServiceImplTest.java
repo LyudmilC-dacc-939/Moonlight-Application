@@ -165,7 +165,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
+                .createReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(user, reservation.getUser());
@@ -182,7 +182,7 @@ class HotelRoomReservationServiceImplTest {
 
         assertThrows(RuntimeException.class, () -> {
             hotelRoomReservationService
-                    .makeReservation(userId, roomNumber, LocalDate.now(), LocalDate.now().plusDays(5)
+                    .createReservation(userId, roomNumber, LocalDate.now(), LocalDate.now().plusDays(5)
                             , guestsAdult, guestsChildren);
         });
         verify(userRepository, times(1)).findById(userId);
@@ -195,7 +195,7 @@ class HotelRoomReservationServiceImplTest {
 
         assertThrows(RuntimeException.class, () -> {
             hotelRoomReservationService
-                    .makeReservation(userId, roomNumber, LocalDate.now(), LocalDate.now().plusDays(5)
+                    .createReservation(userId, roomNumber, LocalDate.now(), LocalDate.now().plusDays(5)
                             , guestsAdult, guestsChildren);
         });
         verify(hotelRoomRepository, times(1)).findByRoomNumber(roomNumber);
@@ -216,7 +216,7 @@ class HotelRoomReservationServiceImplTest {
 
         assertThrows(RoomNotAvailableException.class, () -> {
             hotelRoomReservationService
-                    .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
+                    .createReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
         });
 
         verify(hotelRoomRepository, times(1)).findByRoomNumber(roomNumber);
@@ -231,7 +231,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         assertThrows(RuntimeException.class, () -> hotelRoomReservationService
-                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren));
+                .createReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren));
         verify(hotelRoomReservationRepository, never()).save(any(HotelRoomReservation.class));
     }
 
@@ -247,7 +247,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
+                .createReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(userId, reservation.getUser().getId());
@@ -268,7 +268,7 @@ class HotelRoomReservationServiceImplTest {
                 .thenAnswer(i -> i.getArguments()[0]);
 
         HotelRoomReservation reservation = hotelRoomReservationService
-                .makeReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
+                .createReservation(userId, roomNumber, startDate, endDate, guestsAdult, guestsChildren);
 
         assertNotNull(reservation);
         assertEquals(userId, reservation.getUser().getId());
@@ -282,14 +282,14 @@ class HotelRoomReservationServiceImplTest {
     @Test
     void makeReservation_nullStartDateShouldFail() {
         assertThrows(RuntimeException.class, () -> {
-            hotelRoomReservationService.makeReservation(userId, roomNumber, null, endDate, guestsAdult, guestsChildren);
+            hotelRoomReservationService.createReservation(userId, roomNumber, null, endDate, guestsAdult, guestsChildren);
         });
     }
 
     @Test
     void makeReservation_nullEndDateShouldFail() {
         assertThrows(RuntimeException.class, () -> {
-            hotelRoomReservationService.makeReservation(userId, roomNumber, startDate, null, guestsAdult, guestsChildren);
+            hotelRoomReservationService.createReservation(userId, roomNumber, startDate, null, guestsAdult, guestsChildren);
         });
     }
     @Test
@@ -301,7 +301,7 @@ class HotelRoomReservationServiceImplTest {
         when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
 
         RoomNotAvailableException thrown = assertThrows(RoomNotAvailableException.class, () ->
-                hotelRoomReservationService.makeReservation(userId, roomNumber, startDate, endDate
+                hotelRoomReservationService.createReservation(userId, roomNumber, startDate, endDate
                         , guestsAdult, guestsChildren));
 
         assertEquals("Total number of guests exceeds maximum allowed guest for the room type.", thrown.getMessage());
@@ -373,7 +373,7 @@ class HotelRoomReservationServiceImplTest {
         assertNotNull(actualReservations, "The returned list should not be null");
         assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
         verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
-}
+    }
         @Test
         void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
             LocalDate startDate = LocalDate.now().plusDays(5);
