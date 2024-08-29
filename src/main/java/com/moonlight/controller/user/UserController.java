@@ -23,15 +23,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.CollectionUtils;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -165,7 +161,7 @@ public class UserController {
     ResponseEntity<List<User>> getPageableUsersList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<User> users = userService.getPageableUserList(page, size);
+        List<User> users = userService.getPageableUsersList(page, size);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 

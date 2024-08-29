@@ -457,15 +457,4 @@ class HotelRoomReservationServiceImplTest {
                         .getAvailableRooms(startDate, endDate));
         assertEquals("End date cannot be before start date", exception.getMessage());
     }
-
-    @Test
-    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate(){
-        LocalDate startDate = LocalDate.now().plusDays(5);
-        LocalDate endDate = LocalDate.now().plusDays(2);
-
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,()-> hotelRoomReservationService
-                        .getAvailableRooms(startDate, endDate));
-        assertEquals("End date cannot be before start date", exception.getMessage());
-    }
 }
