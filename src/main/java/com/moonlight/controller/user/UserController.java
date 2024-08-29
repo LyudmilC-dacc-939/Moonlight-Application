@@ -54,6 +54,7 @@ public class UserController {
     @Operation(summary = "Searches an user by their id", description = "Returns user information by id")
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully found with id",
                     content = @Content(mediaType = "application/json",
@@ -81,6 +82,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<User> getUser(@RequestParam("userEmail") String userEmail) {
         return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserByEmail(userEmail));
     }
@@ -98,6 +100,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<?> deleteUser(@RequestParam("userId") Long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -123,6 +126,7 @@ public class UserController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Updating user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User successfully updated",
             content = @Content(mediaType = "application/json",
@@ -140,6 +144,7 @@ public class UserController {
     @Operation(summary = "List all users", description = "Provide pageable list of users to admin")
     @GetMapping(path = "/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User successfully found with id",
                     content = @Content(mediaType = "application/json",
@@ -172,6 +177,7 @@ public class UserController {
                             schema = @Schema(implementation = ChangePasswordRequest.class)))
     })
     @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = "/change-password")
     ResponseEntity<User> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(changePasswordRequest));

@@ -2,8 +2,8 @@ package com.moonlight.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.car.CarReservation;
+import com.moonlight.model.hotel.HotelRoomReservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

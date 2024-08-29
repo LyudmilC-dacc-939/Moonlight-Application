@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +46,7 @@ public class CarReservationController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CarReservation.class)))})
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = "/create-reservation/")
     public ResponseEntity<CarReservationResponse> createReservation(
             @RequestBody CarReservationRequest request, @AuthenticationPrincipal User user) {

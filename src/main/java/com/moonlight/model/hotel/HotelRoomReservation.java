@@ -25,7 +25,8 @@ public class HotelRoomReservation {
     @JsonBackReference
     private User user;
 
-    @ManyToOne // One hotel room may have multiple reservation over time and each reservation is associated with one hotel room
+    @ManyToOne
+    // One hotel room may have multiple reservation over time and each reservation is associated with one hotel room
     @JoinColumn(name = "roomNumber", nullable = false)
     @JsonBackReference
     private HotelRoom hotelRoom;

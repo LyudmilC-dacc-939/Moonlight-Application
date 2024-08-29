@@ -42,7 +42,7 @@ server:
 web:
   access-url: https://office.nasbg.com/danni
 
-spring-doc:
+springdoc:
   api-docs:
     path: /api-docs
 

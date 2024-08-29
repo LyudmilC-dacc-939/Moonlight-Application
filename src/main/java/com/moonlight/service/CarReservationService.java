@@ -10,5 +10,6 @@ import java.util.Map;
 
 public interface CarReservationService {
     CarReservation createReservation(CarReservationRequest request, String email);
+
     Map<LocalDate, List<String>> getAvailableCarsByDateRange(CarAvailabilityRequest request);
 }

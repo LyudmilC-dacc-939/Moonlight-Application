@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -34,8 +35,8 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
 
     @Override
     public boolean datesOverlap(LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd) {
-        if(existingStart.isEqual(existingEnd)&&newStart.isEqual(existingEnd )
-                || newStart.isEqual(newEnd)&&existingEnd.isEqual(newStart)){
+        if (existingStart.isEqual(existingEnd) && newStart.isEqual(existingEnd)
+                || newStart.isEqual(newEnd) && existingEnd.isEqual(newStart)) {
             return true;
         }
         return (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart));
@@ -76,14 +77,14 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
                 throw new IllegalArgumentException("End date must be after or equal to the start date!");
             }
 
-            int totalGuests = guestsAdult+guestChildren;
-            if(totalGuests > hotelRoom.getRoomType().getMaxNumberOfGuests()){
+            int totalGuests = guestsAdult + guestChildren;
+            if (totalGuests > hotelRoom.getRoomType().getMaxNumberOfGuests()) {
                 throw new RoomNotAvailableException(
                         "Total number of guests exceeds maximum allowed guest for the room type.");
             }
 
-            int duration =duration(startDate,endDate);
-            double totalCost = totalCost(duration,hotelRoom);
+            int duration = duration(startDate, endDate);
+            double totalCost = totalCost(duration, hotelRoom);
 
             HotelRoomReservation reservation = new HotelRoomReservation();
             reservation.setUser(user);
@@ -97,45 +98,48 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
 
             return hotelRoomReservationRepository.save(reservation);
         } else {
-            throw new RoomNotAvailableException("The selected accommodation with number " +hotelRoom.getRoomNumber()+
-                    ", type "+ hotelRoom.getRoomType()
+            throw new RoomNotAvailableException("The selected accommodation with number " + hotelRoom.getRoomNumber() +
+                    ", type " + hotelRoom.getRoomType()
                     + ", featuring a " + hotelRoom.getRoomView() + " view is unavailable for the selected period." +
                     "\nPlease review the available rooms or select different period and try again.");
         }
     }
+
     @Override
     public int duration(LocalDate startDate, LocalDate endDate) {
         int duration;
-        if(startDate.isEqual(endDate)){
-           duration = (int) (ChronoUnit.DAYS.between(startDate,endDate)+1);
+        if (startDate.isEqual(endDate)) {
+            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
         } else {
-             duration = (int) (ChronoUnit.DAYS.between(startDate,endDate));
+            duration = (int) (ChronoUnit.DAYS.between(startDate, endDate));
         }
         return duration;
     }
+
     @Override
-    public double totalCost (int duration, HotelRoom hotelRoom) {
-        return duration*hotelRoom.getRoomType().getRoomPricePerNight();
+    public double totalCost(int duration, HotelRoom hotelRoom) {
+        return duration * hotelRoom.getRoomType().getRoomPricePerNight();
     }
+
     @Override
     @Transactional
     public List<HotelRoomAvailabilityResponse> getAvailableRooms
             (LocalDate startDate, LocalDate endDate) {
 
-        if(endDate.isBefore(startDate)){
+        if (endDate.isBefore(startDate)) {
             throw new InvalidDateRangeException("End date cannot be before start date");
         }
         // fetch all rooms
-        List <HotelRoom> allRooms = hotelRoomRepository.findAll();
-      // Filter available rooms, without overlapping reservation
+        List<HotelRoom> allRooms = hotelRoomRepository.findAll();
+        // Filter available rooms, without overlapping reservation
         List<HotelRoom> availableRooms = allRooms.stream()
-                .filter(hotelRoom -> checkRoomAvailability(hotelRoom,startDate,endDate))
+                .filter(hotelRoom -> checkRoomAvailability(hotelRoom, startDate, endDate))
                 .toList();
         return availableRooms.stream().map(this::convertToAvailableHotelRoomResponse)
                 .collect(Collectors.toList());
     }
 
-    private HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
+    private HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room) {
         HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
         response.setRoomNumber(room.getRoomNumber());
         response.setRoomType(room.getRoomType().name());

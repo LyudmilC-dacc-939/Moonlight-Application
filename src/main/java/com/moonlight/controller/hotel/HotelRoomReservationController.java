@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.Data;
@@ -49,6 +50,7 @@ public class HotelRoomReservationController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = HotelRoomReservation.class)))})
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = "/create-reservation/")
     public ResponseEntity<HotelRoomReservationResponse> createReservation
             (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user) {

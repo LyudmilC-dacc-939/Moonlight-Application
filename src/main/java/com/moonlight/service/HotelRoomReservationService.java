@@ -9,17 +9,17 @@ import java.util.List;
 
 public interface HotelRoomReservationService {
 
-    boolean datesOverlap (LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd);
+    boolean datesOverlap(LocalDate existingStart, LocalDate existingEnd, LocalDate newStart, LocalDate newEnd);
 
-    boolean checkRoomAvailability (HotelRoom room, LocalDate startDate, LocalDate endDate);
+    boolean checkRoomAvailability(HotelRoom room, LocalDate startDate, LocalDate endDate);
 
     HotelRoomReservation makeReservation(
-            Long userId, Long  roomNumber, LocalDate startDate, LocalDate endDate
+            Long userId, Long roomNumber, LocalDate startDate, LocalDate endDate
             , int guestsAdult, int guestChildren);
 
     int duration(LocalDate startDate, LocalDate endDate);
 
-    double totalCost (int duration, HotelRoom hotelRoom);
+    double totalCost(int duration, HotelRoom hotelRoom);
 
     List<HotelRoomAvailabilityResponse> getAvailableRooms
             (LocalDate startDate, LocalDate endDate);
