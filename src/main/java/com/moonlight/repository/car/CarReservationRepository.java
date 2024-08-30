@@ -1,7 +1,6 @@
 package com.moonlight.repository.car;
 
 import com.moonlight.model.car.CarReservation;
-import com.moonlight.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,8 +11,6 @@ import java.util.List;
 
 @Repository
 public interface CarReservationRepository extends JpaRepository<CarReservation, Long> {
-    List<CarReservation> findByUser(User user);
-
     List<CarReservation> findByUserId(Long userId);
 
 
