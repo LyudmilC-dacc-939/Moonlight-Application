@@ -11,10 +11,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class CarAvailabilityRequest {
-    @NotNull
-    @FutureOrPresent
+    @NotNull(message = "Please, fill in start date")
+    @FutureOrPresent(message = "Start date cannot be in the past")
     private LocalDate startDate;
-    @NotNull
-    @Future
+    @NotNull(message = "Please fill in end date")
+    @Future(message = "End date cannot be in the past")
     private LocalDate endDate;
 }

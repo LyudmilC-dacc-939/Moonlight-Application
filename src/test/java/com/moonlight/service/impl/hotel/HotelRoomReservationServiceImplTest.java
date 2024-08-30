@@ -51,7 +51,6 @@ class HotelRoomReservationServiceImplTest {
 
     @InjectMocks
     private HotelRoomReservationServiceImpl hotelRoomReservationService;
-
     private Long userId;
     private Long roomNumber;
     private User user;

@@ -129,7 +129,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
         return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
     }
 
-    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room) {
+    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
         HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
         response.setRoomNumber(room.getRoomNumber());
         response.setRoomType(room.getRoomType().name());
