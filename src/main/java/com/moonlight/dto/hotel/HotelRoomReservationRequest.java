@@ -13,18 +13,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class HotelRoomReservationRequest {
 
-    @NotNull
+    @NotNull(message = "Please select a room number")
     private Long roomNumber;
 
-    @NotNull
-    @FutureOrPresent
+    @NotNull(message = "You are required to fill in start date field")
+    @FutureOrPresent (message = "Start date can not be in the past")
     private LocalDate startDate;
 
-    @NotNull
-    @Future
+    @NotNull(message = "You are required to fill in end date field")
+    @Future(message = "End date can not be in the past")
     private LocalDate endDate;
 
-    @NotNull
+    @NotNull(message = "Please, fill in number of guests field")
     private int guestsAdult;
 
     private int guestsChildren;

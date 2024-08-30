@@ -137,7 +137,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class)))})
-    ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("id") Long userId) {
+    ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest,@PathVariable("id") Long userId) {
         return new ResponseEntity<>(userService.updateUser(updateUserRequest, userId), HttpStatus.OK);
     }
 

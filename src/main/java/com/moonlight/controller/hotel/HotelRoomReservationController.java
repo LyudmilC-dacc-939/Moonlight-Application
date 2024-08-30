@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class HotelRoomReservationController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = "/create-reservation/")
     public ResponseEntity<HotelRoomReservationResponse> createReservation
-            (@RequestBody @Valid HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user) {
+            (@RequestBody @Validated HotelRoomReservationRequest reservationRequest, @AuthenticationPrincipal User user) {
 
 
         HotelRoomReservation reservation = hotelRoomReservationService.makeReservation(

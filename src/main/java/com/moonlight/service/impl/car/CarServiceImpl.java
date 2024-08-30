@@ -1,5 +1,6 @@
 package com.moonlight.service.impl.car;
 
+import com.moonlight.advice.exception.ItemNotFoundException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UnavailableResourceException;
 import com.moonlight.dto.ImageResponse;
@@ -10,7 +11,6 @@ import com.moonlight.repository.car.FileResourceRepository;
 import com.moonlight.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -29,7 +29,9 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> findByQuerySearch(String carType, String carBrand) {
+
         return carRepository.findByCarBrandOrType(carType, carBrand);
+
     }
 
     public List<ImageResponse> getCarImages(Long carId, Long imageId) {

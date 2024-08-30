@@ -39,8 +39,10 @@ public class UserRequest {
     private String repeatPassword;
 
     @Column(columnDefinition = "boolean default false")
+    @NotNull(message = "You must agree to our GDPR to register")
     private Boolean isAgreedGDPR;
 
     @Column(columnDefinition = "boolean default false")
+    @NotNull(message = "You must agree to our EULA to register")
     private Boolean isAgreedEULA;
 }

@@ -12,18 +12,18 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class CarReservationRequest {
-    @NotNull
+    @NotNull (message = "Car Id can not be null")
     private Long carId;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Please fill in number of persons")
+    @Positive(message = "Positive number is required")
     private int numberOfPeople;
 
-    @NotNull
-    @FutureOrPresent
+    @NotNull (message = "Please, fill in start date")
+    @FutureOrPresent(message = "Start date cannot be in the past")
     private LocalDate startDate;
 
-    @NotNull
-    @Future
+    @NotNull(message = "Please fill in end date")
+    @Future(message = "End date cannot be in the past")
     private LocalDate endDate;
 }

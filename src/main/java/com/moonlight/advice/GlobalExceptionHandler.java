@@ -2,14 +2,18 @@ package com.moonlight.advice;
 
 import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.ConstraintViolationException;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +67,36 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>>
+    handleConstrainViolationExceptions(ConstraintViolationException ex){
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(cv->{
+            String fieldName = ((PathImpl)cv.getPropertyPath()).getLeafNode().getName();
+            String errorMessage = cv.getMessage();
+            errors.put(fieldName,errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<String> handleAuthenticationException (AuthenticationException ex){
+        return new ResponseEntity<>("Authentication is required to access this resource",
+                HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<String> handleExpiredJwtException (ExpiredJwtException ex){
+        return new ResponseEntity<>("Your session has expired, please log in again",
+                HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException (AccessDeniedException ex){
+        return new ResponseEntity<>("Your do not have permission to access this resource",
+                HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(ItemNotFoundException.class)
+        public ResponseEntity<String> handleItemNotFoundException (ItemNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
 //    @ExceptionHandler(Exception.class)

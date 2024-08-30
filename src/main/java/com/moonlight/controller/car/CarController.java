@@ -1,5 +1,6 @@
 package com.moonlight.controller.car;
 
+import com.moonlight.advice.exception.ItemNotFoundException;
 import com.moonlight.dto.ImageResponse;
 import com.moonlight.model.car.Car;
 import com.moonlight.service.CarService;
@@ -46,7 +47,7 @@ public class CarController {
                                              @RequestParam(value = "carType", required = false) String carType) {
         List<Car> foundCars = carService.findByQuerySearch(carBrand, carType);
         if (foundCars.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+            throw new ItemNotFoundException("Car brand: "+ carBrand+", and / or "+carType+ " is not found");
         }
         return ResponseEntity.status(HttpStatus.FOUND).body(foundCars);
     }
