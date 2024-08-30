@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface FileResourceRepository extends JpaRepository<FileResource, Long> {
-    List<FileResource> findByCarId(Long carId); // query to find all file resources for a given car
+    List<FileResource> findByCarId(Long carId);
+    List<FileResource> findByCarIdAndId(Long carId, Long id);// query to find all file resources for a given car
 }
