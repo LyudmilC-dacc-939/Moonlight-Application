@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface CarReservationRepository extends JpaRepository<CarReservation, Long> {
-  
+
     List<CarReservation> findByUserId(Long userId);
 
     @Query(value = "SELECT * FROM car_reservation cr WHERE " +

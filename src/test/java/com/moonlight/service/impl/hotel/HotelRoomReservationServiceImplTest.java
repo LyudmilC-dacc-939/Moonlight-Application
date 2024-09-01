@@ -42,10 +42,13 @@ class HotelRoomReservationServiceImplTest {
 
     @Mock
     private HotelRoomRepository hotelRoomRepository;
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private HotelRoomReservationRepository hotelRoomReservationRepository;
+
     @InjectMocks
     private HotelRoomReservationServiceImpl hotelRoomReservationService;
     private Long userId;
@@ -90,6 +93,7 @@ class HotelRoomReservationServiceImplTest {
 
     @Test
     void checkRoomAvailability_roomNotAvailable() {
+
         HotelRoomReservation existingReservation = new HotelRoomReservation();
         existingReservation.setHotelRoom(hotelRoom);
         existingReservation.setStartDate(startDate.minusDays(2));
@@ -346,6 +350,33 @@ class HotelRoomReservationServiceImplTest {
     }
 
     @Test
+    void returnEmptyListWhenNoRoomAvailable() {
+        when(hotelRoomRepository.findAll()).thenReturn(Collections.emptyList());
+        List<HotelRoomAvailabilityResponse> availableRooms =
+                hotelRoomReservationService.getAvailableRooms(startDate, endDate);
+        assertTrue(availableRooms.isEmpty());
+    }
+
+    @Test
+    void convertHotelRoomToAvailabilityResponse() {
+        HotelRoom room = new HotelRoom();
+        room.setRoomNumber(101L);
+        room.setRoomType(RoomType.STANDARD);
+        room.setRoomView(RoomView.SEA);
+        room.setBedType(RoomBedType.SINGLE_BED);
+
+        HotelRoomReservationServiceImpl service = new HotelRoomReservationServiceImpl();
+        HotelRoomAvailabilityResponse response = service.convertToAvailableHotelRoomResponse(room);
+
+        assertEquals(101L, response.getRoomNumber());
+        assertEquals("STANDARD", response.getRoomType());
+        assertEquals("SEA", response.getRoomView());
+        assertEquals("SINGLE_BED", response.getRoomBedType());
+        assertEquals(220, response.getRoomPricePerNight());
+        assertEquals(2, response.getMaxNumberOfGuests());
+    }
+
+    @Test
     void getRoomReservationsByUserId_ifIdIsValid_noReservations() {
         Long userId = 1L;
         when(hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId)).thenReturn(List.of());
@@ -419,32 +450,6 @@ class HotelRoomReservationServiceImplTest {
         InvalidDateRangeException exception =
                 assertThrows(InvalidDateRangeException.class,()-> hotelRoomReservationService
                         .getAvailableRooms(startDate, endDate));
-    }
-
-    @Test
-    void returnEmptyListWhenNoRoomAvailable() {
-        when(hotelRoomRepository.findAll()).thenReturn(Collections.emptyList());
-        List<HotelRoomAvailabilityResponse> availableRooms =
-                hotelRoomReservationService.getAvailableRooms(startDate, endDate);
-        assertTrue(availableRooms.isEmpty());
-    }
-
-    @Test
-    void convertHotelRoomToAvailabilityResponse() {
-        HotelRoom room = new HotelRoom();
-        room.setRoomNumber(101L);
-        room.setRoomType(RoomType.STANDARD);
-        room.setRoomView(RoomView.SEA);
-        room.setBedType(RoomBedType.SINGLE_BED);
-
-        HotelRoomReservationServiceImpl service = new HotelRoomReservationServiceImpl();
-        HotelRoomAvailabilityResponse response = service.convertToAvailableHotelRoomResponse(room);
-
-        assertEquals(101L, response.getRoomNumber());
-        assertEquals("STANDARD", response.getRoomType());
-        assertEquals("SEA", response.getRoomView());
-        assertEquals("SINGLE_BED", response.getRoomBedType());
-        assertEquals(220, response.getRoomPricePerNight());
-        assertEquals(2, response.getMaxNumberOfGuests());
+        assertEquals("End date cannot be before start date", exception.getMessage());
     }
 }
