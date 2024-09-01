@@ -10,24 +10,27 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "car_reservations")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
 public class CarReservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
+    //^this prevented overflow of response when fetching all users
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "car_id", nullable = false)
     @JsonBackReference
+    //^this prevented overflow of response when fetching reservations
     private Car car;
 
     @Column(name = "start_date", nullable = false)

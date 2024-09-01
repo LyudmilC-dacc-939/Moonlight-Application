@@ -12,4 +12,6 @@ public interface CarReservationService {
     CarReservation createReservation(CarReservationRequest request, String email);
 
     Map<LocalDate, List<String>> getAvailableCarsByDateRange(CarAvailabilityRequest request);
+
+    List<CarReservation> getCarReservationsByUserId(Long userId);
 }

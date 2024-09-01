@@ -1,6 +1,5 @@
 package com.moonlight.service.impl.hotel;
 
-
 import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RoomNotAvailableException;
 import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Data
 public class HotelRoomReservationServiceImpl implements HotelRoomReservationService {
+
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
     @Autowired
@@ -57,18 +57,18 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     @NotNull
     @Transactional
     @Override
-    public HotelRoomReservation makeReservation(
+    public HotelRoomReservation createReservation(
             Long userId, Long roomNumber, LocalDate startDate, LocalDate endDate
             , int guestsAdult, int guestChildren) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found with ID: " + userId);
         }
         User user = userOptional.get();
 
         Optional<HotelRoom> hotelRoomOptional = hotelRoomRepository.findByRoomNumber(roomNumber);
-        if (!hotelRoomOptional.isPresent()) {
-            throw new RuntimeException("Hotel room not found with ID" + roomNumber);
+        if (hotelRoomOptional.isEmpty()) {
+            throw new RuntimeException("Hotel room not found with ID: " + roomNumber);
         }
         HotelRoom hotelRoom = hotelRoomOptional.get();
 
@@ -106,6 +106,41 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     }
 
     @Override
+    @Transactional
+    public List<HotelRoomAvailabilityResponse> getAvailableRooms
+            (LocalDate startDate, LocalDate endDate) {
+
+        if (endDate.isBefore(startDate)) {
+            throw new InvalidDateRangeException("End date cannot be before start date");
+        }
+        // fetch all rooms
+        List<HotelRoom> allRooms = hotelRoomRepository.findAll();
+
+        // Filter available rooms, without overlapping reservation
+        List<HotelRoom> availableRooms = allRooms.stream()
+                .filter(hotelRoom -> checkRoomAvailability(hotelRoom, startDate, endDate))
+                .toList();
+        return availableRooms.stream().map(this::convertToAvailableHotelRoomResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<HotelRoomReservation> getRoomReservationsByUserId(Long userId) {
+        return hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId);
+    }
+
+    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room) {
+        HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
+        response.setRoomNumber(room.getRoomNumber());
+        response.setRoomType(room.getRoomType().name());
+        response.setRoomView(room.getRoomView().name());
+        response.setRoomBedType(room.getBedType().name());
+        response.setRoomPricePerNight(room.getRoomType().getRoomPricePerNight());
+        response.setMaxNumberOfGuests(room.getRoomType().getMaxNumberOfGuests());
+        return response;
+    }
+
+    @Override
     public int duration(LocalDate startDate, LocalDate endDate) {
         int duration;
         if (startDate.isEqual(endDate)) {
@@ -119,35 +154,5 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
     @Override
     public double totalCost(int duration, HotelRoom hotelRoom) {
         return duration * hotelRoom.getRoomType().getRoomPricePerNight();
-    }
-
-    @Override
-    @Transactional
-    public List<HotelRoomAvailabilityResponse> getAvailableRooms
-            (LocalDate startDate, LocalDate endDate) {
-
-        if (endDate.isBefore(startDate)) {
-            throw new InvalidDateRangeException("End date cannot be before start date");
-        }
-        // fetch all rooms
-        List<HotelRoom> allRooms = hotelRoomRepository.findAll();
-        // Filter available rooms, without overlapping reservation
-        List<HotelRoom> availableRooms = allRooms.stream()
-                .filter(hotelRoom -> checkRoomAvailability(hotelRoom, startDate, endDate))
-                .toList();
-        return availableRooms.stream().map(this::convertToAvailableHotelRoomResponse)
-                .collect(Collectors.toList());
-    }
-
-
-    public HotelRoomAvailabilityResponse convertToAvailableHotelRoomResponse(HotelRoom room){
-        HotelRoomAvailabilityResponse response = new HotelRoomAvailabilityResponse();
-        response.setRoomNumber(room.getRoomNumber());
-        response.setRoomType(room.getRoomType().name());
-        response.setRoomView(room.getRoomView().name());
-        response.setRoomBedType(room.getBedType().name());
-        response.setRoomPricePerNight(room.getRoomType().getRoomPricePerNight());
-        response.setMaxNumberOfGuests(room.getRoomType().getMaxNumberOfGuests());
-        return response;
     }
 }

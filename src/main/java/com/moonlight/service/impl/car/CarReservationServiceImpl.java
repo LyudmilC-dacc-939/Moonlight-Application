@@ -121,7 +121,12 @@ public class CarReservationServiceImpl implements CarReservationService {
         return availabilityMap;
     }
 
-    void dateRangeValidator(LocalDate startDate, LocalDate endDate) {
+    @Override
+    public List<CarReservation> getCarReservationsByUserId(Long userId) {
+        return carReservationRepository.findByUserIdOrderByStartDate(userId);
+    }
+
+    private void dateRangeValidator(LocalDate startDate, LocalDate endDate) {
         boolean isValidDateRange = startDate != null &&
                 endDate != null &&
                 !endDate.isBefore(startDate);

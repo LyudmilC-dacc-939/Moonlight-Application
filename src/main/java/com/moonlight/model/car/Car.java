@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "CARS")
@@ -35,10 +34,11 @@ public class Car {
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     @Column(name = "image_url")
-    private List<FileResource> fileResources = new ArrayList<>();
+    private List<FileResource> fileResources;
 
-    // This is not necessary, but I am adding it in case we want a two-way connection between Car/CarResevation for query purposes
+    // This is not necessary, but I am adding it in case we want a two-way connection between Car/CarReservation for query purposes
     @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
-    private List<CarReservation> reservations = new ArrayList<>();
+    @JsonManagedReference
+    private List<CarReservation> reservations;
 
 }

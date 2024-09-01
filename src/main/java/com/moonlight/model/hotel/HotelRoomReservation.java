@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 
 @Entity
-@Table
+@Table(name = "room_reservations")
 @NoArgsConstructor
 @Data
 public class HotelRoomReservation {
@@ -20,13 +20,12 @@ public class HotelRoomReservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne  //  One User may have multiple reservations
+    @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     @JsonBackReference
     private User user;
 
     @ManyToOne
-    // One hotel room may have multiple reservation over time and each reservation is associated with one hotel room
     @JoinColumn(name = "roomNumber", nullable = false)
     @JsonBackReference
     private HotelRoom hotelRoom;
@@ -52,4 +51,5 @@ public class HotelRoomReservation {
     @Min(value = 0, message = "Number of children guests must be at least {value}")
     @Max(value = 4, message = "Number of adult guests must be at most {value}")
     private int guestsChildren;
+  
 }

@@ -1,6 +1,13 @@
 package com.moonlight.model.hotel;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +32,6 @@ public class Amenity {
     @NotEmpty(message = "Must include an amenity")
     private String amenity;
 
-    @ManyToMany(mappedBy = "amenities", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "amenities", fetch = FetchType.LAZY)
     private Set<HotelRoom> hotelRooms = new HashSet<>();
 }
