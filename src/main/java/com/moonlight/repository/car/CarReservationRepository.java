@@ -14,7 +14,6 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
 
     List<CarReservation> findByUserId(Long userId);
 
-
     @Query(value = "SELECT * FROM car_reservation cr WHERE " +
             "(:carId IS NULL OR cr.car_id LIKE %:carId%) AND " +
             "(:startDate IS NULL OR cr.start_date = :startDate) AND " +

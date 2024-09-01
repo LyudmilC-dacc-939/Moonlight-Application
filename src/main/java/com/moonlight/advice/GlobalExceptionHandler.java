@@ -90,9 +90,10 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException (AccessDeniedException ex){
-        return new ResponseEntity<>("Your do not have permission to access this resource",
-                HttpStatus.FORBIDDEN);
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Current user not authorized: " + ex.getMessage());
     }
     @ExceptionHandler(ItemNotFoundException.class)
         public ResponseEntity<String> handleItemNotFoundException (ItemNotFoundException ex){
@@ -105,12 +106,7 @@ public class GlobalExceptionHandler {
 //        log.error("An error occurred: ", exception);
 //        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 //    }
-//
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
-//        log.error("Access denied: ", exception);
-//        return new ResponseEntity<>("Access denied: " + exception.getMessage(), HttpStatus.FORBIDDEN);
-//    }
-    // ^ Uncomment these 2 for testing Responses and bug fixing
+
+    // ^ Uncomment for testing Responses and bug fixing
 
 }

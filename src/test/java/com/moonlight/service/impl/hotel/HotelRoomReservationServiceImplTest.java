@@ -273,9 +273,7 @@ class HotelRoomReservationServiceImplTest {
         LocalDate endDate = startDate;
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
         when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
-
         when(hotelRoomReservationRepository.save(any(HotelRoomReservation.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
 
@@ -294,9 +292,7 @@ class HotelRoomReservationServiceImplTest {
     @Test
     void makeReservation_endDateAfterStartDateSuccess() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
         when(hotelRoomRepository.findByRoomNumber(roomNumber)).thenReturn(Optional.of(hotelRoom));
-
         when(hotelRoomReservationRepository.save(any(HotelRoomReservation.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
 
@@ -351,6 +347,82 @@ class HotelRoomReservationServiceImplTest {
                 hotelRoomReservationService.getAvailableRooms(start, end));
 
         assertEquals("End date cannot be before start date", exception.getMessage());
+    }
+
+    @Test
+    void getRoomReservationsByUserId_ifIdIsValid_noReservations() {
+        Long userId = 1L;
+        when(hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId)).thenReturn(List.of());
+
+        List<HotelRoomReservation> actualReservations = hotelRoomReservationService.getRoomReservationsByUserId(userId);
+
+        assertNotNull(actualReservations, "The returned list should not be null");
+        assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
+        verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(userId);
+    }
+
+    @Test
+    void getRoomReservationsByUserId_ifIdIsValid_withReservations() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        HotelRoomReservation reservation1 = new HotelRoomReservation();
+        reservation1.setId(100L);
+        reservation1.setUser(user);
+        reservation1.setStartDate(LocalDate.of(2024, 8, 27));
+        HotelRoomReservation reservation2 = new HotelRoomReservation();
+        reservation2.setId(101L);
+        reservation2.setUser(user);
+        reservation2.setStartDate(LocalDate.of(2024, 9, 15));
+        reservation2.setEndDate(LocalDate.of(2024, 10, 25));
+
+        List<HotelRoomReservation> expectedReservations = Arrays.asList(reservation1, reservation2);
+        when(hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId)).thenReturn(expectedReservations);
+
+        List<HotelRoomReservation> actualReservations = hotelRoomReservationService.getRoomReservationsByUserId(userId);
+        when(hotelRoomReservationRepository.save(any(HotelRoomReservation.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
+
+        when(hotelRoomReservationRepository.findByUserIdOrderByStartDate(userId)).thenReturn(expectedReservations);
+
+        assertEquals(expectedReservations, actualReservations);
+        assertNotNull(actualReservations, "The returned list should not be null");
+        assertEquals(2, actualReservations.size(), "The returned list should contain 2 reservations");
+        assertEquals(expectedReservations, actualReservations,
+                "The returned list should match the expected reservations");
+        assertEquals(100L, actualReservations.get(0).getId(),
+                "The first reservation ID should be 1");
+        assertEquals(LocalDate.of(2024, 8, 27), actualReservations.get(0).getStartDate(),
+                "The first reservation start date should match");
+        assertEquals(101L, actualReservations.get(1).getId(), "The second reservation ID should be 2");
+        assertEquals(LocalDate.of(2024, 10, 25), actualReservations.get(1).getEndDate(),
+                "The second reservation end date should match");
+        verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(userId);
+    }
+
+    @Test
+    void getRoomReservationsByUserId_ifUserNotFound() {
+        // Simulating an invalid id scenario
+        long invalidUserId = 0L;
+        when(hotelRoomReservationRepository.findByUserIdOrderByStartDate(invalidUserId)).thenReturn(List.of());
+
+        List<HotelRoomReservation> actualReservations = hotelRoomReservationService.getRoomReservationsByUserId(invalidUserId);
+
+        assertNotNull(actualReservations, "The returned list should not be null");
+        assertTrue(actualReservations.isEmpty(), "The returned list should be empty");
+        verify(hotelRoomReservationRepository, times(1)).findByUserIdOrderByStartDate(invalidUserId);
+    }
+
+    @Test
+    void testGetAvailableRooms_ThrowsException_WhenEndDateBeforeStartDate() {
+        LocalDate startDate = LocalDate.now().plusDays(5);
+        LocalDate endDate = LocalDate.now().plusDays(2);
+
+        InvalidDateRangeException exception =
+                assertThrows(InvalidDateRangeException.class,()-> hotelRoomReservationService
+                        .getAvailableRooms(startDate, endDate));
     }
 
     @Test

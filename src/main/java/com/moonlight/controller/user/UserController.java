@@ -28,6 +28,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -146,7 +147,8 @@ public class UserController {
                             schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "404", description = "Not Found",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = User.class)))})
+                            schema = @Schema(implementation = User.class)))
+    })
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
@@ -258,31 +260,32 @@ public class UserController {
     })
     @SneakyThrows
     @GetMapping(path = "/list-reservations/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     ResponseEntity<?> getReservations(@RequestParam(value = "userId", required = false) Long userId,
-                                      @RequestParam(value = "reservationType", defaultValue = "all", required = false) String reservationType,
-                                      @AuthenticationPrincipal User currentUser) {
-        if (currentUser.getUserRole().equals("ROLE_CLIENT")) {
-            return new ResponseEntity<>("403: User without authorities NOT permitted", HttpStatusCode.valueOf(403));
-        }
+                                      @RequestParam(value = "reservationType", defaultValue = "all", required = false) String reservationType) {
         if (userId != null) {
             Optional.ofNullable(userService.getUserById(userId)).orElseThrow(() ->
                     new RecordNotFoundException("User with id: " + userId + " not exist"));
         }
+      
+        Map<String, List<?>> resultMap = new HashMap<>();
         switch (reservationType) {
             case "hotel rooms", "hotel", "rooms":
                 List<HotelRoomReservation> roomReservations = roomReservationService.getRoomReservationsByUserId(userId);
                 if (roomReservations.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no room reservations");
                 }
-                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(roomReservations);
+                resultMap.put("Hotel reservations: ", roomReservations);
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             case "cars", "car":
                 List<CarReservation> carReservations = carReservationService.getCarReservationsByUserId(userId);
                 if (carReservations.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no car reservations");
                 }
-                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(carReservations);
+                resultMap.put("Car reservations: ", carReservations);
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             case "restaurant":
-                //todo: add return function for restaurantReservationService once its added
+                //todo: add return function for RestaurantReservationService once its added
                 System.out.println("future restaurant list");
                 break;
             case "bar":
@@ -290,15 +293,16 @@ public class UserController {
                 System.out.println("future bar list");
                 break;
             case "all":
-                List<Object> allReservations = List.of(
-                        roomReservationService.getRoomReservationsByUserId(userId),
-                        carReservationService.getCarReservationsByUserId(userId));
-                boolean isEmpty = allReservations.stream()
-                        .allMatch(list -> CollectionUtils.isEmpty((List<?>) list));
+                List<HotelRoomReservation> allRoomReservations = roomReservationService.getRoomReservationsByUserId(userId);
+                List<CarReservation> allCarReservations = carReservationService.getCarReservationsByUserId(userId);
+                resultMap.put("Hotel reservations: ", allRoomReservations);
+                resultMap.put("Car reservations: ", allCarReservations);
+                boolean isEmpty = resultMap.values().stream()
+                        .allMatch(CollectionUtils::isEmpty);
                 if (isEmpty) {
                     return ResponseEntity.status(HttpStatusCode.valueOf(204)).body("User has no reservations");
                 }
-                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(allReservations);
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             default:
                 return ResponseEntity.status(HttpStatusCode.valueOf(400)).build();
         }
