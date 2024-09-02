@@ -67,8 +67,6 @@ class HotelRoomReservationRepositoryTest {
         amenity.setHotelRooms(hotelRooms);
         amenity2.setHotelRooms(hotelRooms);
         hotelRoom = hotelRoomRepository.save(hotelRoom);
-
-
     }
 
     @Test

@@ -227,13 +227,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetPeageableUsersList() {
+    void testGetPageableUsersList() {
         List<User> users = Arrays.asList(new User(), new User(), new User());
         Page<User> pagedResult = new PageImpl<>(users);
 
         when(userRepository.findAll(any(PageRequest.class))).thenReturn(pagedResult);
 
-        List<User> result = userServiceImpl.getPeageableUsersList(0, 3);
+        List<User> result = userServiceImpl.getPageableUsersList(0, 3);
 
         assertEquals(3, result.size());
     }
