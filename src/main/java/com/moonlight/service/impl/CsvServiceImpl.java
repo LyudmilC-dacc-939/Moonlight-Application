@@ -53,4 +53,18 @@ public class CsvServiceImpl implements CsvService {
         }
         return cars;
     }
+
+    public List<String[]> readRestaurantTablesFromCsv(String filePath) throws IOException {
+        List<String[]> restaurantTables = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader((new InputStreamReader(new ClassPathResource(filePath).getInputStream())))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] restaurantTableData = line.split(",");
+                restaurantTables.add(restaurantTableData);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return restaurantTables;
+    }
 }
