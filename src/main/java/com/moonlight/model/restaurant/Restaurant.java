@@ -26,6 +26,7 @@ public class Restaurant {
     private RestaurantZone restaurantZone;
 
     @NotNull(message = "Please select a table number")
+    @Column(name = "table_number")
     private Long tableNumber;
 
     @Positive
