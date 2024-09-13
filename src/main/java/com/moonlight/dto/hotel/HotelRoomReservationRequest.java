@@ -17,7 +17,7 @@ public class HotelRoomReservationRequest {
     private Long roomNumber;
 
     @NotNull(message = "You are required to fill in start date field")
-    @FutureOrPresent (message = "Start date can not be in the past")
+    @FutureOrPresent(message = "Start date can not be in the past")
     private LocalDate startDate;
 
     @NotNull(message = "You are required to fill in end date field")

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -47,7 +46,7 @@ public class CarController {
                                              @RequestParam(value = "carType", required = false) String carType) {
         List<Car> foundCars = carService.findByQuerySearch(carBrand, carType);
         if (foundCars.isEmpty()) {
-            throw new ItemNotFoundException("Car brand: "+ carBrand+", and / or "+carType+ " is not found");
+            throw new ItemNotFoundException("Car brand: " + carBrand + ", and / or " + carType + " is not found");
         }
         return ResponseEntity.status(HttpStatus.FOUND).body(foundCars);
     }

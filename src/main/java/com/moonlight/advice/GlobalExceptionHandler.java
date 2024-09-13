@@ -14,6 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,35 +69,40 @@ public class GlobalExceptionHandler {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>>
-    handleConstrainViolationExceptions(ConstraintViolationException ex){
+    handleConstrainViolationExceptions(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getConstraintViolations().forEach(cv->{
-            String fieldName = ((PathImpl)cv.getPropertyPath()).getLeafNode().getName();
+        ex.getConstraintViolations().forEach(cv -> {
+            String fieldName = ((PathImpl) cv.getPropertyPath()).getLeafNode().getName();
             String errorMessage = cv.getMessage();
-            errors.put(fieldName,errorMessage);
+            errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> handleAuthenticationException (AuthenticationException ex){
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
         return new ResponseEntity<>("Authentication is required to access this resource",
                 HttpStatus.UNAUTHORIZED);
     }
+
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<String> handleExpiredJwtException (ExpiredJwtException ex){
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
         return new ResponseEntity<>("Your session has expired, please log in again",
                 HttpStatus.UNAUTHORIZED);
     }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Current user not authorized: " + ex.getMessage());
     }
+
     @ExceptionHandler(ItemNotFoundException.class)
-        public ResponseEntity<String> handleItemNotFoundException (ItemNotFoundException ex){
+    public ResponseEntity<String> handleItemNotFoundException(ItemNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

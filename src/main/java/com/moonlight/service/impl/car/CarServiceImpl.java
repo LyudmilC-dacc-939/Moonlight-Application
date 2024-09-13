@@ -1,6 +1,5 @@
 package com.moonlight.service.impl.car;
 
-import com.moonlight.advice.exception.ItemNotFoundException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UnavailableResourceException;
 import com.moonlight.dto.ImageResponse;
@@ -11,6 +10,7 @@ import com.moonlight.repository.car.FileResourceRepository;
 import com.moonlight.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;

@@ -38,10 +38,10 @@ public class HotelController {
                             schema = @Schema(implementation = HotelRoom.class)))})
     @GetMapping("/search")
     public ResponseEntity<Set<HotelRoom>> searchHotelRooms(
-           @RequestParam(value = "roomNumber", required = false) Long roomNumber,
-           @RequestParam(value = "roomType", required = false) String roomType,
-           @RequestParam(value = "roomView", required = false) String roomView,
-           @RequestParam(value = "bedType", required = false) String bedType) {
+            @RequestParam(value = "roomNumber", required = false) Long roomNumber,
+            @RequestParam(value = "roomType", required = false) String roomType,
+            @RequestParam(value = "roomView", required = false) String roomView,
+            @RequestParam(value = "bedType", required = false) String bedType) {
         Set<HotelRoom> hotelRooms = hotelRoomService.findByRoomNumberByRoomTypeOrViewTypeOrBedType(roomNumber, roomType, roomView, bedType);
         if (hotelRooms.isEmpty()) {
             throw new ItemNotFoundException("No room found with your search criteria");

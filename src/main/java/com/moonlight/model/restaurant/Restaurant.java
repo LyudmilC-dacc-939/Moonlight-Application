@@ -1,5 +1,6 @@
 package com.moonlight.model.restaurant;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.moonlight.model.enums.RestaurantZone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +8,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity(name = "RESTAURANTS")
 @Table(name = "restaurants")
@@ -32,5 +35,9 @@ public class Restaurant {
     @Positive
     @NotNull(message = "Please enter the maximum number of seats for this table")
     private int maxNumberOfSeats;
+
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<RestaurantReservation> restaurantReservations;
 
 }

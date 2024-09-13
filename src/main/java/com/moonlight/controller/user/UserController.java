@@ -267,7 +267,7 @@ public class UserController {
             Optional.ofNullable(userService.getUserById(userId)).orElseThrow(() ->
                     new RecordNotFoundException("User with id: " + userId + " not exist"));
         }
-      
+
         Map<String, List<?>> resultMap = new HashMap<>();
         switch (reservationType) {
             case "hotel rooms", "hotel", "rooms":

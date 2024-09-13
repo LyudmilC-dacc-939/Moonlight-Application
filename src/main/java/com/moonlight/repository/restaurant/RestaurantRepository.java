@@ -16,6 +16,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query(value = "SELECT * FROM restaurants r WHERE " +
             "(:tableNumber IS NULL OR r.table_number = :tableNumber) AND " +
             "(:restaurantZone IS NULL OR r.restaurant_zone = :restaurantZone)", nativeQuery = true)
-    Set<Restaurant> findByTableNumberOrZone(@Param("tableNumber")Long tableNumber,
-                                            @Param("restaurantZone")String restaurantZone);
+    Set<Restaurant> findByTableNumberOrZone(@Param("tableNumber") Long tableNumber,
+                                            @Param("restaurantZone") String restaurantZone);
 }

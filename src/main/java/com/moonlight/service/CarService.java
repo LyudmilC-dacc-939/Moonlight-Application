@@ -8,5 +8,6 @@ import java.util.List;
 public interface CarService {
 
     List<Car> findByQuerySearch(String carType, String carBrand);
+
     List<ImageResponse> getCarImages(Long carId, Long imageId);
 }

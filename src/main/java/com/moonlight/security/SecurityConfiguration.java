@@ -51,11 +51,11 @@ public class SecurityConfiguration {
                                         "api/v1/reservations/hotel/available-rooms/",
                                         "/api/v1/cars/images/**",
                                         "/webjars/**"
-                                      )
+                                )
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
-                .exceptionHandling(exceptionHandling ->exceptionHandling
+                .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(customAccessDeniedHandler())
                         .authenticationEntryPoint(customAuthenticationEntryPoint()))
                 .sessionManagement(session -> session
@@ -64,16 +64,18 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
+
     @Bean
-    public AccessDeniedHandler customAccessDeniedHandler (){
-        return ((request, response, accessDeniedException)->{
+    public AccessDeniedHandler customAccessDeniedHandler() {
+        return ((request, response, accessDeniedException) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write("You do not have permission to access this resource");
         });
     }
+
     @Bean
-    public AuthenticationEntryPoint customAuthenticationEntryPoint (){
-        return ((request, response, authException)->{
+    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return ((request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Authentication is required to access this resource");
         });

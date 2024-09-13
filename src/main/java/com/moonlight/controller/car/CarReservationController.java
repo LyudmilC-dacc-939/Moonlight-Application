@@ -13,14 +13,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class CarReservationController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = "/create-reservation/")
     public ResponseEntity<CarReservationResponse> createReservation(
-            @Valid  @RequestBody CarReservationRequest request, @AuthenticationPrincipal User user) {
+            @Valid @RequestBody CarReservationRequest request, @AuthenticationPrincipal User user) {
         String email = user.getEmailAddress();
         CarReservation reservation = carReservationService.createReservation(request, email);
 
@@ -83,7 +84,7 @@ public class CarReservationController {
                             schema = @Schema(implementation = CarReservation.class)))})
     @GetMapping("/available/")
     public ResponseEntity<CarAvailabilityResponse> getAvailableCars(
-           @Valid @RequestBody CarAvailabilityRequest request) {
+            @Valid @RequestBody CarAvailabilityRequest request) {
 
         Map<LocalDate, List<String>> dailyAvailability = carReservationService.getAvailableCarsByDateRange(request);
 

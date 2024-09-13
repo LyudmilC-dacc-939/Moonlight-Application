@@ -5,10 +5,12 @@ import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
 import com.moonlight.model.car.CarReservation;
 import com.moonlight.model.hotel.HotelRoomReservation;
+import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.model.user.UserRole;
 import com.moonlight.repository.car.CarReservationRepository;
 import com.moonlight.repository.hotel.HotelRoomReservationRepository;
+import com.moonlight.repository.restaurant.RestaurantReservationRepository;
 import com.moonlight.repository.user.UserRepository;
 import com.moonlight.repository.user.UserRoleRepository;
 import com.moonlight.security.ApplicationConfiguration;
@@ -70,6 +72,9 @@ class UserServiceImplTest {
 
     @Mock
     private CarReservationRepository carReservationRepository;
+
+    @Mock
+    private RestaurantReservationRepository restaurantReservationRepository;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
@@ -299,16 +304,19 @@ class UserServiceImplTest {
     void testGetUserReservationsSuccess() {
         List<HotelRoomReservation> hotelRoomReservations = Arrays.asList(new HotelRoomReservation(), new HotelRoomReservation());
         List<CarReservation> carReservations = Arrays.asList(new CarReservation(), new CarReservation());
+        List<RestaurantReservation> restaurantReservations = Arrays.asList(new RestaurantReservation(), new RestaurantReservation());
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(currentUserImpl.isCurrentUserMatch(user)).thenReturn(true);
         when(hotelRoomReservationRepository.findByUserId(user.getId())).thenReturn(hotelRoomReservations);
         when(carReservationRepository.findByUserId(user.getId())).thenReturn(carReservations);
+        when(restaurantReservationRepository.findByUserId(user.getId())).thenReturn(restaurantReservations);
 
         Map<String, Object> reservations = userServiceImpl.getUserReservations(user);
 
         assertEquals(2, ((List<?>) reservations.get("hotelRoomReservations")).size());
         assertEquals(2, ((List<?>) reservations.get("carReservations")).size());
+        assertEquals(2, ((List<?>) reservations.get("restaurantReservations")).size());
     }
 
     @Test
