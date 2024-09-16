@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/reservations/restaurant")
+@RequestMapping("/api/v1/reservations/restaurant")
 @Tag(name = "Restaurant Reservation API", description = "API for managing restaurant reservations")
 public class RestaurantReservationController {
     @Autowired
@@ -36,20 +36,19 @@ public class RestaurantReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Restaurant reservation successfully made",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservation.class))),
+                            schema = @Schema(implementation = RestaurantReservationResponse.class))),
             @ApiResponse(responseCode = "400", description = "Format is not valid",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservation.class))),
+                    content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "403", description = "Given dates are invalid/taken",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservation.class))),
+                    content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "User or Restaurant not found",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservation.class)))})
+                    content = @Content(mediaType = "application/json"))
+    })
     public ResponseEntity<RestaurantReservationResponse> createReservation(
             @Valid @RequestBody RestaurantReservationRequest request, @AuthenticationPrincipal User user) {
         RestaurantReservation reservation = restaurantReservationService.createReservation(request, user);
-        RestaurantReservationResponse response = new RestaurantReservationResponse(reservation.getId(),
+        RestaurantReservationResponse response = new RestaurantReservationResponse(
+                reservation.getId(),
                 reservation.getReservationDate(),
                 reservation.getReservationTime().toLocalTime(),
                 reservation.getZone(),

@@ -31,4 +31,9 @@ public interface RestaurantReservationRepository extends JpaRepository<Restauran
             @Param("reservationEndTime") LocalDateTime reservationEndTime,
             @Param("tableNumber") Long tableNumber
     );
+
+    @Query(value = "SELECT * FROM restaurant_reservations r " +
+            "WHERE :userId IS NULL OR r.user_id = :userId " +
+            "ORDER BY r.reservation_date ASC", nativeQuery = true)
+    List<RestaurantReservation> findByUserIdOrderByReservationDateReservationDateAsc(@Param("userId") Long userId);
 }

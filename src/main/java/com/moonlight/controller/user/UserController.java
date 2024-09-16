@@ -4,9 +4,11 @@ import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
 import com.moonlight.model.car.CarReservation;
 import com.moonlight.model.hotel.HotelRoomReservation;
+import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.service.CarReservationService;
 import com.moonlight.service.HotelRoomReservationService;
+import com.moonlight.service.RestaurantReservationService;
 import com.moonlight.service.UserService;
 import com.moonlight.service.impl.user.CurrentUserImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +48,7 @@ public class UserController {
     @Autowired
     private CarReservationService carReservationService;
     @Autowired
-    private CurrentUserImpl currentUserImpl;
+    private RestaurantReservationService restaurantReservationService;
 
     @Operation(summary = "User Registration", description = "Registers new user")
     @ApiResponses(value = {
@@ -285,9 +287,12 @@ public class UserController {
                 resultMap.put("Car reservations: ", carReservations);
                 return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             case "restaurant":
-                //todo: add return function for RestaurantReservationService once its added
-                System.out.println("future restaurant list");
-                break;
+                List<RestaurantReservation> restaurantReservations = restaurantReservationService.getRestaurantReservationsByUserId(userId);
+                if (restaurantReservations.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no restaurant reservations");
+                }
+                resultMap.put("Restaurant reservations: ", restaurantReservations);
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             case "bar":
                 //todo: add return function for BarReservationService once its added
                 System.out.println("future bar list");
@@ -295,8 +300,10 @@ public class UserController {
             case "all":
                 List<HotelRoomReservation> allRoomReservations = roomReservationService.getRoomReservationsByUserId(userId);
                 List<CarReservation> allCarReservations = carReservationService.getCarReservationsByUserId(userId);
+                List<RestaurantReservation> allRestaurantReservations = restaurantReservationService.getRestaurantReservationsByUserId(userId);
                 resultMap.put("Hotel reservations: ", allRoomReservations);
                 resultMap.put("Car reservations: ", allCarReservations);
+                resultMap.put("Restaurant reservations: ", allRestaurantReservations);
                 boolean isEmpty = resultMap.values().stream()
                         .allMatch(CollectionUtils::isEmpty);
                 if (isEmpty) {

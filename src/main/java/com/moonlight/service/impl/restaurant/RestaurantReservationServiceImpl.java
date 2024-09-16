@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class RestaurantReservationServiceImpl implements RestaurantReservationService {
@@ -26,7 +27,6 @@ public class RestaurantReservationServiceImpl implements RestaurantReservationSe
     private RestaurantRepository restaurantRepository;
     @Autowired
     private CurrentUserImpl currentUserImpl;
-
 
     @Override
     @SneakyThrows
@@ -76,5 +76,10 @@ public class RestaurantReservationServiceImpl implements RestaurantReservationSe
             return restaurantReservationRepository.save(reservation);
 
         }
+    }
+
+    @Override
+    public List<RestaurantReservation> getRestaurantReservationsByUserId(Long userId) {
+       return restaurantReservationRepository.findByUserIdOrderByReservationDateReservationDateAsc(userId);
     }
 }
