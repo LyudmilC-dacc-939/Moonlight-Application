@@ -36,7 +36,7 @@ public class RestaurantReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Restaurant reservation successfully made",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservationResponse.class))),
+                            schema = @Schema(implementation = RestaurantReservation.class))),
             @ApiResponse(responseCode = "400", description = "Format is not valid",
                     content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "403", description = "Given dates are invalid/taken",

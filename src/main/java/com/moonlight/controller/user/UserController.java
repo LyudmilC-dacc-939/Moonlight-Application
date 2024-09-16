@@ -246,19 +246,24 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully fetched data",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+                            schema = @Schema(anyOf =
+                                    {CarReservation.class, HotelRoomReservation.class, RestaurantReservation.class}))),
             @ApiResponse(responseCode = "204", description = "Successfully fetched, no data present",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+                            schema = @Schema(anyOf =
+                                    {CarReservation.class, HotelRoomReservation.class, RestaurantReservation.class}))),
             @ApiResponse(responseCode = "400", description = "Request is not valid",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+                            schema = @Schema(anyOf =
+                                    {CarReservation.class, HotelRoomReservation.class, RestaurantReservation.class}))),
             @ApiResponse(responseCode = "403", description = "Unauthorized",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class}))),
+                            schema = @Schema(anyOf =
+                                    {CarReservation.class, HotelRoomReservation.class, RestaurantReservation.class}))),
             @ApiResponse(responseCode = "404", description = "No data matching input found",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(anyOf = {CarReservation.class, HotelRoomReservation.class})))
+                            schema = @Schema(anyOf =
+                                    {CarReservation.class, HotelRoomReservation.class})))
     })
     @SneakyThrows
     @GetMapping(path = "/list-reservations/")
