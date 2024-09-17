@@ -1,7 +1,6 @@
 package com.moonlight.model.bar;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.moonlight.model.enums.ScreenName;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +14,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,14 +33,15 @@ public class Screen {
     @ManyToOne(fetch = FetchType.LAZY)
     private Bar Bar;
 
-    @Enumerated(EnumType.STRING)
-    private ScreenName screenName;
+    @NotNull
+    private String screenName;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "screen")
     @JsonManagedReference
     private List<Event> events;
 
-    private Integer seatNumber;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "screen")
+    @JsonManagedReference
+    private List<Seat> seats;
 
-    private final double seatPrice = 10.0;
 }

@@ -1,6 +1,7 @@
 package com.moonlight.model.bar;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,9 +15,13 @@ public class Bar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    private String barName;
+
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "Bar",
             fetch = FetchType.EAGER)
+    @NotNull
     private Set<Screen> screens;
 
 }

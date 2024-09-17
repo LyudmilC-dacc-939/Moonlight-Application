@@ -67,4 +67,34 @@ public class CsvServiceImpl implements CsvService {
         }
         return restaurantTables;
     }
+
+    @Override
+    public List<String> readBarScreensFromCsv(String filePath) throws IOException {
+        List<String> screens = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource(filePath).getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                screens.add(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return screens;
+    }
+
+    @Override
+    public List<String[]> readBarSeatsFromCsv(String filePath) throws IOException {
+        List<String[]> barSeats = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader((new InputStreamReader(new ClassPathResource(filePath).getInputStream())))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] barSeatsData = line.split(",");
+                barSeats.add(barSeatsData);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return barSeats;
+    }
+
 }
