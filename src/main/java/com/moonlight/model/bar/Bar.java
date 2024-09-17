@@ -3,15 +3,12 @@ package com.moonlight.model.bar;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
+import lombok.Data;
 import java.util.Set;
 
 @Entity
 @Table(name = "bars")
-@RequiredArgsConstructor
-@Getter
+@Data
 public class Bar {
 
     @Id
@@ -25,7 +22,6 @@ public class Bar {
             mappedBy = "Bar",
             fetch = FetchType.EAGER)
     @JsonManagedReference
-    @NotNull
     private Set<Screen> screens;
 
 }

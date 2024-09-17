@@ -20,11 +20,11 @@ public class Screen {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
     @JoinColumn(name = "bar_id", nullable = false)
+    @JsonBackReference
     private Bar Bar;
 
-    @NotNull
+    @NotNull(message = "Screen must be named")
     @Column(unique = true)
     private String screenName;
 

@@ -2,6 +2,7 @@ package com.moonlight.model.bar;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,8 @@ public class Seat {
     @JsonBackReference
     private Screen screen;
 
-    private int seatNumber;  // Local seat number for the screen
+    @NotNull(message = "Seat must have a number")
+    private int seatNumber;
 
     private final double seatPrice = 5.0;
 

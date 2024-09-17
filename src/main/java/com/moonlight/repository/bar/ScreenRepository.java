@@ -9,5 +9,7 @@ import java.util.Optional;
 @Repository
 public interface ScreenRepository extends JpaRepository<Screen, Long> {
 
-    Optional<Screen> findByScreenNameOrId(String screenName, Long id);
+    Optional<Screen> findByScreenName(String screenName);
+
+    Optional<Screen> findByScreenNameAndBarId(String screenName, Long barId);
 }
