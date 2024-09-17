@@ -9,16 +9,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Seat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "screen_id", nullable = false)
     @JsonBackReference
     private Screen screen;
 
     private int seatNumber;  // Local seat number for the screen
 
-    private final double seatPrice = 10.0;
+    private final double seatPrice = 5.0;
 
 }

@@ -25,8 +25,9 @@ public class Event {
     // "MM/dd/yyyy HH:mm:ss" -- in the request, so that events have a specific date AND time
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
+    @JoinColumn(name = "screen_id", nullable = false)
     @JsonBackReference
+    @NotNull
     private Screen screen;
 
 }
