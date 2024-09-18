@@ -13,7 +13,5 @@ public interface CsvService {
 
     List<String[]> readRestaurantTablesFromCsv(String filePath) throws IOException;
 
-    List<String> readBarScreensFromCsv(String filePath) throws IOException;
-
-    List<String[]> readBarSeatsFromCsv(String filePath) throws IOException;
+    List<String[]> readBarScreensAndSeatsFromCsv(String filePath) throws IOException;
 }
