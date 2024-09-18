@@ -11,5 +11,4 @@ import java.util.Optional;
 public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     boolean existsByScreenAndSeatNumber(Screen screen, int seatNumber);
-
 }

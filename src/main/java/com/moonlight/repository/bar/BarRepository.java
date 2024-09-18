@@ -11,5 +11,4 @@ import java.util.Optional;
 public interface BarRepository extends JpaRepository<Bar, Long> {
 
     Optional<Bar> findByBarName(String name);
-
 }

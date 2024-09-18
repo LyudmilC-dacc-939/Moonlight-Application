@@ -12,6 +12,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -51,7 +52,10 @@ public class BarScreensAndSeatsAsset implements CommandLineRunner {
         for (String[] rowData : dataFromCsv) {
             String barName = rowData[0].trim();
             String screenName = rowData[1].trim();
-            Screen screen = Screen.valueOf(screenName);
+            Screen screen = Arrays.stream(Screen.values())
+                                              .filter(s -> s.getCurrentScreenName().equals(screenName))
+                                              .findFirst()
+                                              .orElseThrow(() -> new IllegalArgumentException("Unknown screen name: " + screenName));
 
             bar = barRepository.findByBarName(barName)
                     .orElseGet(() -> {
@@ -76,7 +80,6 @@ public class BarScreensAndSeatsAsset implements CommandLineRunner {
                     seat.setBar(bar);
 
                     seatRepository.save(seat);
-                    bar.getSeats().add(seat);
                 }
             }
         }
