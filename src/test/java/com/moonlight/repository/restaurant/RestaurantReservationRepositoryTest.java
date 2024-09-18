@@ -7,17 +7,15 @@ import com.moonlight.model.user.User;
 import com.moonlight.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
-
+import org.mockito.Mock;
+import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,21 +29,18 @@ class RestaurantReservationRepositoryTest {
 
     @Autowired
     private RestaurantReservationRepository restaurantReservationRepository;
-
     @Mock
     private RestaurantReservationRepository restaurantReservationRepositoryMocked;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RestaurantRepository restaurantRepository;
     private User user;
-
     private Restaurant restaurant;
-
     private RestaurantReservation restaurantReservation;
-
+    private LocalDate reservationDate;
+    private Integer seats;
+    private Boolean isSmoking;
 
     @BeforeEach
     void setUp() {
@@ -63,6 +58,7 @@ class RestaurantReservationRepositoryTest {
         restaurant.setRestaurantZone(RestaurantZone.BAR);
         restaurantRepository.save(restaurant);
 
+        reservationDate = LocalDate.now().plusDays(1);
         LocalDate reservationDate = LocalDate.now().plusDays(1);
         LocalTime reservationTime = LocalTime.of(13, 0);
         LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationTime);
@@ -77,7 +73,8 @@ class RestaurantReservationRepositoryTest {
         restaurantReservation.setZone(RestaurantZone.BAR);
         restaurantReservationRepository.save(restaurantReservation);
 
-
+        seats = 1;
+        isSmoking = false;
     }
 
     @Test
@@ -256,5 +253,4 @@ class RestaurantReservationRepositoryTest {
         assertEquals(LocalDate.of(2023, 9, 15), result.get(0).getReservationDate());
         verify(restaurantReservationRepositoryMocked, times(1)).findByUserIdOrderByReservationDateReservationDateAsc(firstUser.getId());
     }
-
 }

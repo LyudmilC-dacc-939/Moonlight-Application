@@ -32,6 +32,20 @@ public interface RestaurantReservationRepository extends JpaRepository<Restauran
             @Param("tableNumber") Long tableNumber
     );
 
+    @Query(value = "SELECT DISTINCT rr.table_number, rr.reservation_time, rr.reservation_end_time " +
+            "FROM restaurant_reservations rr " +
+            "JOIN restaurants r ON rr.table_number = r.table_number " +
+            "WHERE rr.reservation_date = :reservationDate " +
+            "AND ( :seats IS NULL OR r.max_number_of_seats >= :seats)" +
+            "AND ( :isSmoking IS NULL " +
+            " OR ( :isSmoking = true AND rr.is_smoking =  1 ) " +
+            " OR ( :isSmoking = false AND rr.is_smoking =  0 ))", nativeQuery = true)
+    List<Object[]> findAvailableTablesByDateAndPreferences(
+            @Param("reservationDate") LocalDate reservationDate,
+            @Param("seats") Integer seats,
+            @Param("isSmoking") Boolean isSmoking
+    );
+
     @Query(value = "SELECT * FROM restaurant_reservations r " +
             "WHERE :userId IS NULL OR r.user_id = :userId " +
             "ORDER BY r.reservation_date ASC", nativeQuery = true)

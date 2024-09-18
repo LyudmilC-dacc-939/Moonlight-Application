@@ -2,6 +2,7 @@ package com.moonlight.controller.restaurant;
 
 import com.moonlight.dto.restaurant.RestaurantReservationRequest;
 import com.moonlight.dto.restaurant.RestaurantReservationResponse;
+import com.moonlight.dto.restaurant.TableAvailabilityResponse;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.service.RestaurantReservationService;
@@ -17,6 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/reservations/restaurant")
 @Tag(name = "Restaurant Reservation API", description = "API for managing restaurant reservations")
+@Valid
 public class RestaurantReservationController {
     @Autowired
     private RestaurantReservationService restaurantReservationService;
@@ -36,14 +43,16 @@ public class RestaurantReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Restaurant reservation successfully made",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservationResponse.class))),
+                            schema = @Schema(implementation = RestaurantReservation.class))),
             @ApiResponse(responseCode = "400", description = "Format is not valid",
-                    content = @Content(mediaType = "application/json")),
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class))),
             @ApiResponse(responseCode = "403", description = "Given dates are invalid/taken",
-                    content = @Content(mediaType = "application/json")),
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class))),
             @ApiResponse(responseCode = "404", description = "User or Restaurant not found",
-                    content = @Content(mediaType = "application/json"))
-    })
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class)))})
     public ResponseEntity<RestaurantReservationResponse> createReservation(
             @Valid @RequestBody RestaurantReservationRequest request, @AuthenticationPrincipal User user) {
         RestaurantReservation reservation = restaurantReservationService.createReservation(request, user);
@@ -55,6 +64,35 @@ public class RestaurantReservationController {
                 reservation.getTableNumber(),
                 reservation.isSmoking(),
                 reservation.getSeatCost());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/available-tables")
+    @Operation(summary = "Get available tables", description = "Get available tables")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Available tables successfully made",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class))),
+            @ApiResponse(responseCode = "400", description = "Format is not valid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class))),
+            @ApiResponse(responseCode = "403", description = "Given dates are invalid/taken",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class))),
+            @ApiResponse(responseCode = "404", description = "User or Restaurant not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RestaurantReservation.class)))})
+    public ResponseEntity<?> getAvailableTables(
+            @RequestParam(required = false)
+            LocalDate reservationDate,
+            @RequestParam(required = false) LocalTime startTime,
+            @RequestParam(required = false) LocalTime endTime,
+            @RequestParam(required = false) Integer seats,
+            @RequestParam(required = false) Boolean isSmoking
+    ) {
+        TableAvailabilityResponse response = restaurantReservationService
+                .getAvailableTablesByDateAndPreferences(reservationDate, startTime, endTime, seats, isSmoking);
+
         return ResponseEntity.ok(response);
     }
 }
