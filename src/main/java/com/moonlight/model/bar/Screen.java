@@ -15,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class Screen {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +23,7 @@ public class Screen {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bar_id", nullable = false)
     @JsonBackReference
-    private Bar Bar;
+    private Bar bar;
 
     @NotNull(message = "Screen must be named")
     @Column(unique = true)
@@ -35,5 +36,4 @@ public class Screen {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "screen")
     @JsonManagedReference
     private List<Seat> seats;
-
 }

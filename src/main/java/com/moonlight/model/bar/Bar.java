@@ -19,9 +19,8 @@ public class Bar {
     private String barName;
 
     @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "Bar",
+            mappedBy = "bar",
             fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<Screen> screens;
-
 }

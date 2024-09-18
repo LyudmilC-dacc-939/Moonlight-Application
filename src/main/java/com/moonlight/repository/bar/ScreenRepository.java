@@ -1,5 +1,6 @@
 package com.moonlight.repository.bar;
 
+import com.moonlight.model.bar.Bar;
 import com.moonlight.model.bar.Screen;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,5 +12,5 @@ public interface ScreenRepository extends JpaRepository<Screen, Long> {
 
     Optional<Screen> findByScreenName(String screenName);
 
-    Optional<Screen> findByScreenNameAndBarId(String screenName, Long barId);
+    Optional<Screen> findByScreenNameAndBar(String screenName, Bar bar);
 }

@@ -96,5 +96,4 @@ public class CsvServiceImpl implements CsvService {
         }
         return barSeats;
     }
-
 }

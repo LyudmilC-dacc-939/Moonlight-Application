@@ -46,12 +46,13 @@ public class BarScreensAsset implements CommandLineRunner {
     private void saveScreens(List<String> screensFromCsv, Bar bar) {
         for (String screenName : screensFromCsv) {
 
-            if (screenRepository.findByScreenNameAndBarId(screenName, bar.getId()).isEmpty()) {
-                Screen screen = new Screen();
-                screen.setScreenName(screenName);
-                screen.setBar(bar);
+            Optional<Screen> screen = screenRepository.findByScreenNameAndBar(screenName, bar);
+            Screen newScreen = new Screen();
+            if (screen.isEmpty()) {
+                newScreen.setScreenName(screenName);
+                newScreen.setBar(bar);
 
-                screenRepository.save(screen);
+                screenRepository.save(newScreen);
             }
         }
     }

@@ -41,11 +41,11 @@ public class BarSeatsAsset implements CommandLineRunner {
             for (int i = 1; i < seatData.length; i++) {
                 int seatNumber = Integer.parseInt(seatData[i].trim());
 
-                Seat newSeat = new Seat();
-                newSeat.setSeatNumber(seatNumber);
-                newSeat.setScreen(screen);
+                if (seatRepository.findBySeatNumberAndScreen(seatNumber, screen).isEmpty()) {
+                    Seat newSeat = new Seat();
+                    newSeat.setSeatNumber(seatNumber);
+                    newSeat.setScreen(screen);
 
-                if (seatRepository.findBySeatNumber(newSeat.getSeatNumber()).isEmpty()) {
                     seatRepository.save(newSeat);
                 }
             }
