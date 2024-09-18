@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -21,17 +22,19 @@ public class Event {
     private Long id;
 
     @Column(name = "event_name")
-    @NotNull
+    @NotNull(message = "Event must have name")
     private String eventName;
 
     @Column(name = "event_date")
-    @NotNull
+    @NotNull(message = "event must have date and time")
     @Future
     private LocalDateTime eventDate;
     // "MM/dd/yyyy HH:mm:ss" -- in the request, so that events have a specific date AND time
 
+    @ElementCollection(targetClass = Screen.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "screen_events", joinColumns = @JoinColumn(name = "event_id"))
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Event must have a screen")
-    private Screen screen;
+    @NotNull(message = "Event must have at least 1 screen")
+    private Set<Screen> screen;
 
 }
