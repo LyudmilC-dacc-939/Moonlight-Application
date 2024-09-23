@@ -13,23 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Seat {
 
+    private final double seatPrice = 5.0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Seat must have a screen")
     private Screen screen;
-
     @Column(name = "seat_number")
     @NotNull(message = "Seat must have a number")
     private int seatNumber;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bar_id", nullable = false)
     @JsonBackReference
     private Bar bar;
-
-    private final double seatPrice = 5.0;
 
 }

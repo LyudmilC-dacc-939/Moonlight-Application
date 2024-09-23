@@ -53,9 +53,9 @@ public class BarScreensAndSeatsAsset implements CommandLineRunner {
             String barName = rowData[0].trim();
             String screenName = rowData[1].trim();
             Screen screen = Arrays.stream(Screen.values())
-                                              .filter(s -> s.getCurrentScreenName().equals(screenName))
-                                              .findFirst()
-                                              .orElseThrow(() -> new IllegalArgumentException("Unknown screen name: " + screenName));
+                    .filter(s -> s.getCurrentScreenName().equals(screenName))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Unknown screen name: " + screenName));
 
             bar = barRepository.findByBarName(barName)
                     .orElseGet(() -> {

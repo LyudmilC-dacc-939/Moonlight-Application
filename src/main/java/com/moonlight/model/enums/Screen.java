@@ -24,14 +24,6 @@ public enum Screen {
         this.currentScreenName = screenName;
     }
 
-    public void setScreenNameForEvent(String eventName) {
-        this.currentScreenName = eventName;
-    }
-
-    public void resetToDefault() {
-        this.currentScreenName = this.defaultScreenName;
-    }
-
     public static Screen fromId(int id) {
         for (Screen screen : Screen.values()) {
             if (screen.getId() == id) {
@@ -39,5 +31,13 @@ public enum Screen {
             }
         }
         throw new IllegalArgumentException("Unknown Screen ID: " + id);
+    }
+
+    public void setScreenNameForEvent(String eventName) {
+        this.currentScreenName = eventName;
+    }
+
+    public void resetToDefault() {
+        this.currentScreenName = this.defaultScreenName;
     }
 }

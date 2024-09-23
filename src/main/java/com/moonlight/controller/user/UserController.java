@@ -10,7 +10,6 @@ import com.moonlight.service.CarReservationService;
 import com.moonlight.service.HotelRoomReservationService;
 import com.moonlight.service.RestaurantReservationService;
 import com.moonlight.service.UserService;
-import com.moonlight.service.impl.user.CurrentUserImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

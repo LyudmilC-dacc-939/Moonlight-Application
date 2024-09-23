@@ -1,6 +1,5 @@
 package com.moonlight.model.bar;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.moonlight.model.enums.Screen;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -9,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Set;
 
 @Entity
