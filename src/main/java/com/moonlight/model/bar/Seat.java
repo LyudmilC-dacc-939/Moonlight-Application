@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.moonlight.model.enums.Screen;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "SEATS")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Seat {
 
     private final double seatPrice = 5.0;
