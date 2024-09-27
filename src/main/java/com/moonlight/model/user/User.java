@@ -72,7 +72,6 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<BarReservation> barReservations;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(userRole.getUserRole()));

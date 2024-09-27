@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ class BarReservationRepositoryTest {
     void setUp() {
         // Create and persist a User
         user = new User();
-        user.setId(3L); // Set an ID or any other necessary properties
+        user.setId(1L); // Set an ID or any other necessary properties
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmailAddress("test@test.com");
@@ -73,6 +74,25 @@ class BarReservationRepositoryTest {
 
         // Persist the reservation
         barReservationRepository.save(reservation);
+
+        // Create and persist some reservations with the user
+        BarReservation reservation1 = new BarReservation();
+        reservation1.setUser(user); // Associate the reservation with the user
+        reservation1.setSeats(new HashSet<Seat>() {{
+            add(seat);
+        }});
+        reservation1.setScreen(Screen.SCREEN_ONE);
+        reservation1.setReservationDate(LocalDate.now().plusDays(1)); // Example date
+        entityManager.persist(reservation1);
+
+        BarReservation reservation2 = new BarReservation();
+        reservation2.setUser(user); // Associate the reservation with the user
+        reservation2.setSeats(new HashSet<Seat>() {{
+            add(seat);
+        }});
+        reservation2.setScreen(Screen.SCREEN_ONE);
+        reservation2.setReservationDate(LocalDate.now().plusDays(2)); // Example date
+        entityManager.persist(reservation2);
     }
 
     @Test
@@ -84,5 +104,17 @@ class BarReservationRepositoryTest {
         // Check for a date that doesn't exist
         boolean notExists = barReservationRepository.existsBySeatAndReservationDate(seat, LocalDate.now());
         assertThat(notExists).isFalse(); // Should return false since there is no reservation for today
+    }
+
+    @Test
+    void testFindByUserId() {
+        List<BarReservation> reservations = barReservationRepository.findByUserId(1L);
+
+        assertThat(reservations).hasSize(3); // Expecting 2 reservations for user with ID 1
+        assertThat(reservations).extracting("reservationDate").containsExactly(
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(2)
+        );
     }
 }

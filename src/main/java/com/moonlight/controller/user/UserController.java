@@ -2,14 +2,12 @@ package com.moonlight.controller.user;
 
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
+import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.car.CarReservation;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
-import com.moonlight.service.CarReservationService;
-import com.moonlight.service.HotelRoomReservationService;
-import com.moonlight.service.RestaurantReservationService;
-import com.moonlight.service.UserService;
+import com.moonlight.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,6 +46,8 @@ public class UserController {
     private CarReservationService carReservationService;
     @Autowired
     private RestaurantReservationService restaurantReservationService;
+    @Autowired
+    private BarReservationService barReservationService;
 
     @Operation(summary = "User Registration", description = "Registers new user")
     @ApiResponses(value = {
@@ -298,16 +298,21 @@ public class UserController {
                 resultMap.put("Restaurant reservations: ", restaurantReservations);
                 return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             case "bar":
-                //todo: add return function for BarReservationService once its added
-                System.out.println("future bar list");
-                break;
+                List<BarReservation> barReservations = barReservationService.getBarReservationsByUserId(userId);
+                if (barReservations.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no restaurant reservations");
+                }
+                resultMap.put("Bar reservations: ", barReservations);
+                return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(resultMap);
             case "all":
                 List<HotelRoomReservation> allRoomReservations = roomReservationService.getRoomReservationsByUserId(userId);
                 List<CarReservation> allCarReservations = carReservationService.getCarReservationsByUserId(userId);
                 List<RestaurantReservation> allRestaurantReservations = restaurantReservationService.getRestaurantReservationsByUserId(userId);
+                List<BarReservation> allBarReservations = barReservationService.getBarReservationsByUserId(userId);
                 resultMap.put("Hotel reservations: ", allRoomReservations);
                 resultMap.put("Car reservations: ", allCarReservations);
                 resultMap.put("Restaurant reservations: ", allRestaurantReservations);
+                resultMap.put("Bar Reservations: ", allBarReservations);
                 boolean isEmpty = resultMap.values().stream()
                         .allMatch(CollectionUtils::isEmpty);
                 if (isEmpty) {
@@ -317,7 +322,5 @@ public class UserController {
             default:
                 return ResponseEntity.status(HttpStatusCode.valueOf(400)).build();
         }
-        System.out.println("You shouldn't see this localized message if switch statement works fine");
-        return ResponseEntity.status(HttpStatusCode.valueOf(422)).build();
     }
 }

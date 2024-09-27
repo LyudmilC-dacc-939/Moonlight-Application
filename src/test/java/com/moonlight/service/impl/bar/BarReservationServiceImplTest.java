@@ -18,13 +18,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
+import java.util.Optional;
+import java.util.Set;
 import static org.mockito.Mockito.when;
 
 class BarReservationServiceImplTest {
@@ -134,5 +137,28 @@ class BarReservationServiceImplTest {
         // Verify the response contains the correct seat numbers
         assertEquals(Set.of(1), response.getSeatNumbers()); // Expecting seat 1
         assertEquals(1L, response.getReservationId()); // Expecting reservation ID 1
+    }
+
+    @Test
+    void testGetBarReservationsByUserId() {
+        User user = new User();
+        user.setId(1L); // Set an ID for the user
+
+        BarReservation reservation1 = new BarReservation();
+        reservation1.setId(1L); // Example ID
+        reservation1.setUser(user); // Associate the reservation with the user
+        // Set other properties as necessary
+
+        BarReservation reservation2 = new BarReservation();
+        reservation2.setId(2L);
+        reservation2.setUser(user); // Associate the reservation with the user
+
+        List<BarReservation> mockReservations = List.of(reservation1, reservation2);
+        when(barReservationRepository.findByUserId(anyLong())).thenReturn(mockReservations);
+
+        List<BarReservation> reservations = barReservationService.getBarReservationsByUserId(1L);
+
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations).extracting("id").containsExactly(1L, 2L);
     }
 }
