@@ -4,11 +4,13 @@ import com.moonlight.advice.exception.IllegalAccessException;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
+import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.car.CarReservation;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.model.user.UserRole;
+import com.moonlight.repository.bar.BarReservationRepository;
 import com.moonlight.repository.car.CarReservationRepository;
 import com.moonlight.repository.hotel.HotelRoomReservationRepository;
 import com.moonlight.repository.restaurant.RestaurantReservationRepository;
@@ -50,8 +52,9 @@ public class UserServiceImpl implements UserService {
     private final ApplicationConfiguration applicationConfiguration;
     private final HotelRoomReservationRepository hotelRoomReservationRepository;
     private final CarReservationRepository carReservationRepository;
-
     private final RestaurantReservationRepository restaurantReservationRepository;
+
+    private final BarReservationRepository barReservationRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
@@ -62,7 +65,7 @@ public class UserServiceImpl implements UserService {
                            UserRoleRepository userRoleRepository,
                            ApplicationConfiguration applicationConfiguration,
                            HotelRoomReservationRepository hotelRoomReservationRepository,
-                           CarReservationRepository carReservationRepository, RestaurantReservationRepository restaurantReservationRepository) {
+                           CarReservationRepository carReservationRepository, RestaurantReservationRepository restaurantReservationRepository, BarReservationRepository barReservationRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -74,6 +77,7 @@ public class UserServiceImpl implements UserService {
         this.hotelRoomReservationRepository = hotelRoomReservationRepository;
         this.carReservationRepository = carReservationRepository;
         this.restaurantReservationRepository = restaurantReservationRepository;
+        this.barReservationRepository = barReservationRepository;
     }
 
     @Override
@@ -210,6 +214,7 @@ public class UserServiceImpl implements UserService {
             List<HotelRoomReservation> hotelRoomReservations = hotelRoomReservationRepository.findByUserId(foundUser.getId());
             List<CarReservation> carReservations = carReservationRepository.findByUserId(foundUser.getId());
             List<RestaurantReservation> restaurantReservations = restaurantReservationRepository.findByUserId(foundUser.getId());
+            List<BarReservation> barReservations = barReservationRepository.findByUserId(foundUser.getId());
             Map<String, Object> reservations = new HashMap<>();
             if (!hotelRoomReservations.isEmpty()) {
                 reservations.put("hotelRoomReservations", hotelRoomReservations);
@@ -227,6 +232,12 @@ public class UserServiceImpl implements UserService {
                 reservations.put("restaurantReservations", restaurantReservations);
             } else {
                 reservations.put("restaurantReservations", "No restaurant reservations found");
+            }
+
+            if (!barReservations.isEmpty()) {
+                reservations.put("barReservations", barReservations);
+            } else {
+                reservations.put("barReservations", "No bar reservations found");
             }
             return reservations;
         }

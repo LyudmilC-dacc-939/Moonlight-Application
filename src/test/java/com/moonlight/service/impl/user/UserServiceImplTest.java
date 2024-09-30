@@ -3,11 +3,13 @@ package com.moonlight.service.impl.user;
 import com.moonlight.advice.exception.InvalidInputException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
+import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.car.CarReservation;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.model.user.UserRole;
+import com.moonlight.repository.bar.BarReservationRepository;
 import com.moonlight.repository.car.CarReservationRepository;
 import com.moonlight.repository.hotel.HotelRoomReservationRepository;
 import com.moonlight.repository.restaurant.RestaurantReservationRepository;
@@ -75,6 +77,9 @@ class UserServiceImplTest {
 
     @Mock
     private RestaurantReservationRepository restaurantReservationRepository;
+
+    @Mock
+    private BarReservationRepository barReservationRepository;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
@@ -305,18 +310,23 @@ class UserServiceImplTest {
         List<HotelRoomReservation> hotelRoomReservations = Arrays.asList(new HotelRoomReservation(), new HotelRoomReservation());
         List<CarReservation> carReservations = Arrays.asList(new CarReservation(), new CarReservation());
         List<RestaurantReservation> restaurantReservations = Arrays.asList(new RestaurantReservation(), new RestaurantReservation());
+        List<BarReservation> barReservations = Arrays.asList(new BarReservation(), new BarReservation());
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(currentUserImpl.isCurrentUserMatch(user)).thenReturn(true);
         when(hotelRoomReservationRepository.findByUserId(user.getId())).thenReturn(hotelRoomReservations);
         when(carReservationRepository.findByUserId(user.getId())).thenReturn(carReservations);
         when(restaurantReservationRepository.findByUserId(user.getId())).thenReturn(restaurantReservations);
+        when(barReservationRepository.findByUserId(user.getId())).thenReturn(barReservations);
+
 
         Map<String, Object> reservations = userServiceImpl.getUserReservations(user);
 
         assertEquals(2, ((List<?>) reservations.get("hotelRoomReservations")).size());
         assertEquals(2, ((List<?>) reservations.get("carReservations")).size());
         assertEquals(2, ((List<?>) reservations.get("restaurantReservations")).size());
+        assertEquals(2, ((List<?>) reservations.get("barReservations")).size());
+
     }
 
     @Test
