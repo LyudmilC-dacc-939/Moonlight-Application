@@ -52,6 +52,8 @@ public class SecurityConfiguration {
                                         "api/v1/reservations/restaurant/available-tables",
                                         "api/v1/bars/search/screen",
                                         "api/v1/bars/search/screen/seats",
+                                        "api/v1/bars/screen/get-info/*",
+                                        "api/v1/bars/events/search/*",
                                         "/api/v1/cars/images/**",
                                         "/webjars/**"
                                 )

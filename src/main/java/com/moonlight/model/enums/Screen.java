@@ -2,9 +2,11 @@ package com.moonlight.model.enums;
 
 import jakarta.persistence.Column;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Getter
+@RequiredArgsConstructor
 @ToString
 public enum Screen {
     SCREEN_ONE(1, "SCREEN: Football"),
@@ -18,11 +20,6 @@ public enum Screen {
     @Column(name = "current_name")
     private String currentScreenName;
 
-    Screen(int id, String screenName) {
-        this.id = id;
-        this.defaultScreenName = screenName;
-        this.currentScreenName = screenName;
-    }
 
     public static Screen fromId(int id) {
         for (Screen screen : Screen.values()) {

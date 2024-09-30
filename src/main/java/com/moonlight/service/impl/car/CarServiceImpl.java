@@ -31,7 +31,6 @@ public class CarServiceImpl implements CarService {
     public List<Car> findByQuerySearch(String carType, String carBrand) {
 
         return carRepository.findByCarBrandOrType(carType, carBrand);
-
     }
 
     public List<ImageResponse> getCarImages(Long carId, Long imageId) {

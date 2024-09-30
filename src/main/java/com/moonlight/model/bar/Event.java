@@ -4,6 +4,7 @@ import com.moonlight.model.enums.Screen;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 @Table(name = "events")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +26,18 @@ public class Event {
     private String eventName;
 
     @Column(name = "event_date")
-    @NotNull(message = "event must have date and time")
+    @NotNull(message = "Event must have date and time")
     @Future
     private LocalDateTime eventDate;
     // "MM/dd/yyyy HH:mm:ss" -- in the request, so that events have a specific date AND time
 
     @ElementCollection(targetClass = Screen.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "screen_events", joinColumns = @JoinColumn(name = "event_id"))
+    @CollectionTable(name = "screen_events",
+            joinColumns = {
+                    @JoinColumn(name = "event_name", referencedColumnName = "event_name"),
+                    @JoinColumn(name = "event_date", referencedColumnName = "event_date")
+            })
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Event must have at least 1 screen")
-    private Set<Screen> screen;
-
+    private Set<Screen> screens;
 }
