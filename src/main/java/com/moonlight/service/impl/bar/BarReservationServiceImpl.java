@@ -13,6 +13,8 @@ import com.moonlight.repository.bar.BarReservationRepository;
 import com.moonlight.repository.bar.SeatRepository;
 import com.moonlight.service.BarReservationService;
 import com.moonlight.service.impl.user.CurrentUserImpl;
+import jakarta.transaction.Transactional;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,17 +89,40 @@ public class BarReservationServiceImpl implements BarReservationService {
         }
     }
 
-        private Screen findScreenByName (String screenName){
-            for (Screen screen : Screen.values()) {
-                if (screen.getCurrentScreenName().equalsIgnoreCase(screenName)) {
-                    return screen;
-                }
+    private Screen findScreenByName(String screenName) {
+        for (Screen screen : Screen.values()) {
+            if (screen.getCurrentScreenName().equalsIgnoreCase(screenName)) {
+                return screen;
             }
-            throw new RecordNotFoundException("Invalid screen name: " + screenName);
         }
+        throw new RecordNotFoundException("Invalid screen name: " + screenName);
+    }
 
     @Override
     public List<BarReservation> getBarReservationsByUserId(Long userId) {
         return barReservationRepository.findByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    @SneakyThrows
+    public List<Seat> getAvailableSeats(String screenName, LocalDate reservationDate) {
+
+        Screen screen = findScreenByName(screenName);
+
+        List<Seat> allSeats = seatRepository.findByScreen(screen);
+
+        List<BarReservation> reservations = barReservationRepository.findByScreenAndReservationDate(
+                screen, reservationDate);
+
+        Set<Seat> reservedSeats = reservations.stream()
+                .flatMap(reservation -> reservation.getSeats().stream())
+                .collect(Collectors.toSet());
+
+        List<Seat> availableSeats = allSeats.stream()
+                .filter(seat -> !reservedSeats.contains(seat))
+                .toList();
+
+        return availableSeats;
     }
 }

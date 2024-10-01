@@ -38,6 +38,8 @@ class BarReservationRepositoryTest {
         // Create and persist a User
         user = new User();
         user.setId(1L); // Set an ID or any other necessary properties
+        user.setId(3L); // Set an ID or any other necessary properties
+        user.setId(1L); // Set an ID or any other necessary properties
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmailAddress("test@test.com");
@@ -116,5 +118,19 @@ class BarReservationRepositoryTest {
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(2)
         );
+    }
+
+    @Test
+    void findByScreenAndReservationDate() {
+        int expectedReservations = 2;
+        LocalDate reservationDate = LocalDate.now().plusDays(1);
+
+        List<BarReservation> reservations = barReservationRepository
+                .findByScreenAndReservationDate(Screen.SCREEN_ONE, reservationDate);
+        assertThat(reservations).hasSize(expectedReservations);
+        assertThat(reservations).extracting(BarReservation::getReservationDate)
+                .containsExactly(reservationDate, reservationDate);
+        assertThat(reservations).extracting(BarReservation::getScreen)
+                .containsOnly(Screen.SCREEN_ONE);
     }
 }

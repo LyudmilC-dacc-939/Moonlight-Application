@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,6 +106,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleItemNotFoundException(ItemNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleDateTimeParseException (DateTimeParseException ex){
+        return new ResponseEntity<>("Invalid date format", HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler(IllegalCurrentStateException.class)
     public ResponseEntity<String> handleIllegalCurrentStateException(IllegalCurrentStateException ex) {

@@ -16,18 +16,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import java.time.LocalDate;
+import java.util.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import java.util.Optional;
-import java.util.Set;
 import static org.mockito.Mockito.when;
 
 class BarReservationServiceImplTest {
@@ -138,7 +136,6 @@ class BarReservationServiceImplTest {
         assertEquals(Set.of(1), response.getSeatNumbers()); // Expecting seat 1
         assertEquals(1L, response.getReservationId()); // Expecting reservation ID 1
     }
-
     @Test
     void testGetBarReservationsByUserId() {
         User user = new User();
@@ -160,5 +157,43 @@ class BarReservationServiceImplTest {
 
         assertThat(reservations).hasSize(2);
         assertThat(reservations).extracting("id").containsExactly(1L, 2L);
+    }
+
+    @Test
+    public void testGetAvailableSeats() {
+        Screen screen = Screen.SCREEN_ONE;
+        LocalDate reservationDate = LocalDate.now().plusDays(1);
+
+        Seat seat1 = new Seat();
+        seat1.setId(1L);
+        seat1.setSeatNumber(1);
+        seat1.setScreen(Screen.SCREEN_ONE);
+
+        Seat seat2 = new Seat();
+        seat1.setId(2L);
+        seat1.setSeatNumber(2);
+        seat1.setScreen(Screen.SCREEN_ONE);
+
+        Seat seat3 = new Seat();
+        seat1.setId(3L);
+        seat1.setSeatNumber(3);
+        seat1.setScreen(Screen.SCREEN_ONE);
+
+        List<Seat> allSeats = Arrays.asList(seat1,seat2,seat3);
+
+        Set<Seat> reservedSeats = new HashSet<>();
+        reservedSeats.add(allSeats.get(0));
+        BarReservation reservation = new BarReservation();
+        reservation.setSeats(reservedSeats);
+
+        when(seatRepository.findByScreen(screen)).thenReturn(allSeats);
+        when(barReservationRepository.findByScreenAndReservationDate(screen, reservationDate))
+                .thenReturn(Collections.singletonList(reservation));
+        List<Seat> availableSeats = barReservationService
+                .getAvailableSeats(screen.getCurrentScreenName(), reservationDate);
+        assertEquals(2, availableSeats.size());
+        assertTrue(availableSeats.contains(allSeats.get(1)));
+        assertTrue(availableSeats.contains(allSeats.get(2)));
+        assertFalse(availableSeats.contains(allSeats.get(0)));
     }
 }
