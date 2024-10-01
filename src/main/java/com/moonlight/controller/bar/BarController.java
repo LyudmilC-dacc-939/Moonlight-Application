@@ -18,13 +18,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -91,6 +91,7 @@ public class BarController {
     @PostMapping("/events/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AddEventResponse> createEvent(@Valid @RequestBody AddEventRequest addEventRequest) {
+
         return ResponseEntity.status(HttpStatus.CREATED).body(barService.createEvent(addEventRequest));
     }
 

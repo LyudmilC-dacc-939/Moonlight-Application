@@ -15,7 +15,7 @@ public class AddEventRequest {
         @NotNull(message = "Event must have name")
         private String eventName;
 
-        @NotNull(message = "Event must be in correct format: \n1. dd-MM-yyyy HH:mm:ss \n2.dd-MM-yyyy")
+        @NotNull(message = "Event date must be in correct format: \n1. dd-MM-yyyy HH:mm:ss \n2.dd-MM-yyyy")
         @JsonDeserialize(using = DateOrDateTimeDeserializer.class)
         private LocalDateTime eventDate;
         // can use both dd-MM-yyyy HH:mm:ss AND dd-MM-yyyy when making a request: in the first instance it will

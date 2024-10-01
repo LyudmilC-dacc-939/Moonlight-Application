@@ -1,5 +1,6 @@
 package com.moonlight.service.impl.bar;
 
+import com.moonlight.advice.exception.IllegalCurrentStateException;
 import com.moonlight.advice.exception.ItemNotFoundException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.bar.AddEventRequest;
@@ -67,14 +68,37 @@ public class BarServiceImpl implements BarService {
         addedEvent.setEventName(addEventRequest.getEventName());
         addedEvent.setEventDate(addEventRequest.getEventDate());
 
-        try {
-            Screen screen = Screen.fromId(addEventRequest.getScreenId());
+        LocalDateTime now = LocalDateTime.now();
 
-            addedEvent.setScreens(Set.of(screen));
-        } catch (IllegalArgumentException e) {
-            throw new ItemNotFoundException("Invalid screen id: " + addEventRequest.getScreenId(), e);
+        if (addEventRequest.getEventDate().isBefore(now)) {
+            throw new IllegalCurrentStateException("Event date must be in the future.");
         }
 
+        Screen screen;
+        try {
+            screen = Screen.fromId(addEventRequest.getScreenId());
+        } catch (IllegalArgumentException e) {
+            throw new ItemNotFoundException("Unknown Screen ID: " + addEventRequest.getScreenId(), e);
+        }
+
+        List<Event> existingEventsWithSameNameAndDate = eventRepository.findByEventNameAndEventDateAndScreens(
+                addEventRequest.getEventName(),
+                addEventRequest.getEventDate(),
+                screen
+        );
+
+        if (!existingEventsWithSameNameAndDate.isEmpty()) {
+            throw new IllegalCurrentStateException(
+                    "An event with the same name is already scheduled on this date for the specified screen.");
+        }
+
+        List<Event> existingEventsWithSameName =
+                eventRepository.findByEventNameAndEventDateAfter(addEventRequest.getEventName(), now);
+        if (!existingEventsWithSameName.isEmpty()) {
+            throw new IllegalCurrentStateException("An event with the same name already exists for future events.");
+        }
+
+        addedEvent.setScreens(Set.of(screen));
         Event savedEvent = eventRepository.save(addedEvent);
 
         AddEventResponse savedEventResponse = new AddEventResponse();

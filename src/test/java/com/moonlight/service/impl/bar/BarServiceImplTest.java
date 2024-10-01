@@ -1,5 +1,6 @@
 package com.moonlight.service.impl.bar;
 
+import com.moonlight.advice.exception.IllegalCurrentStateException;
 import com.moonlight.advice.exception.ItemNotFoundException;
 import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.bar.AddEventRequest;
@@ -58,9 +59,10 @@ public class BarServiceImplTest {
         seats.add(seat1);
         seats.add(seat2);
 
+        LocalDateTime now = LocalDateTime.now();
         addEventRequest = new AddEventRequest();
         addEventRequest.setEventName("Champions League Football Match");
-        addEventRequest.setEventDate(LocalDateTime.of(2024, 9, 30, 18, 0));
+        addEventRequest.setEventDate(now.plusDays(2));
         addEventRequest.setScreenId(1);
 
         event = new Event();
@@ -129,7 +131,7 @@ public class BarServiceImplTest {
             barService.createEvent(addEventRequest);
         });
 
-        assertEquals("Invalid screen id: -1", exception.getMessage());
+        assertEquals("Unknown Screen ID: -1", exception.getMessage());
     }
 
     @Test
@@ -158,7 +160,7 @@ public class BarServiceImplTest {
 
         AddEventResponse response = barService.createEvent(addEventRequest);
 
-        assertEquals(LocalDateTime.of(2024, 9, 30, 18, 0), response.getEventDate());
+        assertEquals(addEventRequest.getEventDate(), response.getEventDate());
     }
 
     @Test
@@ -286,5 +288,49 @@ public class BarServiceImplTest {
         assertEquals("Football Final", response.getEventsForScreen().get(1).getEventName());
     }
 
+    @Test
+    void testCreateEvent_EventDateInPast_ThrowsIllegalCurrentStateException() {
+        addEventRequest.setEventDate(LocalDateTime.now().minusDays(1));
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("Event date must be in the future.", exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_InvalidScreenId_ThrowsItemNotFoundException() {
+        addEventRequest.setScreenId(999);
+        addEventRequest.setEventDate(LocalDateTime.now().plusDays(1));
+
+        lenient().when(eventRepository.findByEventNameAndEventDateAndScreens(anyString(), any(), any()))
+                .thenReturn(Collections.emptyList());
+
+        ItemNotFoundException exception = assertThrows(
+                ItemNotFoundException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("Unknown Screen ID: 999", exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_ExistingEventWithSameNameAndDate_ThrowsIllegalCurrentStateException() {
+        when(eventRepository.findByEventNameAndEventDateAndScreens(
+                addEventRequest.getEventName(),
+                addEventRequest.getEventDate(),
+                Screen.fromId(addEventRequest.getScreenId()))
+        ).thenReturn(Collections.singletonList(event));
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("An event with the same name is already scheduled on this date for the specified screen.",
+                exception.getMessage());
+    }
 }
 

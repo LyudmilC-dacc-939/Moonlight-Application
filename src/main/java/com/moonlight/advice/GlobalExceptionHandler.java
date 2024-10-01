@@ -33,8 +33,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<?> invalidInputException(InvalidInputException invalidInputException) {
-        return new ResponseEntity<>(invalidInputException.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> invalidInputException(InvalidInputException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalAccessException.class)
@@ -104,6 +104,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<String> handleItemNotFoundException(ItemNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalCurrentStateException.class)
+    public ResponseEntity<String> handleIllegalCurrentStateException(IllegalCurrentStateException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 //    @ExceptionHandler(Exception.class)

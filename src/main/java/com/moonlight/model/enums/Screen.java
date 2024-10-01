@@ -30,6 +30,14 @@ public enum Screen {
         throw new IllegalArgumentException("Unknown Screen ID: " + id);
     }
 
+    public String getCurrentScreenName(){
+        if (this.currentScreenName == null){
+            this.currentScreenName = this.defaultScreenName;
+            return currentScreenName;
+        }
+        return currentScreenName;
+    }
+
     public void setScreenNameForEvent(String eventName) {
         this.currentScreenName = eventName;
     }

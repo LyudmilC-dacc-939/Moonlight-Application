@@ -1,13 +1,12 @@
 package com.moonlight.repository.bar;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.moonlight.model.bar.Event;
 import com.moonlight.model.enums.Screen;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -159,5 +158,17 @@ public class EventRepositoryTest {
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindByEventNameAndEventDateAfter() {
+        LocalDateTime currentDate = LocalDateTime.now();
+
+        List<Event> foundEvents = eventRepository.findByEventNameAndEventDateAfter("Tennis Match", currentDate);
+
+        assertNotNull(foundEvents);
+        assertEquals(1, foundEvents.size());
+        assertEquals("Tennis Match", foundEvents.get(0).getEventName());
+        assertTrue(foundEvents.get(0).getEventDate().isAfter(currentDate));
     }
 }
