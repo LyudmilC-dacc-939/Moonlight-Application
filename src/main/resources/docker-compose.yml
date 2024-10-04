@@ -1,0 +1,21 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: myapp_mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bootcamp_docked
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - myapp-network
+
+volumes:
+  db_data:
+
+networks:
+  myapp-network:
+    driver: bridge
