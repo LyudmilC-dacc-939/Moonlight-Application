@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class BarServiceImpl implements BarService {
@@ -47,7 +45,10 @@ public class BarServiceImpl implements BarService {
             }
 
         }
-        return seats;
+        List <Seat> sortedSeats = new ArrayList<>(seats);
+        sortedSeats.sort(Comparator.comparing(Seat::getSeatNumber));
+
+        return new LinkedHashSet<>(sortedSeats);
     }
 
     @Override

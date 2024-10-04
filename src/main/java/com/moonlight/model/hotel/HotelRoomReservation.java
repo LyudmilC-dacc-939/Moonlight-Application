@@ -1,6 +1,7 @@
 package com.moonlight.model.hotel;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -52,4 +53,7 @@ public class HotelRoomReservation {
     @Max(value = 4, message = "Number of adult guests must be at most {value}")
     private int guestsChildren;
 
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 }

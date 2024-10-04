@@ -1,6 +1,7 @@
 package com.moonlight.model.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.enums.RestaurantZone;
 import com.moonlight.model.user.User;
 import jakarta.persistence.*;
@@ -53,4 +54,8 @@ public class RestaurantReservation {
 
     @Column(name = "seat_cost", nullable = false)
     private double seatCost;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 }

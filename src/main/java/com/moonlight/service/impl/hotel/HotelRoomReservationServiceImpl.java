@@ -3,6 +3,7 @@ package com.moonlight.service.impl.hotel;
 import com.moonlight.advice.exception.InvalidDateRangeException;
 import com.moonlight.advice.exception.RoomNotAvailableException;
 import com.moonlight.dto.hotel.HotelRoomAvailabilityResponse;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.hotel.HotelRoom;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.user.User;
@@ -95,6 +96,7 @@ public class HotelRoomReservationServiceImpl implements HotelRoomReservationServ
             reservation.setGuestsChildren(guestChildren);
             reservation.setDuration(duration);
             reservation.setTotalCost(totalCost);
+            reservation.setStatus(ReservationStatus.PENDING);
 
             return hotelRoomReservationRepository.save(reservation);
         } else {

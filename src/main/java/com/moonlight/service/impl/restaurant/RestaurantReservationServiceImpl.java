@@ -5,6 +5,7 @@ import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.advice.exception.UnavailableResourceException;
 import com.moonlight.dto.restaurant.RestaurantReservationRequest;
 import com.moonlight.dto.restaurant.TableAvailabilityResponse;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.restaurant.Restaurant;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
@@ -80,6 +81,7 @@ public class RestaurantReservationServiceImpl implements RestaurantReservationSe
             reservation.setSeatCost(totalCost);
             reservation.setTableNumber(request.getTableNumber());
             reservation.setSmoking(request.isSmoking());
+            reservation.setStatus(ReservationStatus.PENDING);
 
             return restaurantReservationRepository.save(reservation);
 

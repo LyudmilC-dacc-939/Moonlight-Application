@@ -1,6 +1,7 @@
 package com.moonlight.model.bar;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.enums.Screen;
 import com.moonlight.model.user.User;
 import jakarta.persistence.*;
@@ -45,4 +46,8 @@ public class BarReservation {
     @Column(name = "reservation_date")
     @NotNull(message = "Reservation must have a date")
     private LocalDate reservationDate;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 }

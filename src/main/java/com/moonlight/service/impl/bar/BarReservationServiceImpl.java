@@ -7,6 +7,7 @@ import com.moonlight.dto.bar.BarReservationRequest;
 import com.moonlight.dto.bar.BarReservationResponse;
 import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.bar.Seat;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.enums.Screen;
 import com.moonlight.model.user.User;
 import com.moonlight.repository.bar.BarReservationRepository;
@@ -73,6 +74,7 @@ public class BarReservationServiceImpl implements BarReservationService {
             reservation.setScreen(screen);
             reservation.setReservationDate(request.getReservationDate());
             reservation.setTotalCost(totalCost);
+            reservation.setStatus(ReservationStatus.PENDING);
 
             BarReservation savedReservation = barReservationRepository.save(reservation);
 
