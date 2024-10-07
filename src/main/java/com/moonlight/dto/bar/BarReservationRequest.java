@@ -16,7 +16,10 @@ public class BarReservationRequest {
     private Set<Integer> seatNumbers;  // Seat numbers provided by the user
 
     @NotNull(message = "Screen must be selected")
-    private String screenName;  // The name of the screen selected by the user
+    private int screenId;  // The id of the screen selected by the user
+
+    @NotNull(message = "Event must be selected")
+    private Long eventId;
 
     @NotNull(message = "Reservation date is required")
     private LocalDate reservationDate;

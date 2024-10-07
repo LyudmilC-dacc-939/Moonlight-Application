@@ -14,7 +14,9 @@ public class BarReservationResponse {
 
     private Long reservationId;
     private Set<Integer> seatNumbers;
-    private String screenName;
+    private Long screenId;
+    private String eventName;
     private Double totalCost;
     private LocalDate reservationDate;
+    private String userName;
 }

@@ -6,6 +6,7 @@ import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.user.User;
 import com.moonlight.model.bar.Seat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BarReservationService {
@@ -14,5 +15,5 @@ public interface BarReservationService {
 
     List<BarReservation> getBarReservationsByUserId(Long userId);
 
-    List<Seat> getAvailableSeats(String screen, LocalDate reservationDate);
+    List<Seat> getAvailableSeats(String screenName, LocalDate reservationDate);
 }

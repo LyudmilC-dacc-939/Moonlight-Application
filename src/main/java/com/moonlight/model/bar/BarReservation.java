@@ -47,6 +47,11 @@ public class BarReservation {
     @NotNull(message = "Reservation must have a date")
     private LocalDate reservationDate;
 
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    @NotNull(message = "Event must be selected")
+    private Event event;
+
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;

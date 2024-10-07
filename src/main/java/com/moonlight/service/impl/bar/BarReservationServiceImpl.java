@@ -6,11 +6,13 @@ import com.moonlight.advice.exception.UnavailableResourceException;
 import com.moonlight.dto.bar.BarReservationRequest;
 import com.moonlight.dto.bar.BarReservationResponse;
 import com.moonlight.model.bar.BarReservation;
+import com.moonlight.model.bar.Event;
 import com.moonlight.model.bar.Seat;
 import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.enums.Screen;
 import com.moonlight.model.user.User;
 import com.moonlight.repository.bar.BarReservationRepository;
+import com.moonlight.repository.bar.EventRepository;
 import com.moonlight.repository.bar.SeatRepository;
 import com.moonlight.service.BarReservationService;
 import com.moonlight.service.impl.user.CurrentUserImpl;
@@ -20,9 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,11 @@ public class BarReservationServiceImpl implements BarReservationService {
 
     @Autowired
     private CurrentUserImpl currentUserImpl;
+    @Autowired
+    private EventRepository eventRepository;
+    @Autowired
+    private ScreenResetService screenResetService;
+
 
     @Override
     public BarReservationResponse createReservation(BarReservationRequest request, User user) {
@@ -42,15 +47,29 @@ public class BarReservationServiceImpl implements BarReservationService {
             throw new RecordNotFoundException("This user is not authorized to proceed this operation");
         } else {
             // Find the screen by screenName
-            Screen screen = findScreenByName(request.getScreenName());
+            Screen screen = findScreenById(request.getScreenId());
+            if (screen == null) {
+                throw new RecordNotFoundException("Screen not found");
+            }
+            Event event = findEventById(request.getEventId());
+            if (event == null) {
+                throw new RecordNotFoundException("An event must be selected for the reservation");
+            }
+            if (!event.getScreens().contains(screen)) {
+                throw new RecordNotFoundException("The selected screen does not match the event screen");
+            }
+            if (!request.getReservationDate().isEqual(event.getEventDate().toLocalDate())) {
+                throw new InvalidDateRangeException("Reservation date must match event date");
+            }
             // Check if date is allowed
             if (request.getReservationDate().isBefore(LocalDate.now())) {
                 throw new InvalidDateRangeException("Reservation date can't be in the past");
             }
             // Find the seats by seatNumbers and screen
             Set<Seat> seats = new HashSet<>();
+            List<Integer> alreadyReservedSeats = new ArrayList<>();
             for (Integer seatNumber : request.getSeatNumbers()) {
-                if (seatNumber > 21) {
+                if (seatNumber > 21 || seatNumber < 1) {
                     throw new UnavailableResourceException("Invalid seat number, please select a seat between 1 and 21");
                 }
                 Seat seat = seatRepository.findByScreenAndSeatNumber(screen, seatNumber)
@@ -59,11 +78,18 @@ public class BarReservationServiceImpl implements BarReservationService {
                 // Check if the seat is already reserved on the requested date
                 boolean seatTaken = barReservationRepository.existsBySeatAndReservationDate(seat, request.getReservationDate());
                 if (seatTaken) {
-                    throw new UnavailableResourceException("Seat " + seatNumber + " is already reserved for the selected date");
+                    alreadyReservedSeats.add(seatNumber);
                 }
-                seats.add(seat);
+            }
+            if (!alreadyReservedSeats.isEmpty()) {
+                throw new UnavailableResourceException("Seat " + alreadyReservedSeats + " is already reserved for the selected date");
             }
 
+            for (Integer seatNumber : request.getSeatNumbers()) {
+                Seat seat = seatRepository.findByScreenAndSeatNumber(screen, seatNumber)
+                        .orElseThrow(() -> new RecordNotFoundException("Seat not found for number " + seatNumber + " on screen " + screen.getCurrentScreenName()));
+                seats.add(seat);
+            }
 
             double totalCost = 5 * seats.size();
 
@@ -72,6 +98,7 @@ public class BarReservationServiceImpl implements BarReservationService {
             reservation.setUser(user);
             reservation.setSeats(seats);
             reservation.setScreen(screen);
+            reservation.setEvent(event);
             reservation.setReservationDate(request.getReservationDate());
             reservation.setTotalCost(totalCost);
             reservation.setStatus(ReservationStatus.PENDING);
@@ -81,19 +108,37 @@ public class BarReservationServiceImpl implements BarReservationService {
             // Create and return the response
             Set<Integer> seatNumbers = seats.stream().map(Seat::getSeatNumber).collect(Collectors.toSet());
 
+
             return new BarReservationResponse(
                     savedReservation.getId(),
                     seatNumbers,
-                    screen.getCurrentScreenName(),
+                    (long) screen.getId(),
+                    event.getEventName(),
                     totalCost,
-                    savedReservation.getReservationDate()
+                    savedReservation.getReservationDate(),
+                    user.getFirstName()
             );
         }
     }
 
+    private Event findEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new RecordNotFoundException("Event with ID " + eventId + " not found"));
+    }
+
+
+    private Screen findScreenById(int screenId) {
+        for (Screen screen : Screen.values()) {
+            if (screen.getId() == screenId) {
+                return screen;
+            }
+        }
+        throw new RecordNotFoundException("Screen with ID" + screenId + " not found");
+    }
+
     private Screen findScreenByName(String screenName) {
         for (Screen screen : Screen.values()) {
-            if (screen.getCurrentScreenName().equalsIgnoreCase(screenName)) {
+            if (screen.getDefaultScreenName().equalsIgnoreCase(screenName)) {
                 return screen;
             }
         }

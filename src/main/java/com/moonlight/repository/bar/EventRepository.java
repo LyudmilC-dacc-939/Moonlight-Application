@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
@@ -35,4 +36,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                                       @Param("eventDate") LocalDateTime eventDate,
                                                       @Param("screen") Screen screen);
     List<Event> findByEventNameAndEventDateAfter(String eventName, LocalDateTime currentDate);
+
 }

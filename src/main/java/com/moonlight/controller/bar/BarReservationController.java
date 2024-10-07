@@ -78,11 +78,11 @@ public class BarReservationController {
                             schema = @Schema(implementation = BarReservation.class)))})
     @GetMapping(path = "/available-seats/")
     public ResponseEntity<List<Seat>> listAvailableSeats(
-            @RequestParam(name = "screen") String screen,
+            @RequestParam(name = "screenName") String screenName,
             @RequestParam(name = "reservationDate")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate reservationDate) {
-        List<Seat> availableSeats = barReservationService.getAvailableSeats(screen, reservationDate);
+        List<Seat> availableSeats = barReservationService.getAvailableSeats(screenName, reservationDate);
         return ResponseEntity.ok(availableSeats);
     }
 }
