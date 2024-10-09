@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HotelRoomReservationResponse {
+    private Long userId;
 
     private LocalDate startDate;
 

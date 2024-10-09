@@ -57,6 +57,7 @@ public class CarReservationController {
         CarReservation reservation = carReservationService.createReservation(request, email);
 
         CarReservationResponse response = new CarReservationResponse(
+                reservation.getUser().getId(),
                 reservation.getId(),
                 reservation.getStartDate(),
                 reservation.getEndDate(),

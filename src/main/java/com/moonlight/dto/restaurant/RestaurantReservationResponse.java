@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 public class RestaurantReservationResponse {
+    private Long userId;
     private Long id;
     private LocalDate reservationDate;
     private LocalTime reservationTime;

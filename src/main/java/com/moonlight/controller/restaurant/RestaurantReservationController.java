@@ -52,6 +52,7 @@ public class RestaurantReservationController {
             @Valid @RequestBody RestaurantReservationRequest request, @AuthenticationPrincipal User user) {
         RestaurantReservation reservation = restaurantReservationService.createReservation(request, user);
         RestaurantReservationResponse response = new RestaurantReservationResponse(
+                reservation.getUser().getId(),
                 reservation.getId(),
                 reservation.getReservationDate(),
                 reservation.getReservationTime().toLocalTime(),

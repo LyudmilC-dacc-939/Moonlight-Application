@@ -65,6 +65,7 @@ public class HotelRoomReservationController {
         );
 
         var response = new HotelRoomReservationResponse();
+        response.setUserId(user.getId());
         response.setStartDate(reservation.getStartDate());
         response.setDuration(reservation.getDuration());
         response.setEndDate(reservation.getEndDate());

@@ -110,6 +110,7 @@ public class BarReservationServiceImpl implements BarReservationService {
 
 
             return new BarReservationResponse(
+                    savedReservation.getUser().getId(),
                     savedReservation.getId(),
                     seatNumbers,
                     (long) screen.getId(),

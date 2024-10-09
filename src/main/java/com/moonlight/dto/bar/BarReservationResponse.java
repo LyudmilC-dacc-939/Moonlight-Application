@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BarReservationResponse {
-
+    private Long userId;
     private Long reservationId;
     private Set<Integer> seatNumbers;
     private Long screenId;

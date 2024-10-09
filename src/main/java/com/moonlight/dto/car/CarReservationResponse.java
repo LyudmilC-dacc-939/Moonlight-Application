@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class CarReservationResponse {
-
+    private Long userId;
     private Long reservationId;
     private LocalDate startDate;
     private LocalDate endDate;

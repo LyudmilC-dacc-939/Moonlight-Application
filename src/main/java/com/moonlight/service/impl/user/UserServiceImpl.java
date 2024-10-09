@@ -34,10 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -215,7 +212,10 @@ public class UserServiceImpl implements UserService {
             List<CarReservation> carReservations = carReservationRepository.findByUserId(foundUser.getId());
             List<RestaurantReservation> restaurantReservations = restaurantReservationRepository.findByUserId(foundUser.getId());
             List<BarReservation> barReservations = barReservationRepository.findByUserId(foundUser.getId());
-            Map<String, Object> reservations = new HashMap<>();
+
+            Map<String, Object> reservations = new LinkedHashMap<>();
+            reservations.put("userId", foundUser.getId());
+
             if (!hotelRoomReservations.isEmpty()) {
                 reservations.put("hotelRoomReservations", hotelRoomReservations);
             } else {
