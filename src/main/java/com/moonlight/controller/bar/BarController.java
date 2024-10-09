@@ -98,8 +98,8 @@ public class BarController {
     @Operation(summary = "Search for events",
             description = "Retrieve a list of events based on optional search criteria such as event ID, name, or date.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "302",
-                    description = "Found",
+            @ApiResponse(responseCode = "200",
+                    description = "OK",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Event.class))),
             @ApiResponse(responseCode = "400",
@@ -112,14 +112,14 @@ public class BarController {
                                                  @RequestParam(value = "eventDate", required = false)
                                                  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate eventDate
     ) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(barService.findByQuerySearch(eventId, eventName, eventDate));
+        return ResponseEntity.status(HttpStatus.OK).body(barService.findByQuerySearch(eventId, eventName, eventDate));
     }
 
     @Operation(summary = "Get information for a specific screen",
             description = "Retrieve detailed information for a specified screen.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "302",
-                    description = "Found",
+            @ApiResponse(responseCode = "200",
+                    description = "OK",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ScreenInformationResponse.class))),
             @ApiResponse(responseCode = "400",
@@ -128,6 +128,6 @@ public class BarController {
     })
     @GetMapping("/screen/get-info/")
     public ResponseEntity<ScreenInformationResponse> getScreenInfo(@RequestParam(value = "screenEnum") Screen screenEnum) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(barService.getFullInfoForScreen(screenEnum));
+        return ResponseEntity.status(HttpStatus.OK).body(barService.getFullInfoForScreen(screenEnum));
     }
 }

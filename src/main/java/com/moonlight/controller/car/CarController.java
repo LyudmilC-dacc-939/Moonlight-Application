@@ -48,7 +48,7 @@ public class CarController {
         if (foundCars.isEmpty()) {
             throw new ItemNotFoundException("Car brand: " + carBrand + ", and / or " + carType + " is not found");
         }
-        return ResponseEntity.status(HttpStatus.FOUND).body(foundCars);
+        return ResponseEntity.status(HttpStatus.OK).body(foundCars);
     }
 
     @Operation(summary = "Get Car images by Car ID or Image ID", description = "Returns list of car pictures")

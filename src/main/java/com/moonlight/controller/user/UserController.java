@@ -68,7 +68,7 @@ public class UserController {
 
     @Operation(summary = "Searches an user by their id", description = "Returns user information by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User successfully found with id",
+            @ApiResponse(responseCode = "200", description = "User successfully found with id",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "403", description = "This user does not have permission to do that",
@@ -81,12 +81,12 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<User> getUser(@PathVariable("id") Long id) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
     }
 
     @Operation(summary = "Searches an user by email", description = "Returns user information by email")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User successfully found with email",
+            @ApiResponse(responseCode = "200", description = "User successfully found with email",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "403", description = "This user does not have permission to do that",
@@ -99,12 +99,12 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<User> getUser(@RequestParam("userEmail") String userEmail) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserByEmail(userEmail));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByEmail(userEmail));
     }
 
     @Operation(summary = "Deletes user by id", description = "Deletes user information by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User successfully deleted",
+            @ApiResponse(responseCode = "204", description = "User successfully deleted",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "403", description = "This user does not have permission to do that",
@@ -118,7 +118,7 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     ResponseEntity<?> deleteUser(@RequestParam("userId") Long userId) {
         userService.deleteUser(userId);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "User provides email and password credentials to login",
