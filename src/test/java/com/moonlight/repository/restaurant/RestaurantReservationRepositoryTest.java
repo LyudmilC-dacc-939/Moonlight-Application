@@ -1,5 +1,6 @@
 package com.moonlight.repository.restaurant;
 
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.enums.RestaurantZone;
 import com.moonlight.model.restaurant.Restaurant;
 import com.moonlight.model.restaurant.RestaurantReservation;
@@ -10,12 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
 import org.mockito.Mock;
+
 import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -71,6 +76,7 @@ class RestaurantReservationRepositoryTest {
         restaurantReservation.setReservationDate(LocalDate.now());
         restaurantReservation.setTableNumber(1L);
         restaurantReservation.setZone(RestaurantZone.BAR);
+        restaurantReservation.setStatus(ReservationStatus.PENDING);
         restaurantReservationRepository.save(restaurantReservation);
 
         seats = 1;

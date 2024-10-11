@@ -16,12 +16,13 @@ public interface BarReservationRepository extends JpaRepository<BarReservation, 
 
     @Query("SELECT COUNT(br) > 0 FROM BarReservation br JOIN br.seats seat " +
             "WHERE seat = :seat AND br.reservationDate = :reservationDate")
-    boolean existsBySeatAndReservationDate(@Param("seat") Seat seat, @Param("reservationDate") LocalDate reservationDate);
+    boolean existsBySeatAndReservationDate(@Param("seat") Seat seat,
+                                           @Param("reservationDate") LocalDate reservationDate);
 
     @Query(value = "SELECT * FROM bar_reservations b " +
             "WHERE :userId IS NULL OR b.user_id = :userId " +
             "ORDER BY b.reservation_date ASC", nativeQuery = true)
-    List<BarReservation> findByUserId(Long userId);
+    List<BarReservation> findByUserId(@Param("userId") Long userId);
 
     List<BarReservation> findByScreenAndReservationDate(Screen screen, LocalDate reservationDate);
 }

@@ -1,5 +1,6 @@
 package com.moonlight.repository.hotel;
 
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.enums.RoomType;
 import com.moonlight.model.enums.RoomView;
 import com.moonlight.model.hotel.Amenity;
@@ -72,6 +73,7 @@ class HotelRoomReservationRepositoryTest {
     @Test
     public void testFindByHotelRoom() {
         HotelRoomReservation reservation = createReservation();
+        reservation.setStatus(ReservationStatus.PENDING);
         hotelRoomReservationRepository.save(reservation);
 
         List<HotelRoomReservation> reservations = hotelRoomReservationRepository.findByHotelRoom(hotelRoom);
@@ -86,6 +88,7 @@ class HotelRoomReservationRepositoryTest {
         reservation1.setHotelRoom(hotelRoom);
         reservation1.setStartDate(LocalDate.of(2023, 8, 1));
         reservation1.setEndDate(LocalDate.of(2023, 8, 14));
+        reservation1.setStatus(ReservationStatus.PENDING);
         hotelRoomReservationRepository.save(reservation1);
 
         HotelRoomReservation reservation2 = createReservation();
@@ -93,6 +96,7 @@ class HotelRoomReservationRepositoryTest {
         reservation2.setHotelRoom(hotelRoom);
         reservation2.setStartDate(LocalDate.of(2023, 7, 1));
         reservation2.setEndDate(LocalDate.of(2023, 7, 10));
+        reservation2.setStatus(ReservationStatus.PENDING);
         hotelRoomReservationRepository.save(reservation2);
 
         List<HotelRoomReservation> reservations = hotelRoomReservationRepository.findByUserIdOrderByStartDate(user.getId());
@@ -108,6 +112,7 @@ class HotelRoomReservationRepositoryTest {
         reservation1.setHotelRoom(hotelRoom);
         reservation1.setStartDate(LocalDate.of(2023, 8, 1));
         reservation1.setEndDate(LocalDate.of(2023, 8, 14));
+        reservation1.setStatus(ReservationStatus.PENDING);
         hotelRoomReservationRepository.save(reservation1);
 
         List<HotelRoomReservation> reservations = hotelRoomReservationRepository.findByUserIdOrderByStartDate(null);
@@ -118,6 +123,7 @@ class HotelRoomReservationRepositoryTest {
     @Test
     public void testFindByUserId() {
         HotelRoomReservation reservation = createReservation();
+        reservation.setStatus(ReservationStatus.PENDING);
         hotelRoomReservationRepository.save(reservation);
 
         List<HotelRoomReservation> reservations = hotelRoomReservationRepository.findByUserId(user.getId());
@@ -135,6 +141,7 @@ class HotelRoomReservationRepositoryTest {
         reservation.setTotalCost(300.0);
         reservation.setGuestsAdult(2);
         reservation.setGuestsChildren(1);
+        reservation.setStatus(ReservationStatus.PENDING);
         return reservation;
     }
 }

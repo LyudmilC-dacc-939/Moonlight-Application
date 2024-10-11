@@ -1,0 +1,59 @@
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3306/moonlight-system?createDatabaseIfNotExist=true
+        username: root
+        password:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQLDialect
+                format_sql: true
+            show-sql: true
+    mail:
+        host: mail.nasbg.com
+        port: 465
+        username: "bootcamp@nasbg.com"
+        password: '%61%,g]AI,g_'
+        protocol: smtp
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    ssl:
+                        enable: true
+                    connectiontimeout: 5000
+                    timeout: 5000
+                    writetimeout: 5000
+logging:
+    level:
+        org:
+            hibernate:
+                SQL: DEBUG
+#                orm:
+#                    jdbc:
+#                        bind: TRACE
+#                type:
+#                    descriptor:
+#                        sql:
+#                            BasicBinder: TRACE
+
+spring-doc:
+    swagger-ui:
+        config-url: /swagger-ui.html
+    api-docs:
+        path: /api-docs
+
+debug: true
+
+server:
+    port: 8080
+    #The port is 8080 in order to be run concurrently with production profile
+   #port: 8081
+    #this port is only if someone from the team is concurrently running his app
+
+secret-key: 3236464233324341314236393235454146313246353844464642353838

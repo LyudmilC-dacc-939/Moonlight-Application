@@ -73,6 +73,5 @@ hs_err_pid*
 /src/main/local-resources/
 /src/test/local-resources/
 /src/main/resources/application-dev.yml
-/src/main/resources/application-local.yml
 
 
