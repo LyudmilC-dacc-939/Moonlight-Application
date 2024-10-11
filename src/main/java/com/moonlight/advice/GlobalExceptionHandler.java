@@ -117,6 +117,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PayPalServiceException.class)
+    public ResponseEntity<String> handplePayPalServiceException(PayPalServiceException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<?> handleAllExceptions(Exception exception) {
 //        // Log the exception for debugging purposes

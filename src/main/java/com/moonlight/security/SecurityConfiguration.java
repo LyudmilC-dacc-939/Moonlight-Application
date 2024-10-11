@@ -56,7 +56,8 @@ public class SecurityConfiguration {
                                         "api/v1/bars/screen/get-info/*",
                                         "api/v1/bars/events/search/*",
                                         "/api/v1/cars/images/**",
-                                        "/webjars/**"
+                                        "/webjars/**",
+                                        "/api/v1/payments/paypal/success"
                                 )
                                 .permitAll()
                                 .anyRequest()
