@@ -171,4 +171,79 @@ public class EventRepositoryTest {
         assertEquals("Tennis Match", foundEvents.get(0).getEventName());
         assertTrue(foundEvents.get(0).getEventDate().isAfter(currentDate));
     }
+
+    @Test
+    public void testFindByEventNameContainingIgnoreCaseAndEventDate_returnsCorrectEvent() {
+        String eventName = "football";
+        LocalDateTime eventDate = LocalDateTime.now().plusDays(1);
+
+        Event event1 = new Event();
+        event1.setEventName("Football Match Bundesliga");
+        event1.setEventDate(eventDate);
+        event1.setScreens(Set.of(Screen.SCREEN_ONE));
+
+        when(eventRepositoryMocked.findByEventNameContainingIgnoreCaseAndEventDate(eventName, eventDate))
+                .thenReturn(List.of(event1));
+
+        List<Event> events = eventRepositoryMocked.findByEventNameContainingIgnoreCaseAndEventDate(eventName, eventDate);
+
+        assertNotNull(events);
+        assertEquals(1, events.size());
+    }
+
+    @Test
+    public void testFindByEventNameContainingIgnoreCaseAndEventDate_correctEventDetails() {
+        String eventName = "football";
+        LocalDateTime eventDate = LocalDateTime.now().plusDays(1);
+
+        Event event1 = new Event();
+        event1.setEventName("Football Match Bundesliga");
+        event1.setEventDate(eventDate);
+        event1.setScreens(Set.of(Screen.SCREEN_ONE));
+
+        when(eventRepositoryMocked.findByEventNameContainingIgnoreCaseAndEventDate(eventName, eventDate))
+                .thenReturn(List.of(event1));
+
+        List<Event> events = eventRepositoryMocked
+                .findByEventNameContainingIgnoreCaseAndEventDate(eventName, eventDate);
+
+        assertEquals("Football Match Bundesliga", events.get(0).getEventName());
+        assertEquals(eventDate, events.get(0).getEventDate());
+    }
+
+    @Test
+    public void testFindByScreenAndEventDate_returnsCorrectEvent() {
+        LocalDate eventDate = LocalDate.now().plusDays(1);
+
+        Event event1 = new Event();
+        event1.setEventName("Football Match La Liga");
+        event1.setEventDate(LocalDateTime.now().plusDays(1));
+        event1.setScreens(Set.of(Screen.SCREEN_ONE));
+
+        when(eventRepositoryMocked.findByScreenAndEventDate(Screen.SCREEN_ONE, eventDate))
+                .thenReturn(List.of(event1));
+
+        List<Event> events = eventRepositoryMocked.findByScreenAndEventDate(Screen.SCREEN_ONE, eventDate);
+
+        assertNotNull(events);
+        assertEquals(1, events.size());
+    }
+
+    @Test
+    public void testFindByScreenAndEventDate_correctEventDetails() {
+        LocalDate eventDate = LocalDate.now().plusDays(1);
+
+        Event event1 = new Event();
+        event1.setEventName("Football Match La Liga");
+        event1.setEventDate(LocalDateTime.now().plusDays(1));
+        event1.setScreens(Set.of(Screen.SCREEN_ONE));
+
+        when(eventRepositoryMocked.findByScreenAndEventDate(Screen.SCREEN_ONE, eventDate))
+                .thenReturn(List.of(event1));
+
+        List<Event> events = eventRepositoryMocked.findByScreenAndEventDate(Screen.SCREEN_ONE, eventDate);
+
+        assertEquals(Screen.SCREEN_ONE, events.get(0).getScreens().iterator().next());
+        assertEquals(eventDate, events.get(0).getEventDate().toLocalDate());
+    }
 }

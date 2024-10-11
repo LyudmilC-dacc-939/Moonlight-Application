@@ -32,7 +32,6 @@ import java.util.Set;
 @RequestMapping("api/v1/bars")
 @RequiredArgsConstructor
 @Tag(name = "Bars API", description = "API for managing bars")
-@Valid
 public class BarController {
 
     private final BarService barService;

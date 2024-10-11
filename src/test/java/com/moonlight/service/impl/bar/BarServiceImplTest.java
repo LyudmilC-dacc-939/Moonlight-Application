@@ -332,5 +332,188 @@ public class BarServiceImplTest {
         assertEquals("An event with the same name is already scheduled on this date for the specified screen.",
                 exception.getMessage());
     }
+
+    @Test
+    void testDoesFutureEventExist_NoMatchingEvents() {
+        String inputName = "Some Event";
+        LocalDateTime eventDate = LocalDateTime.now().plusDays(1);
+        when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(any(String.class), any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
+        when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(null, eventDate))
+                .thenReturn(Collections.emptyList());
+
+        boolean result = barService.doesFutureEventExist(inputName, eventDate);
+
+        assertFalse(result, "Expected no matching future events.");
+    }
+
+    @Test
+    void testDoesFutureEventExist_WithMatchingEvents() {
+        String inputName = "Some Event";
+        LocalDateTime eventDate = LocalDateTime.now().plusDays(1);
+
+        Event existingEvent = new Event();
+        existingEvent.setEventName("Some Future Event");
+
+        when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(any(String.class), any(LocalDateTime.class)))
+                .thenReturn(List.of(existingEvent));
+        when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(null, eventDate))
+                .thenReturn(Collections.emptyList());
+
+        boolean result = barService.doesFutureEventExist(inputName, eventDate);
+
+        assertTrue(result, "Expected to find a matching future event.");
+    }
+
+    @Test
+    void testDoesFutureEventExist_WhenInputNameContainsFutureEventName_ReturnsTrue() {
+        String inputName = "Some Future Event";
+        LocalDateTime eventDate = LocalDateTime.now().plusDays(1);
+
+        Event futureEvent = new Event();
+        futureEvent.setEventName("Future Event");
+
+        List<Event> futureEvents = Collections.singletonList(futureEvent);
+        lenient().when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(null, eventDate))
+                .thenReturn(futureEvents);
+
+        boolean result = barService.doesFutureEventExist(inputName, eventDate);
+
+        assertTrue(result, "Expected doesFutureEventExist to return true when inputName contains a future event name.");
+    }
+
+    @Test
+    void testDoesFutureEventExist_WhenInputNameDoesNotContainFutureEventName_ReturnsFalse() {
+        String inputName = "Some Other Event";
+        LocalDateTime eventDate = LocalDateTime.now().plusDays(1);
+
+        Event futureEvent = new Event();
+        futureEvent.setEventName("Different Future Event");
+
+        List<Event> futureEvents = Collections.singletonList(futureEvent);
+        lenient().when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(null, eventDate))
+                .thenReturn(futureEvents);
+
+        boolean result = barService.doesFutureEventExist(inputName, eventDate);
+
+        assertFalse(result,
+                "Expected doesFutureEventExist to return false when inputName does not contain a future event name.");
+    }
+
+    @Test
+    void testCreateEvent_WhenEventDateIsInThePast_ThrowsException() {
+        AddEventRequest addEventRequest = new AddEventRequest();
+        addEventRequest.setEventName("Past Event");
+        addEventRequest.setEventDate(LocalDateTime.now().minusDays(1));
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("Event date must be in the future.", exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_WhenFutureEventExistsWithSimilarName_ThrowsException() {
+        AddEventRequest addEventRequest = new AddEventRequest();
+        addEventRequest.setEventName("Some Event");
+        addEventRequest.setEventDate(LocalDateTime.now().plusDays(1));
+        addEventRequest.setScreenId(1);
+
+        Event existingEvent = new Event();
+        existingEvent.setEventName("Some Event");
+
+        List<Event> futureEvents = Collections.singletonList(existingEvent);
+
+        lenient().when(eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(
+                        anyString(), any(LocalDateTime.class)))
+                .thenReturn(futureEvents);
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("An event with a similar name already exists for future events.", exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_WhenScreenAlreadyHasEventOnSameDay_ThrowsException() {
+        AddEventRequest addEventRequest = new AddEventRequest();
+        addEventRequest.setEventName("Screen Event");
+        addEventRequest.setEventDate(LocalDateTime.now().plusDays(1));
+        addEventRequest.setScreenId(1);
+
+        Screen screen = Screen.fromId(1);
+        when(eventRepository.findByScreenAndEventDate(screen, addEventRequest.getEventDate().toLocalDate()))
+                .thenReturn(Collections.singletonList(new Event()));
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("This screen already has an event scheduled on the same day.", exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_WhenExistingEventWithSameNameAndDateForScreen_ThrowsException() {
+        AddEventRequest addEventRequest = new AddEventRequest();
+        addEventRequest.setEventName("Event Name");
+        addEventRequest.setEventDate(LocalDateTime.now().plusDays(1));
+        addEventRequest.setScreenId(1);
+
+        Screen screen = Screen.fromId(1);
+        when(eventRepository.findByEventNameAndEventDateAndScreens("Event Name", addEventRequest.getEventDate(), screen))
+                .thenReturn(Collections.singletonList(new Event()));
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("An event with the same name is already scheduled on this date for the specified screen.",
+                exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_WhenExistingFutureEventWithSameName_ThrowsException() {
+        AddEventRequest addEventRequest = new AddEventRequest();
+        addEventRequest.setEventName("Another Future Event");
+        addEventRequest.setEventDate(LocalDateTime.now().plusDays(1));
+
+        lenient().when(eventRepository.findByEventNameAndEventDateAfter("Another Future Event", LocalDateTime.now()))
+                .thenReturn(Collections.singletonList(new Event()));
+
+        ItemNotFoundException exception = assertThrows(
+                ItemNotFoundException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("Unknown Screen ID: 0", exception.getMessage());
+    }
+
+    @Test
+    void testCreateEvent_WhenExistingEventsWithSameName_ThrowsException() {
+        AddEventRequest addEventRequest = new AddEventRequest();
+        addEventRequest.setEventName("Some Event");
+        addEventRequest.setEventDate(LocalDateTime.now().plusDays(1));
+        addEventRequest.setScreenId(1);
+
+        Event existingEvent = new Event();
+        existingEvent.setEventName("Some Event");
+        List<Event> existingEventsWithSameName = Collections.singletonList(existingEvent);
+
+        when(eventRepository.findByEventNameAndEventDateAfter(eq("Some Event"), any(LocalDateTime.class)))
+                .thenReturn(existingEventsWithSameName);
+
+        IllegalCurrentStateException exception = assertThrows(
+                IllegalCurrentStateException.class,
+                () -> barService.createEvent(addEventRequest)
+        );
+
+        assertEquals("An event with the same name already exists for future events.", exception.getMessage());
+    }
 }
 

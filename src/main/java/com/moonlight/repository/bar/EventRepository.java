@@ -45,9 +45,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByEventNameContainingIgnoreCaseAndEventDate(@Param("eventName") String eventName,
                                                                 @Param("eventDate") LocalDateTime eventDate);
 
-    //Leave this for the time being
+    //Leave this for the time being, it's needed until we're sure the above method is acting accordingly
+
     ////    @Query(value = "SELECT e FROM Event e WHERE " +
     ////            "(:eventName IS NULL OR e.eventName LIKE %:eventName%) AND (:eventDate > e.eventDate)")
     ////    List<Event> findByEventNameContainingIgnoreCaseAndEventDate(@Param("eventName") String eventName,
     ////                                                                @Param("eventDate") LocalDate eventDate);
+
+    @Query(value = "SELECT e FROM Event e WHERE :screen MEMBER OF e.screens AND FUNCTION('DATE', e.eventDate) = :eventDate")
+    List<Event> findByScreenAndEventDate(@Param("screen") Screen screen,
+                                         @Param("eventDate") LocalDate eventDate);
 }

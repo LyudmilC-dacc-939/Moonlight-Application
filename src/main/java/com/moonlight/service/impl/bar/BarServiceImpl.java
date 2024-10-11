@@ -86,6 +86,13 @@ public class BarServiceImpl implements BarService {
             throw new ItemNotFoundException("Unknown Screen ID: " + addEventRequest.getScreenId(), e);
         }
 
+        List<Event> eventsOnSameDay = eventRepository
+                .findByScreenAndEventDate(screen, addEventRequest.getEventDate().toLocalDate());
+
+        if (!eventsOnSameDay.isEmpty()) {
+            throw new IllegalCurrentStateException("This screen already has an event scheduled on the same day.");
+        }
+
         List<Event> existingEventsWithSameNameAndDate = eventRepository.findByEventNameAndEventDateAndScreens(
                 addEventRequest.getEventName(),
                 addEventRequest.getEventDate(),
@@ -137,7 +144,7 @@ public class BarServiceImpl implements BarService {
         return screenInformationResponse;
     }
 
-    private boolean doesFutureEventExist(String inputName, LocalDateTime eventDate) {
+    boolean doesFutureEventExist(String inputName, LocalDateTime eventDate) {
         boolean isEventMatching = false;
         List<Event> events = eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(inputName, eventDate);
 
