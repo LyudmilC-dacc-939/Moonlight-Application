@@ -31,10 +31,23 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e JOIN e.screens s WHERE (:screen IS NULL OR s = :screen)")
     List<Event> findAllByScreen(@Param("screen") Screen screen);
 
-    @Query("SELECT e FROM Event e JOIN e.screens s WHERE e.eventName = :eventName AND s = :screen AND e.eventDate = :eventDate")
+    @Query("SELECT e FROM Event e JOIN e.screens s WHERE " +
+            "e.eventName = :eventName AND s = :screen AND e.eventDate = :eventDate")
     List<Event> findByEventNameAndEventDateAndScreens(@Param("eventName") String eventName,
                                                       @Param("eventDate") LocalDateTime eventDate,
                                                       @Param("screen") Screen screen);
+
     List<Event> findByEventNameAndEventDateAfter(String eventName, LocalDateTime currentDate);
 
+    @Query("SELECT e FROM Event e WHERE " +
+            "(:eventName IS NULL OR LOWER(e.eventName) LIKE LOWER(CONCAT('%', :eventName, '%'))) " +
+            "AND e.eventDate > :eventDate")
+    List<Event> findByEventNameContainingIgnoreCaseAndEventDate(@Param("eventName") String eventName,
+                                                                @Param("eventDate") LocalDateTime eventDate);
+
+    //Leave this for the time being
+    ////    @Query(value = "SELECT e FROM Event e WHERE " +
+    ////            "(:eventName IS NULL OR e.eventName LIKE %:eventName%) AND (:eventDate > e.eventDate)")
+    ////    List<Event> findByEventNameContainingIgnoreCaseAndEventDate(@Param("eventName") String eventName,
+    ////                                                                @Param("eventDate") LocalDate eventDate);
 }

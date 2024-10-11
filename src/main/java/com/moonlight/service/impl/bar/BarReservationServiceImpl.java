@@ -167,10 +167,8 @@ public class BarReservationServiceImpl implements BarReservationService {
                 .flatMap(reservation -> reservation.getSeats().stream())
                 .collect(Collectors.toSet());
 
-        List<Seat> availableSeats = allSeats.stream()
+        return allSeats.stream()
                 .filter(seat -> !reservedSeats.contains(seat))
                 .toList();
-
-        return availableSeats;
     }
 }

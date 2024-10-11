@@ -4,6 +4,7 @@ import com.moonlight.model.enums.Screen;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class Event {
     private Long id;
 
     @Column(name = "event_name")
+    @Size(min = 10, message = "Name of Event must be at least {min} letters long")
     @NotNull(message = "Event must have name")
     private String eventName;
 

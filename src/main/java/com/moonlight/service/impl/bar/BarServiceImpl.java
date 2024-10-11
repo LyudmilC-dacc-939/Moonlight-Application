@@ -45,7 +45,7 @@ public class BarServiceImpl implements BarService {
             }
 
         }
-        List <Seat> sortedSeats = new ArrayList<>(seats);
+        List<Seat> sortedSeats = new ArrayList<>(seats);
         sortedSeats.sort(Comparator.comparing(Seat::getSeatNumber));
 
         return new LinkedHashSet<>(sortedSeats);
@@ -73,6 +73,10 @@ public class BarServiceImpl implements BarService {
 
         if (addEventRequest.getEventDate().isBefore(now)) {
             throw new IllegalCurrentStateException("Event date must be in the future.");
+        }
+
+        if (doesFutureEventExist(addEventRequest.getEventName(), now)) {
+            throw new IllegalCurrentStateException("An event with a similar name already exists for future events.");
         }
 
         Screen screen;
@@ -131,5 +135,24 @@ public class BarServiceImpl implements BarService {
         screenInformationResponse.setEventsForScreen(events);
 
         return screenInformationResponse;
+    }
+
+    private boolean doesFutureEventExist(String inputName, LocalDateTime eventDate) {
+        boolean isEventMatching = false;
+        List<Event> events = eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(inputName, eventDate);
+
+        if (!events.isEmpty()) {
+            isEventMatching = true;
+        }
+
+        List<Event> allFutureEvents = eventRepository.findByEventNameContainingIgnoreCaseAndEventDate(null, eventDate);
+        for (Event event : allFutureEvents) {
+            if (inputName.toLowerCase().contains(event.getEventName().toLowerCase())) {
+                isEventMatching = true;
+                break;
+            }
+        }
+
+        return isEventMatching;
     }
 }
