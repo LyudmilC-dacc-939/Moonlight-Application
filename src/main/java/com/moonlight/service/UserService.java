@@ -1,6 +1,7 @@
 package com.moonlight.service;
 
 import com.moonlight.dto.user.*;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -39,6 +40,6 @@ public interface UserService {
             " then saves the changes in the database")
     void resetPassword(ResetPasswordRequest passwordRequest);
 
-    @Operation(summary = "User can see his own reservation", description = "User can find all of his own reservations")
-    Map<String, Object> getUserReservations(User user);
+    @Operation(summary = "User can see his own reservation", description = "User can find all of his own reservations, and filter by paiment status")
+    Map<String, Object> getUserReservations(User user, ReservationStatus reservationStatus);
 }

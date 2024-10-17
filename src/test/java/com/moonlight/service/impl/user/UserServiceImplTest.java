@@ -5,6 +5,7 @@ import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
 import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.car.CarReservation;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
@@ -307,10 +308,34 @@ class UserServiceImplTest {
 
     @Test
     void testGetUserReservationsSuccess() {
-        List<HotelRoomReservation> hotelRoomReservations = Arrays.asList(new HotelRoomReservation(), new HotelRoomReservation());
-        List<CarReservation> carReservations = Arrays.asList(new CarReservation(), new CarReservation());
-        List<RestaurantReservation> restaurantReservations = Arrays.asList(new RestaurantReservation(), new RestaurantReservation());
-        List<BarReservation> barReservations = Arrays.asList(new BarReservation(), new BarReservation());
+        HotelRoomReservation hotelRoomReservation = new HotelRoomReservation();
+        hotelRoomReservation.setStatus(ReservationStatus.PENDING);
+
+        HotelRoomReservation hotelRoomReservation2 = new HotelRoomReservation();
+        hotelRoomReservation2.setStatus(ReservationStatus.PENDING);
+
+        CarReservation carReservation = new CarReservation();
+        carReservation.setStatus(ReservationStatus.PENDING);
+
+        CarReservation carReservation2 = new CarReservation();
+        carReservation2.setStatus(ReservationStatus.PENDING);
+
+        RestaurantReservation restaurantReservation = new RestaurantReservation();
+        restaurantReservation.setStatus(ReservationStatus.PENDING);
+
+        RestaurantReservation restaurantReservation2 = new RestaurantReservation();
+        restaurantReservation2.setStatus(ReservationStatus.PENDING);
+
+        BarReservation barReservation = new BarReservation();
+        barReservation.setStatus(ReservationStatus.PENDING);
+
+        BarReservation barReservation2 = new BarReservation();
+        barReservation2.setStatus(ReservationStatus.PENDING);
+
+        List<HotelRoomReservation> hotelRoomReservations = Arrays.asList(hotelRoomReservation,hotelRoomReservation2);
+        List<CarReservation> carReservations = Arrays.asList(carReservation, carReservation2);
+        List<RestaurantReservation> restaurantReservations = Arrays.asList(restaurantReservation, restaurantReservation2);
+        List<BarReservation> barReservations = Arrays.asList(barReservation, barReservation2);
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(currentUserImpl.isCurrentUserMatch(user)).thenReturn(true);
@@ -319,14 +344,19 @@ class UserServiceImplTest {
         when(restaurantReservationRepository.findByUserId(user.getId())).thenReturn(restaurantReservations);
         when(barReservationRepository.findByUserId(user.getId())).thenReturn(barReservations);
 
-
-        Map<String, Object> reservations = userServiceImpl.getUserReservations(user);
+        Map<String, Object> reservations = userServiceImpl.getUserReservations(user,ReservationStatus.PENDING);
 
         assertEquals(2, ((List<?>) reservations.get("hotelRoomReservations")).size());
         assertEquals(2, ((List<?>) reservations.get("carReservations")).size());
         assertEquals(2, ((List<?>) reservations.get("restaurantReservations")).size());
         assertEquals(2, ((List<?>) reservations.get("barReservations")).size());
 
+        Map<String, Object> reservationsWithNullStatus = userServiceImpl.getUserReservations(user, null);
+
+        assertEquals(2, ((List<?>) reservationsWithNullStatus.get("hotelRoomReservations")).size());
+        assertEquals(2, ((List<?>) reservationsWithNullStatus.get("carReservations")).size());
+        assertEquals(2, ((List<?>) reservationsWithNullStatus.get("restaurantReservations")).size());
+        assertEquals(2, ((List<?>) reservationsWithNullStatus.get("barReservations")).size());
     }
 
     @Test
@@ -335,7 +365,7 @@ class UserServiceImplTest {
         when(currentUserImpl.isCurrentUserMatch(user)).thenReturn(false);
 
         assertThrows(RecordNotFoundException.class, () -> {
-            userServiceImpl.getUserReservations(user);
+            userServiceImpl.getUserReservations(user,ReservationStatus.PENDING);
         });
     }
 

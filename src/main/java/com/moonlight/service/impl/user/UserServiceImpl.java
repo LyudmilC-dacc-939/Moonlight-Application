@@ -6,6 +6,7 @@ import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
 import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.car.CarReservation;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
@@ -201,47 +202,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getUserReservations(User user) {
+    public Map<String, Object> getUserReservations(User user, ReservationStatus reservationStatus) {
         User foundUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RecordNotFoundException("User not found"));
         boolean canGetUserById = currentUserImpl.isCurrentUserMatch(foundUser);
         if (!canGetUserById) {
             throw new RecordNotFoundException("This user is not authorize to proceed this operation");
-        } else {
+        }
             List<HotelRoomReservation> hotelRoomReservations = hotelRoomReservationRepository.findByUserId(foundUser.getId());
             List<CarReservation> carReservations = carReservationRepository.findByUserId(foundUser.getId());
             List<RestaurantReservation> restaurantReservations = restaurantReservationRepository.findByUserId(foundUser.getId());
             List<BarReservation> barReservations = barReservationRepository.findByUserId(foundUser.getId());
 
-            Map<String, Object> reservations = new LinkedHashMap<>();
-            reservations.put("userId", foundUser.getId());
-
-            if (!hotelRoomReservations.isEmpty()) {
-                reservations.put("hotelRoomReservations", hotelRoomReservations);
-            } else {
-                reservations.put("hotelRoomReservations", "No hotel room reservations found");
+            if (reservationStatus != null) {
+                hotelRoomReservations.removeIf(reservation -> !reservationStatus.equals(reservation.getStatus()));
+                carReservations.removeIf(reservation -> !reservationStatus.equals(reservation.getStatus()));
+                restaurantReservations.removeIf(reservation -> !reservationStatus.equals(reservation.getStatus()));
+                barReservations.removeIf(reservation -> !reservationStatus.equals(reservation.getStatus()));
             }
 
-            if (!carReservations.isEmpty()) {
-                reservations.put("carReservations", carReservations);
-            } else {
-                reservations.put("carReservations", "No car reservations found");
-            }
+            if (hotelRoomReservations.isEmpty() && carReservations.isEmpty()
+                    && restaurantReservations.isEmpty() && barReservations.isEmpty()) {
+                throw new RecordNotFoundException("No reservations found for the given status: " + reservationStatus);}
 
-            if (!restaurantReservations.isEmpty()) {
-                reservations.put("restaurantReservations", restaurantReservations);
-            } else {
-                reservations.put("restaurantReservations", "No restaurant reservations found");
-            }
+        Map<String, Object> reservations = new LinkedHashMap<>();
+        reservations.put("userId", foundUser.getId());
 
-            if (!barReservations.isEmpty()) {
-                reservations.put("barReservations", barReservations);
-            } else {
-                reservations.put("barReservations", "No bar reservations found");
-            }
-            return reservations;
+        reservations.put("hotelRoomReservations", hotelRoomReservations.isEmpty() ? "No hotel room reservations found" : hotelRoomReservations);
+        reservations.put("carReservations", carReservations.isEmpty() ? "No car reservations found" : carReservations);
+        reservations.put("restaurantReservations", restaurantReservations.isEmpty() ? "No restaurant reservations found" : restaurantReservations);
+        reservations.put("barReservations", barReservations.isEmpty() ? "No bar reservations found" : barReservations);
+
+        return reservations;
         }
-    }
 
     @Override
     public User updateUser(UpdateUserRequest updateUserRequest, Long userId) {

@@ -4,6 +4,7 @@ import com.moonlight.advice.exception.RecordNotFoundException;
 import com.moonlight.dto.user.*;
 import com.moonlight.model.bar.BarReservation;
 import com.moonlight.model.car.CarReservation;
+import com.moonlight.model.enums.ReservationStatus;
 import com.moonlight.model.hotel.HotelRoomReservation;
 import com.moonlight.model.restaurant.RestaurantReservation;
 import com.moonlight.model.user.User;
@@ -235,8 +236,9 @@ public class UserController {
                             schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "/reservation")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
-    public ResponseEntity<Map<String, Object>> getUserReservations(@AuthenticationPrincipal User user) {
-        Map<String, Object> reservations = userService.getUserReservations(user);
+    public ResponseEntity<Map<String, Object>> getUserReservations(@AuthenticationPrincipal User user,
+                                                                   @RequestParam(required = false) ReservationStatus reservationStatus) {
+        Map<String, Object> reservations = userService.getUserReservations(user,reservationStatus);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
