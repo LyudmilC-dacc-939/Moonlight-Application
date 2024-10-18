@@ -14,6 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -106,10 +107,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleItemNotFoundException(ItemNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleDateTimeParseException (DateTimeParseException ex){
-        return new ResponseEntity<>("Invalid date format", HttpStatus.BAD_REQUEST);
-    }
+    //@ExceptionHandler(Exception.class)
+    //public ResponseEntity<Object> handleDateTimeParseException (DateTimeParseException ex){
+      //  return new ResponseEntity<>("Invalid date format", HttpStatus.BAD_REQUEST);
+    //}
 
 
     @ExceptionHandler(IllegalCurrentStateException.class)
@@ -118,8 +119,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PayPalServiceException.class)
-    public ResponseEntity<String> handplePayPalServiceException(PayPalServiceException ex) {
+    public ResponseEntity<String> handlePayPalServiceException(PayPalServiceException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException (IOException ex, WebRequest request){
+        System.err.println("IOException occurred: "+ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process input/output operation. Please, try again");
+    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRunTimeException (RuntimeException ex){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Ïnternal server error:" + ex.getMessage());
     }
 
 //    @ExceptionHandler(Exception.class)

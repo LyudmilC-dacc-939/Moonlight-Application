@@ -12,4 +12,5 @@ public class BootcampJava24JulyApplication {
         SpringApplication.run(BootcampJava24JulyApplication.class, args);
     }
 
+
 }

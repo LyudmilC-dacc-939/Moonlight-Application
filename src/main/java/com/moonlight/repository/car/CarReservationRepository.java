@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @Repository
 public interface CarReservationRepository extends JpaRepository<CarReservation, Long> {
 
@@ -37,5 +38,4 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
     @Query(value = "SELECT * FROM car_reservations r WHERE " +
             ":userId IS NULL OR r.user_id = :userId ORDER BY r.start_date ASC", nativeQuery = true)
     List<CarReservation> findByUserIdOrderByStartDate(@Param("userId") Long userId);
-
 }

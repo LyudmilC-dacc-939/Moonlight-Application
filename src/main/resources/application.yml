@@ -1,109 +1,114 @@
 spring:
-    profiles:
-        active: prod
-    datasource:
-        url: jdbc:mysql://office.nasbg.com:33062/bootcamp_java_24_july
-        username: bootcamp_java_24_july
-        password: eZ@8Pa21A56_2
-        driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
+  profiles:
+    active: prod
+  datasource:
+    url: jdbc:mysql://office.nasbg.com:33062/bootcamp_java_24_july
+    username: bootcamp_java_24_july
+    password: eZ@8Pa21A56_2
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 
-    mail:
-        host: mail.nasbg.com
-        port: 465
-        username: "bootcamp@nasbg.com"
-        password: '%61%,g]AI,g_'
-        protocol: smtp
-        properties:
-            mail:
-                smtp:
-                    auth: true
-                    starttls:
-                        enable: true
-                    ssl:
-                        enable: true
-                    connectiontimeout: 5000
-                    timeout: 5000
-                    writetimeout: 5000
+  mail:
+    host: mail.nasbg.com
+    port: 465
+    username: "bootcamp@nasbg.com"
+    password: '%61%,g]AI,g_'
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  stripe:
+    stripe.secret-key: sk_test_51Q8S6909YXyOjhuaYH6ryNBr3UVFGvOrGHiYhozPedFPAkiuDrUMdfEi7f7xOmgdxt6HHNdPXLLPSDnL7QnMMfzO00IQbJCZAi
+    stripe.publishable-key: pk_test_51Q8S6909YXyOjhuaUTgDOByaAFFQEN1FiXVttn1BOsiD4G51xeMXiWsGZWDJCKDdYgEOuzVw54j3cH6pARjoMrm600u5JElaFW
+    stripe.webhook-secret: whsec_9004f866b04260d293e6a0adf1e936d4d47a1ae78d89482ef2bdc3eb629fad69
 
 server:
-    error:
-        include-message: always
-        include-binding-errors: always
-    port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+  port: 8080
 
 web:
-    access-url: https://office.nasbg.com/danni
+  access-url: https://office.nasbg.com/danni
 
 
 springdoc:
-    api-docs:
-        path: /api-docs
+  api-docs:
+    path: /api-docs
 
 secret-key: 3236464233324341314236393235454146313246353844464642353838
 
 ---
 # Test-specific properties and H2DB SetUp
 spring:
-    config:
-        activate:
-            on-profile: test
-    datasource:
-        url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-        driver-class-name: org.h2.Driver
-        username: sa
-        password: password
-    jpa:
-        hibernate:
-            ddl-auto: update
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.H2Dialect
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
 
 ---
 # Docker profile-specific properties
 spring:
-    config:
-        activate:
-            on-profile: docker
-    datasource:
-        url: jdbc:mysql://localhost:3307/bootcamp_docked
-        username: root
-        password: root
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:mysql://localhost:3307/bootcamp_docked
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 ---
 #Dev-specific properties: change according to your own DB info
 spring:
-    config:
-        activate:
-            on-profile: dev
-    datasource:
-        url: jdbc:mysql://localhost:3306/moonlight-system?createDatabaseIfNotExist=true
-        username: root
-        password:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-        hibernate:
-            ddl-auto: update
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
-                format_sql: true
-            show-sql: true
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/moonlight-system?createDatabaseIfNotExist=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+      show-sql: true
 server:
-    port: 8080
-    #The port is 8080 in order to be run concurrently with production profile
-    #port: 8081
-    #this port is only if someone from the team is concurrently running his app
+  port: 8080
+  #The port is 8080 in order to be run concurrently with production profile
+  #port: 8081
+  #this port is only if someone from the team is concurrently running his app

@@ -25,4 +25,5 @@ public interface BarReservationRepository extends JpaRepository<BarReservation, 
     List<BarReservation> findByUserId(@Param("userId") Long userId);
 
     List<BarReservation> findByScreenAndReservationDate(Screen screen, LocalDate reservationDate);
+
 }

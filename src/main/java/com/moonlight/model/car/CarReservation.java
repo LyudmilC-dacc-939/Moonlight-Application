@@ -45,4 +45,6 @@ public class CarReservation {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+
+    private String paymentIntentId;
 }

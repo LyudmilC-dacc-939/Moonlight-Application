@@ -56,4 +56,6 @@ public class HotelRoomReservation {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+
+    private String paymentIntentId;
 }
