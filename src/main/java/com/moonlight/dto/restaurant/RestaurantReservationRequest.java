@@ -29,5 +29,4 @@ public class RestaurantReservationRequest {
 
     @NotNull(message = "Smoking preference is required")
     private boolean isSmoking;
-
 }

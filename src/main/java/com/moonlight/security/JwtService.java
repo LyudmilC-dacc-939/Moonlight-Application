@@ -20,6 +20,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+
     @Value("${secret-key}")
     private String SECRET_KEY;
 

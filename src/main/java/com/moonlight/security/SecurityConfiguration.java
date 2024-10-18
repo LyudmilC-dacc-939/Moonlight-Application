@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                                         "api/v1/cars/search/*",
                                         "/api/v1/users/reset-password",
                                         "api/v1/hotel/search",
+                                        "api/v1/restaurants/search",
                                         "api/v1/reservations/car/available/*",
                                         "api/v1/reservations/hotel/available-rooms/",
                                         "api/v1/reservations/restaurant/available-tables",

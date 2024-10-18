@@ -84,7 +84,6 @@ public class RestaurantReservationServiceImpl implements RestaurantReservationSe
             reservation.setStatus(ReservationStatus.PENDING);
 
             return restaurantReservationRepository.save(reservation);
-
         }
     }
 

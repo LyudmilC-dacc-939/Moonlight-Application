@@ -15,3 +15,6 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.H2Dialect
+
+secret-key: 3236464233324341314236393235454146313246353844464642353838
+

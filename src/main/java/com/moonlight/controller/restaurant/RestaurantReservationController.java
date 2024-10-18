@@ -31,9 +31,6 @@ public class RestaurantReservationController {
     @Autowired
     private RestaurantReservationService restaurantReservationService;
 
-    @PostMapping("/create-reservation/")
-    @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     @Operation(summary = "Restaurant reservation", description = "Creates a reservation for a restaurant")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Restaurant reservation successfully made",
@@ -47,9 +44,14 @@ public class RestaurantReservationController {
                             schema = @Schema(implementation = RestaurantReservation.class))),
             @ApiResponse(responseCode = "404", description = "User or Restaurant not found",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservation.class)))})
+                            schema = @Schema(implementation = RestaurantReservation.class)))
+    })
+    @PostMapping("/create-reservation/")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<RestaurantReservationResponse> createReservation(
-            @Valid @RequestBody RestaurantReservationRequest request, @AuthenticationPrincipal User user) {
+            @Valid @RequestBody RestaurantReservationRequest request,
+            @AuthenticationPrincipal User user) {
         RestaurantReservation reservation = restaurantReservationService.createReservation(request, user);
         RestaurantReservationResponse response = new RestaurantReservationResponse(
                 reservation.getUser().getId(),
@@ -63,7 +65,7 @@ public class RestaurantReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/available-tables")
+
     @Operation(summary = "Get available tables", description = "Get available tables")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Available tables successfully made",
@@ -77,10 +79,11 @@ public class RestaurantReservationController {
                             schema = @Schema(implementation = RestaurantReservation.class))),
             @ApiResponse(responseCode = "404", description = "User or Restaurant not found",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantReservation.class)))})
+                            schema = @Schema(implementation = RestaurantReservation.class)))
+    })
+    @GetMapping("/available-tables")
     public ResponseEntity<?> getAvailableTables(
-            @RequestParam(required = false)
-            LocalDate reservationDate,
+            @RequestParam(required = false) LocalDate reservationDate,
             @RequestParam(required = false) LocalTime startTime,
             @RequestParam(required = false) LocalTime endTime,
             @RequestParam(required = false) Integer seats,
