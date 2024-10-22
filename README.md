@@ -1,6 +1,6 @@
-<h1 align="center"> Moonlight</h1> <br>
+<h1 align="center"> Moonlight Application</h1> <br>
 <p align="center">
-    Back end for the Moonlight Booking System.
+    Back end for a Booking System.
 </p>
 <p align="center">
     <strong>bootcamp-java-24-july</strong>
@@ -30,7 +30,7 @@ making it an efficient solution for hospitality and service industries.
 This dependency simplifies the setup and development of web applications in Java. 
 It includes embedded servers like Tomcat, allowing for quick deployment and testing. 
 With features like RESTful APIs and integrated security, it streamlines the creation of web services, 
-making it an essential component for the Moonlight Hotel system.
+making it an essential component for the booking system.
 
 #### Spring Boot Starter Data JPA: 
 This dependency simplifies data access by integrating the Java Persistence API (JPA) with Spring Boot. 
