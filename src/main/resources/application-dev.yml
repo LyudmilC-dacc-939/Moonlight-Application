@@ -51,9 +51,9 @@ spring-doc:
 debug: true
 
 server:
-    port: 8080
-    #The port is 8080 in order to be run concurrently with production profile
-   #port: 8081
+    port: 8081
+    #The port is 8081 in order to be run concurrently with production profile
+   #port: 8082
     #this port is only if someone from the team is concurrently running his app
 
 secret-key: 3236464233324341314236393235454146313246353844464642353838
