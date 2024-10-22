@@ -30,10 +30,10 @@ WORKDIR /app
 RUN cp /app/target/bootcamp-java-24.jar /app/Moonlight-System.jar
 
 # Expose the port the app will run on
-EXPOSE 8080
+EXPOSE 8085
 
 #add the -d commands after run if you want to run the container in the background
-#RUN -p 8082:8080 --name moonlight-app bootcamp-java-24-july_app
+#RUN -p 8085:8080 --name moonlight-app bootcamp-java-24-july_app
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "/app/Moonlight-System.jar"]
