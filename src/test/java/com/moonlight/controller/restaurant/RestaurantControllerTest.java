@@ -14,13 +14,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = "server.port=8085")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = "server.port=8088")
 public class RestaurantControllerTest {
 
     @BeforeAll
     public static void setup() {
         RestAssured.baseURI = "http://localhost";
-        RestAssured.port = 8085;
+        RestAssured.port = 8088;
     }
 
     @Test
