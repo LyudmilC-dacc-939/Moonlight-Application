@@ -57,8 +57,13 @@ The API includes robust security features:
 ### Payment Systems
 The application fully implements two payment systems:
 
-- Stripe: For credit/debit card transactions.
-- PayPal: For online payments.
+1. Stripe: For credit/debit card transactions.
+
+  For testing use card number:
+  
+- success: 4242 4242 4242 4242 (any future date and csv); - change reservation status to confirm
+- for failure: 4000 0000 0000 0341 - keep reservation status as pending
+2. PayPal: For online payments.
 
 ### Docker for Database
 Steps to set up:
